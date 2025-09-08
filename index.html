@@ -7,6 +7,10 @@
 <meta name="description" content="Alpha4orge – Free Figma design templates. Download instantly. Support us by viewing ads."/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+<!-- ✅ Load AdSense script once -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5938037588104367" crossorigin="anonymous"></script>
+
 <style>
   :root{
     --bg:#fafbfc; --panel:#ffffff; --ink:#1f2937; --muted:#6b7280; --ring:#e5e7eb;
@@ -31,7 +35,7 @@
   .grid{display:grid;grid-template-columns:1fr;gap:18px}
   @media(min-width:980px){ .grid{grid-template-columns:3fr 1fr} }
 
-  .ad{background:var(--panel);border:1px solid var(--ring);border-radius:var(--radius);padding:14px;text-align:center;color:var(--muted)}
+  .ad{background:var(--panel);border:1px solid var(--ring);border-radius:var(--radius);padding:10px;text-align:center}
   .sticky{position:sticky;top:96px}
 
   /* Gallery */
@@ -58,7 +62,16 @@
 
   .detail{background:var(--panel);border:1px solid var(--ring);border-radius:16px;padding:16px}
   .shots{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:12px}
-  .shot{background:#f7fafc;border:1px solid var(--ring);border-radius:10px;aspect-ratio:4/3;display:grid;place-items:center;color:var(--muted);font-size:13px}
+  .shot{
+  background:#f7fafc;
+  border:1px solid var(--ring);
+  border-radius:10px;
+  aspect-ratio:4/3;
+  display:grid;
+  place-items:center;
+  color:var(--muted);   /* ✅ fixed */
+  font-size:13px;
+}
 </style>
 </head>
 <body>
@@ -81,15 +94,42 @@
   </section>
 
   <aside class="sticky">
-    <div class="ad" style="min-height:250px;">Sidebar Ad – 300x250</div>
+    <!-- ✅ Sidebar-Top Ad -->
+    <div class="ad">
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-client="ca-pub-5938037588104367"
+           data-ad-slot="1346042426"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    </div>
+
     <div style="height:12px"></div>
-    <div class="ad" style="min-height:600px;">Sidebar Ad – 300x600</div>
+
+    <!-- ✅ Sidebar Skyscraper Ad -->
+    <div class="ad">
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-client="ca-pub-5938037588104367"
+           data-ad-slot="7815495275"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    </div>
   </aside>
 </main>
 
 <footer class="wrap">
-  <p class="tiny">By downloading, you agree to the license on each template page. Please don’t re-host files without attribution.</p>
+  <p class="tiny">
+    By downloading, you agree to the license on each template page.
+    Please don’t re-host files without attribution. <br>
+    <a href="privacy.html">Privacy Policy</a> ·
+    <a href="terms.html">Terms of Service</a>
+  </p>
 </footer>
+
+
 
 <script>
   const seedDesigns = [
@@ -143,26 +183,37 @@
   }
 
   function renderFigmaDetail(code){
-    const d=withCodes.find(x=>x.code===code);
-    if(!d){viewEl.innerHTML=`<div class="detail"><h2>Not found</h2></div>`;return;}
-    const tagRow=d.tags.map(t=>`<span class="tag">${t}</span>`).join(' ');
-    const shots=(d.images||[]).map(s=>`<div class="shot">${s}</div>`).join('');
-    const hero=d.preview?`<div class="thumb" style="margin-bottom:12px"><img src="${d.preview}" alt="${d.title}"></div>`:"";
-    viewEl.innerHTML=`
+    const d = withCodes.find(x => x.code === code);
+    if(!d){
+      viewEl.innerHTML = `<div class="detail"><h2>Not found</h2></div>`;
+      return;
+    }
+
+    const tagRow = d.tags.map(t => `<span class="tag">${t}</span>`).join(' ');
+    const shots  = (d.images || []).map(s => `<div class="shot">${s}</div>`).join('');
+    const hero   = d.preview
+      ? `<div class="thumb" style="margin-bottom:12px">
+          <img src="${d.preview}" alt="${d.title}">
+        </div>`
+      : "";
+
+    viewEl.innerHTML = `
       <div class="detail">
         ${hero}
         <h2>${d.title}</h2>
         <div class="tiny">Code: <strong>${d.code}</strong></div>
-        <div class="meta">${tagRow}</div>
+        <div class="meta" style="margin-top:6px">${tagRow}</div>
         <div class="row">
           <a class="btn" href="${d.imgZip}" download>Download Images (.zip)</a>
           <a class="btn" href="${d.fileSlow}" download>Free download</a>
         </div>
         <div class="shots">${shots}</div>
         <div style="margin-top:12px" class="tiny"><a href="#/figma">← Back</a></div>
-      </div>`;
+      </div>
+    `;
     highlightNav("#/figma");
   }
+
 
   function router(){
     const hash=location.hash||"#/figma";
