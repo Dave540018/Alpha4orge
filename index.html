@@ -75,16 +75,26 @@
 </style>
 </head>
 <body>
+  
 <header>
-  <div class="wrap brand">
-    <div class="logo">A4</div>
-    <div>
-      <h1>Alpha4orge</h1>
-      <div class="sub">Inspiring Creation, Creating Inspiration.</div>
+  <div class="wrap brand" style="display:flex;justify-content:space-between;align-items:center;">
+    <!-- Left side: Logo + Title -->
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div class="logo">A4</div>
+      <div>
+        <h1 style="margin:0;font-size:20px;">Alpha4orge</h1>
+        <div class="sub" style="font-size:12px;color:#6b7280">Inspiring Creation, Creating Inspiration.</div>
+      </div>
     </div>
-  </div>
-  <div class="wrap nav" id="nav">
-    <a href="#/figma" data-route>Figma Files</a>
+
+    <!-- Right side: Navbar -->
+    <nav class="nav" id="nav" style="display:flex;gap:14px;">
+      <a href="index.html">Home</a>
+      <a href="#/figma" data-route>Figma Files</a>
+      <a href="about.html">About</a>
+      <a href="blog.html">Blog</a>
+      <a href="contact.html">Contact</a>
+    </nav>
   </div>
 </header>
 
@@ -124,8 +134,8 @@
   <p class="tiny">
     By downloading, you agree to the license on each template page.
     Please don’t re-host files without attribution. <br>
-    <a href="pages/privacy.html">Privacy Policy</a> ·
-    <a href="pages/terms.html">Terms of Service</a>
+    <a href="privacy.html">Privacy Policy</a> ·
+    <a href="terms.html">Terms of Service</a>
   </p>
 </footer>
 
@@ -231,4 +241,3 @@
 </script>
 </body>
 </html>
-
