@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Alpha4orge – Free Figma Designs</title>
+<meta name="description" content="Alpha4orge – Free Figma design templates. Download instantly. Support us by viewing ads."/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#fafbfc; --panel:#ffffff; --ink:#1f2937; --muted:#6b7280; --ring:#e5e7eb;
+    --accent:#0ea5e9; --radius:14px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;color:var(--ink);background:var(--bg)}
+  a{color:inherit;text-decoration:none}
+
+  /* Header */
+  header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.85);backdrop-filter:saturate(1.2) blur(8px);border-bottom:1px solid var(--ring)}
+  .wrap{max-width:1200px;margin:0 auto;padding:14px 16px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{width:36px;height:36px;border-radius:12px;background:var(--panel);border:1px solid var(--ring);display:grid;place-items:center;font-weight:800;color:var(--accent)}
+  h1{font-size:20px;margin:0}
+  .sub{color:var(--muted);font-size:12px}
+  .nav{display:flex;gap:10px;margin-top:10px}
+  .nav a{padding:8px 12px;border:1px solid var(--ring);border-radius:999px;background:var(--panel);font-weight:600;font-size:13px}
+  .nav a.active{border-color:#cbd5e1;color:#0f172a}
+
+  /* Layout */
+  .grid{display:grid;grid-template-columns:1fr;gap:18px}
+  @media(min-width:980px){ .grid{grid-template-columns:3fr 1fr} }
+
+  .ad{background:var(--panel);border:1px solid var(--ring);border-radius:var(--radius);padding:14px;text-align:center;color:var(--muted)}
+  .sticky{position:sticky;top:96px}
+
+  /* Gallery */
+  .gallery{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+  .card{grid-column:span 4;background:var(--panel);border:1px solid var(--ring);border-radius:16px;overflow:hidden;transition:transform .12s ease}
+  .card:hover{transform:translateY(-2px)}
+  .card.wide{grid-column:span 6}
+  @media(max-width:900px){ .card{grid-column:span 6} .card.wide{grid-column:span 12} }
+  @media(max-width:560px){ .card,.card.wide{grid-column:span 12} }
+  .thumb{background:#f7fafc;border-bottom:1px solid var(--ring);aspect-ratio:16/10;display:block;overflow:hidden}
+  .thumb img{width:100%;height:100%;object-fit:cover}
+
+  .content{padding:14px}
+  .title{font-weight:800;margin:0 0 6px;font-size:16px}
+  .meta{font-size:12px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+  .tag{background:#f1f5f9;border:1px solid var(--ring);padding:4px 8px;border-radius:999px;font-size:11px}
+  .foot{display:flex;align-items:center;justify-content:space-between;margin-top:10px;font-size:12px;color:var(--muted)}
+  .code{font-weight:800}
+
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .btn{border:1px solid var(--ring);background:var(--panel);padding:9px 12px;border-radius:10px;font-weight:700;color:#0b5cab;cursor:pointer}
+  footer{border-top:1px solid var(--ring);margin-top:24px}
+  .tiny{font-size:12px;color:var(--muted)}
+
+  .detail{background:var(--panel);border:1px solid var(--ring);border-radius:16px;padding:16px}
+  .shots{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:12px}
+  .shot{background:#f7fafc;border:1px solid var(--ring);border-radius:10px;aspect-ratio:4/3;display:grid;place-items:center;color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap brand">
+    <div class="logo">A4</div>
+    <div>
+      <h1>Alpha4orge</h1>
+      <div class="sub">Inspiring Creation, Creating Inspiration.</div>
+    </div>
+  </div>
+  <div class="wrap nav" id="nav">
+    <a href="#/figma" data-route>Figma Files</a>
+  </div>
+</header>
+
+<main class="wrap grid">
+  <section id="mainArea">
+    <div id="view"></div>
+  </section>
+
+  <aside class="sticky">
+    <div class="ad" style="min-height:250px;">Sidebar Ad – 300x250</div>
+    <div style="height:12px"></div>
+    <div class="ad" style="min-height:600px;">Sidebar Ad – 300x600</div>
+  </aside>
+</main>
+
+<footer class="wrap">
+  <p class="tiny">By downloading, you agree to the license on each template page. Please don’t re-host files without attribution.</p>
+</footer>
+
+<script>
+  const seedDesigns = [
+    {
+      title: "The Paper-Cut Effect Free Tier Design Template",
+      tags: ["Free", "Poster", "Layered"],
+      preview: "https://github.com/user-attachments/assets/02789c6a-e557-41b1-8adb-bad4febe8f8f",
+      images: ["Cover 1","Cover 2","Cover 3"],
+      fileSlow: "https://github.com/user-attachments/files/22137162/The.Paper.Cut.Effect.zip",
+      imgZip: "https://github.com/user-attachments/files/22137162/The.Paper.Cut.Effect.zip",
+      date: "Aug 25, 2025"
+    },
+    {
+      title: "Next Post Example Design Template",
+      tags: ["UI","Modern"],
+      preview: "https://placehold.co/600x400/png",
+      images: ["Homepage","Profile page"],
+      fileSlow: "https://example.com/next-design.zip",
+      imgZip: "https://example.com/next-design.zip",
+      date: "Sep 5, 2025"
+    }
+  ];
+
+  const pad=n=>String(n).padStart(3,"0");
+  const slug=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"");
+  const withCodes=seedDesigns.map((d,i)=>({...d,id:slug(d.title),code:`A4-${pad(i+1)}`}));
+
+  const viewEl=document.getElementById('view');
+
+  function galleryCard(d, idx){
+    const tags=d.tags.map(t=>`<span class="tag">${t}</span>`).join(' ');
+    const thumb=d.preview?`<div class="thumb"><img src="${d.preview}" alt="${d.title}"></div>`:`<div class="thumb">Preview</div>`;
+    return `
+      <article class="card">
+        ${thumb}
+        <div class="content">
+          <h3 class="title">${d.title}</h3>
+          <div class="meta">${tags}</div>
+          <div class="row"><a class="btn" href="${d.fileSlow}" download>Free download</a></div>
+          <div class="foot"><a class="code" href="#/figma/${d.code}">Code: ${d.code}</a><span>${d.date}</span></div>
+        </div>
+      </article>`;
+  }
+
+  function renderFigmaList(){
+    viewEl.innerHTML=`
+      <div class="gallery">
+        ${withCodes.map((d,i)=>galleryCard(d,i)).join('')}
+      </div>`;
+    highlightNav("#/figma");
+  }
+
+  function renderFigmaDetail(code){
+    const d=withCodes.find(x=>x.code===code);
+    if(!d){viewEl.innerHTML=`<div class="detail"><h2>Not found</h2></div>`;return;}
+    const tagRow=d.tags.map(t=>`<span class="tag">${t}</span>`).join(' ');
+    const shots=(d.images||[]).map(s=>`<div class="shot">${s}</div>`).join('');
+    const hero=d.preview?`<div class="thumb" style="margin-bottom:12px"><img src="${d.preview}" alt="${d.title}"></div>`:"";
+    viewEl.innerHTML=`
+      <div class="detail">
+        ${hero}
+        <h2>${d.title}</h2>
+        <div class="tiny">Code: <strong>${d.code}</strong></div>
+        <div class="meta">${tagRow}</div>
+        <div class="row">
+          <a class="btn" href="${d.imgZip}" download>Download Images (.zip)</a>
+          <a class="btn" href="${d.fileSlow}" download>Free download</a>
+        </div>
+        <div class="shots">${shots}</div>
+        <div style="margin-top:12px" class="tiny"><a href="#/figma">← Back</a></div>
+      </div>`;
+    highlightNav("#/figma");
+  }
+
+  function router(){
+    const hash=location.hash||"#/figma";
+    const parts=hash.split("/");
+    if(parts[1]==="figma"&&parts.length===2){renderFigmaList();return;}
+    if(parts[1]==="figma"&&parts[2]){renderFigmaDetail(parts[2]);return;}
+    renderFigmaList();
+  }
+  window.addEventListener("hashchange",router);
+  window.addEventListener("load",router);
+
+  function highlightNav(target){
+    document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('active',a.getAttribute('href')===target));
+  }
+</script>
+</body>
+</html>
