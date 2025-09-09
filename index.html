@@ -153,14 +153,22 @@
       date: "Aug 25, 2025"
     },
     {
-      title: "Next Post Example Design Template",
-      tags: ["UI","Modern"],
-      preview: "https://placehold.co/600x400/png",
-      images: ["Homepage","Profile page"],
-      fileSlow: "https://example.com/next-design.zip",
-      imgZip: "https://example.com/next-design.zip",
-      date: "Sep 5, 2025"
+      title: "Free Customizable Neon YouTube Banner",
+      tags: ["Free", "YouTube", "Banner"],
+      // Thumbnail shown in gallery
+      preview: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Free.Customizable.Neon.Youtube.Banner.2560.x.1440.png",
+      // Images shown on the detail page
+      images: [
+        "Hero Preview",
+        "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Free.Customizable.Neon.Youtube.Banner.Mockup.Design.jpg"
+      ],
+      // Main downloadable Figma project file
+      fileSlow: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Free.Customizable.Neon.Youtube.Banner.2560.x.1440.fig",
+      // Extra downloadable (here reusing PNG as preview download)
+      imgZip: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Free.Customizable.Neon.Youtube.Banner.2560.x.1440.png",
+      date: "Sep 9, 2025"
     }
+
   ];
 
   const pad=n=>String(n).padStart(3,"0");
@@ -193,37 +201,57 @@
   }
 
   function renderFigmaDetail(code){
-    const d = withCodes.find(x => x.code === code);
-    if(!d){
-      viewEl.innerHTML = `<div class="detail"><h2>Not found</h2></div>`;
-      return;
-    }
-
-    const tagRow = d.tags.map(t => `<span class="tag">${t}</span>`).join(' ');
-    const shots  = (d.images || []).map(s => `<div class="shot">${s}</div>`).join('');
-    const hero   = d.preview
-      ? `<div class="thumb" style="margin-bottom:12px">
-          <img src="${d.preview}" alt="${d.title}">
-        </div>`
-      : "";
-
-    viewEl.innerHTML = `
-      <div class="detail">
-        ${hero}
-        <h2>${d.title}</h2>
-        <div class="tiny">Code: <strong>${d.code}</strong></div>
-        <div class="meta" style="margin-top:6px">${tagRow}</div>
-        <div class="row">
-          <a class="btn" href="${d.imgZip}" download>Download Images (.zip)</a>
-          <a class="btn" href="${d.fileSlow}" download>Free download</a>
-        </div>
-        <div class="shots">${shots}</div>
-        <div style="margin-top:12px" class="tiny"><a href="#/figma">← Back</a></div>
-      </div>
-    `;
-    highlightNav("#/figma");
+  const d = withCodes.find(x => x.code === code);
+  if(!d){
+    viewEl.innerHTML = `<div class="detail"><h2>Not found</h2></div>`;
+    return;
   }
 
+  const isUrl = v => typeof v === "string" && /^https?:\/\//i.test(v);
+
+  const tagRow = d.tags.map(t => `<span class="tag">${t}</span>`).join(' ');
+
+  // If an item in d.images is a URL -> show <img>, else show the text label
+  const shots = (d.images || []).map(s => {
+    if (isUrl(s)) {
+      return `
+        <div class="shot">
+          <img src="${s}" alt="${d.title} preview" style="max-width:100%;max-height:100%;object-fit:cover;">
+        </div>`;
+    }
+    // also support object format: { url, alt }
+    if (s && typeof s === "object" && s.url) {
+      const alt = s.alt || `${d.title} preview`;
+      return `
+        <div class="shot">
+          <img src="${s.url}" alt="${alt}" style="max-width:100%;max-height:100%;object-fit:cover;">
+        </div>`;
+    }
+    return `<div class="shot">${s || ""}</div>`;
+  }).join('');
+
+  const hero = d.preview
+    ? `<div class="thumb" style="margin-bottom:12px">
+         <img src="${d.preview}" alt="${d.title}">
+       </div>`
+    : "";
+
+  viewEl.innerHTML = `
+    <div class="detail">
+      ${hero}
+      <h2>${d.title}</h2>
+      <div class="tiny">Code: <strong>${d.code}</strong></div>
+      <div class="meta" style="margin-top:6px">${tagRow}</div>
+      <div class="row">
+        <a class="btn" href="${d.imgZip}" download>Download Images (.zip)</a>
+        <a class="btn" href="${d.fileSlow}" download>Free download</a>
+      </div>
+      <div class="shots">${shots}</div>
+      <div style="margin-top:12px" class="tiny"><a href="#/figma">← Back</a></div>
+    </div>
+  `;
+  highlightNav("#/figma");
+}
 
   function router(){
     const hash=location.hash||"#/figma";
@@ -241,5 +269,3 @@
 </script>
 </body>
 </html>
-
-
