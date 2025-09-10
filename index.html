@@ -98,6 +98,7 @@
     <nav class="nav" id="nav" style="display:flex;gap:14px;">
       <a href="index.html">Home</a>
       <a href="#/figma" data-route>Figma Files</a>
+      <a href="#/printables" data-route>Printables</a>
       <a href="about.html">About</a>
       <a href="blog.html">Blog</a>
       <a href="contact.html">Contact</a>
@@ -151,54 +152,80 @@
 
 <script>
   const seedDesigns = [
-    {
-      title: "The Paper-Cut Effect Free Tier Design Template",
-      tags: ["Free", "Poster", "Layered"],
-      preview: "https://github.com/user-attachments/assets/02789c6a-e557-41b1-8adb-bad4febe8f8f",
-      images: ["Cover 1","Cover 2","Cover 3"],
-      fileSlow: "https://github.com/user-attachments/files/22137162/The.Paper.Cut.Effect.zip",
-      imgZip: "https://github.com/user-attachments/files/22137162/The.Paper.Cut.Effect.zip",
-      date: "Aug 25, 2025"
-    },
-    {
-      title: "Free Customizable Neon YouTube Banner",
-      tags: ["Free", "YouTube", "Banner"],
-      // Thumbnail shown in gallery
-      preview: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Free.Customizable.Neon.Youtube.Banner.2560.x.1440.png",
-      // Images shown on the detail page
-      images: [
-        "Hero Preview",
-        "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Free.Customizable.Neon.Youtube.Banner.Mockup.Design.jpg"
-      ],
-      // Main downloadable Figma project file
-      fileSlow: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Free.Customizable.Neon.Youtube.Banner.2560.x.1440.fig",
-      // Extra downloadable (here reusing PNG as preview download)
-      imgZip: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Free.Customizable.Neon.Youtube.Banner.2560.x.1440.png",
-      date: "Sep 9, 2025"
-    }
+  {
+    kind: "figma",
+    title: "The Paper-Cut Effect Free Tier Design Template",
+    tags: ["Free", "Poster", "Layered"],
+    preview: "https://github.com/user-attachments/assets/02789c6a-e557-41b1-8adb-bad4febe8f8f",
+    images: ["Cover 1","Cover 2","Cover 3"],
+    downloadUrl: "https://github.com/user-attachments/files/22137162/The.Paper.Cut.Effect.zip",
+    date: "Aug 25, 2025"
+  },
+  {
+    kind: "figma",
+    title: "Free Customizable Neon YouTube Banner",
+    tags: ["Free", "YouTube", "Banner"],
+    preview: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Free.Customizable.Neon.Youtube.Banner.2560.x.1440.png",
+    images: [
+      "Hero Preview",
+      "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Free.Customizable.Neon.Youtube.Banner.Mockup.Design.jpg"
+    ],
+    downloadUrl: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Free.Customizable.Neon.Youtube.Banner.2560.x.1440.fig",
+    date: "Sep 9, 2025"
+  },
 
-  ];
-
+  /* Example printable (replace the URLs when ready) */
+  {
+    kind: "printable",
+    title: "Mario Question Mark Box Story | Comic Edition",
+    tags: ["Free","Printable","Mario"],
+    preview: "https://i.pinimg.com/736x/64/92/df/6492df41725cb7fddb7e31a0d9c8ed7c.jpg",
+    images: [
+      "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Mario.Box.Red.png",
+      "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Mario.Question.Box.png"
+    ],
+    downloadUrl: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Mario.Box.Printables.zip",
+    date: "Sep 10, 2025"
+  }
+];
   const pad=n=>String(n).padStart(3,"0");
   const slug=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"");
   const withCodes=seedDesigns.map((d,i)=>({...d,id:slug(d.title),code:`A4-${pad(i+1)}`}));
 
   const viewEl=document.getElementById('view');
 
-  function galleryCard(d, idx){
-    const tags=d.tags.map(t=>`<span class="tag">${t}</span>`).join(' ');
-    const thumb=d.preview?`<div class="thumb"><img src="${d.preview}" alt="${d.title}"></div>`:`<div class="thumb">Preview</div>`;
-    return `
-      <article class="card">
-        ${thumb}
-        <div class="content">
-          <h3 class="title">${d.title}</h3>
-          <div class="meta">${tags}</div>
-          <div class="row"><a class="btn" href="${d.fileSlow}" download>Free download</a></div>
-          <div class="foot"><a class="code" href="#/figma/${d.code}">Code: ${d.code}</a><span>${d.date}</span></div>
-        </div>
-      </article>`;
+  function galleryCard(d){
+  const tags = d.tags.map(t=>`<span class="tag">${t}</span>`).join(' ');
+  const thumb = d.preview
+    ? `<div class="thumb"><img src="${d.preview}" alt="${d.title}"></div>`
+    : `<div class="thumb">Preview</div>`;
+  return `
+    <article class="card">
+      ${thumb}
+      <div class="content">
+        <h3 class="title">${d.title}</h3>
+        <div class="meta">${tags}</div>
+        <div class="row"><a class="btn" href="${d.downloadUrl}" download>Download</a></div>
+        <div class="foot"><a class="code" href="#/figma/${d.code}">Code: ${d.code}</a><span>${d.date}</span></div>
+
+      </div>
+    </article>`;
+}
+
+function renderList(kind){
+  const items = withCodes.filter(d => d.kind === kind);
+  if(items.length === 0){
+    viewEl.innerHTML = `<div class="detail"><h2>No items yet</h2></div>`;
+    return;
   }
+  viewEl.innerHTML = `
+    <div class="gallery">
+      ${items.map(d => galleryCard(d)).join('')}
+    </div>`;
+  highlightNav(kind === "printable" ? "#/printables" : "#/figma");
+}
+
+
 
   function renderFigmaList(){
     viewEl.innerHTML=`
@@ -208,41 +235,30 @@
     highlightNav("#/figma");
   }
 
-  function renderFigmaDetail(code){
+  function renderDetail(code){
   const d = withCodes.find(x => x.code === code);
-  if(!d){
-    viewEl.innerHTML = `<div class="detail"><h2>Not found</h2></div>`;
-    return;
-  }
+  if(!d){ viewEl.innerHTML = `<div class="detail"><h2>Not found</h2></div>`; return; }
 
   const isUrl = v => typeof v === "string" && /^https?:\/\//i.test(v);
-
   const tagRow = d.tags.map(t => `<span class="tag">${t}</span>`).join(' ');
 
-  // If an item in d.images is a URL -> show <img>, else show the text label
   const shots = (d.images || []).map(s => {
     if (isUrl(s)) {
-      return `
-        <div class="shot">
-          <img src="${s}" alt="${d.title} preview" loading="lazy" style="max-width:100%;max-height:100%;object-fit:cover;">
-        </div>`;
+      return `<div class="shot"><img src="${s}" alt="${d.title} preview" loading="lazy" style="max-width:100%;max-height:100%;object-fit:cover;"></div>`;
     }
-    // also support object format: { url, alt }
     if (s && typeof s === "object" && s.url) {
       const alt = s.alt || `${d.title} preview`;
-      return `
-        <div class="shot">
-          <img src="${s.url}" alt="${alt}" style="max-width:100%;max-height:100%;object-fit:cover;">
-        </div>`;
+      return `<div class="shot"><img src="${s.url}" alt="${alt}" loading="lazy" style="max-width:100%;max-height:100%;object-fit:cover;"></div>`;
     }
     return `<div class="shot">${s || ""}</div>`;
   }).join('');
 
   const hero = d.preview
-    ? `<div class="thumb" style="margin-bottom:12px">
-         <img src="${d.preview}" alt="${d.title}" loading="lazy">
-       </div>`
+    ? `<div class="thumb" style="margin-bottom:12px"><img src="${d.preview}" alt="${d.title}" loading="lazy"></div>`
     : "";
+
+  // routeBack is the list route the item came from
+  const routeBack = d.kind === "printable" ? "#/printables" : "#/figma";
 
   viewEl.innerHTML = `
     <div class="detail">
@@ -251,23 +267,33 @@
       <div class="tiny">Code: <strong>${d.code}</strong></div>
       <div class="meta" style="margin-top:6px">${tagRow}</div>
       <div class="row">
-        <a class="btn" href="${d.imgZip}" download>Download Images (.zip)</a>
-        <a class="btn" href="${d.fileSlow}" download>Free download</a>
+        <a class="btn" href="${d.downloadUrl}" download>Download</a>
       </div>
       <div class="shots">${shots}</div>
-      <div style="margin-top:12px" class="tiny"><a href="#/figma">← Back</a></div>
-    </div>
-  `;
-  highlightNav("#/figma");
+      <div style="margin-top:12px" class="tiny"><a href="${routeBack}">← Back</a></div>
+    </div>`;
+  highlightNav(routeBack);
 }
 
+
   function router(){
-    const hash=location.hash||"#/figma";
-    const parts=hash.split("/");
-    if(parts[1]==="figma"&&parts.length===2){renderFigmaList();return;}
-    if(parts[1]==="figma"&&parts[2]){renderFigmaDetail(parts[2]);return;}
-    renderFigmaList();
+  const hash = location.hash || "#/figma";
+  const [, section, code] = hash.split("/"); // ["", "figma", "A4-001"]
+
+  if(!section || section === "figma"){
+    if(code){ renderDetail(code); return; }
+    renderList("figma"); return;
   }
+
+  if(section === "printables"){
+    if(code){ renderDetail(code); return; }
+    renderList("printable"); return;
+  }
+
+  // Fallback
+  renderList("figma");
+}
+
   window.addEventListener("hashchange",router);
   window.addEventListener("load",router);
 
