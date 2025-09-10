@@ -311,6 +311,26 @@ function renderList(kind){
     document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('active',a.getAttribute('href')===target));
   }
 </script>
+   <!-- GA hash-route tracking -->
+  <script>
+    // Send a virtual page_view to GA4 when the hash (route) changes
+    function sendGaPageview() {
+      if (typeof gtag !== 'function') return;
+      gtag('event', 'page_view', {
+        page_title: document.title,
+        page_location: location.href,
+        page_path: location.pathname + location.hash  // include # route
+      });
+    }
+
+    // Fire when route changes and also once on load
+    window.addEventListener('hashchange', sendGaPageview);
+    window.addEventListener('load', () => {
+      // optional: uncomment if you want to force a first hit
+      // sendGaPageview();
+    });
+  </script>
 </body>
 </html>
+
 
