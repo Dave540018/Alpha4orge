@@ -72,6 +72,13 @@
   color:var(--muted);   /* ✅ fixed */
   font-size:13px;
 }
+/* Default: hide skyscraper (mobile / tablet) */
+.ad-skyscraper { display: none; }
+
+/* On large screens, show skyscraper */
+@media (min-width: 1200px) {
+  .ad-skyscraper { display: block; }
+}
 </style>
 </head>
 <body>
@@ -103,31 +110,32 @@
     <div id="view"></div>
   </section>
 
-  <aside class="sticky">
-    <!-- ✅ Sidebar-Top Ad -->
-    <div class="ad">
-      <ins class="adsbygoogle"
-           style="display:block"
-           data-ad-client="ca-pub-5938037588104367"
-           data-ad-slot="1346042426"
-           data-ad-format="auto"
-           data-full-width-responsive="true"></ins>
-      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-    </div>
+<aside class="sticky">
+  <!-- ✅ Sidebar Rectangle (shows everywhere) -->
+  <div class="ad ad-rectangle">
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-5938037588104367"
+         data-ad-slot="1346042426"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
 
-    <div style="height:12px"></div>
+  <div style="height:12px"></div>
 
-    <!-- ✅ Sidebar Skyscraper Ad -->
-    <div class="ad">
-      <ins class="adsbygoogle"
-           style="display:block"
-           data-ad-client="ca-pub-5938037588104367"
-           data-ad-slot="7815495275"
-           data-ad-format="auto"
-           data-full-width-responsive="true"></ins>
-      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-    </div>
-  </aside>
+  <!-- ✅ Sidebar Skyscraper (desktop only) -->
+  <div class="ad ad-skyscraper">
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-5938037588104367"
+         data-ad-slot="7815495275"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+</aside>
+
 </main>
 
 <footer class="wrap">
@@ -216,7 +224,7 @@
     if (isUrl(s)) {
       return `
         <div class="shot">
-          <img src="${s}" alt="${d.title} preview" style="max-width:100%;max-height:100%;object-fit:cover;">
+          <img src="${s}" alt="${d.title} preview" loading="lazy" style="max-width:100%;max-height:100%;object-fit:cover;">
         </div>`;
     }
     // also support object format: { url, alt }
@@ -232,7 +240,7 @@
 
   const hero = d.preview
     ? `<div class="thumb" style="margin-bottom:12px">
-         <img src="${d.preview}" alt="${d.title}">
+         <img src="${d.preview}" alt="${d.title}" loading="lazy">
        </div>`
     : "";
 
