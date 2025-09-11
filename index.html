@@ -254,13 +254,18 @@
 </footer>
 
 <script>
-  function openDetail(kind, code){
-    location.hash = `#/${kind}/${code}`;
-  }
+  function openDetail(route, code){
+  location.hash = `#/${route}/${code}`;
+}
 </script>
 
 
 <script>
+
+  // map data kind -> route segment used in the URL
+const routeOf = k => (k === 'printable' ? 'printables' : 'figma');
+
+  
   const seedDesigns = [
   {
     kind: "figma",
@@ -325,22 +330,26 @@ function galleryCard(d){
   const thumb = d.preview
     ? `<div class="thumb"><img src="${d.preview}" alt="${d.title}"></div>`
     : `<div class="thumb">Preview</div>`;
+  const route = routeOf(d.kind);
+
   return `
-    <article class="card" onclick="openDetail('${d.kind}','${d.code}')">
+    <article class="card" onclick="openDetail('${route}','${d.code}')">
       ${thumb}
       <div class="content">
         <h3 class="title">${d.title}</h3>
         <div class="meta">${tags}</div>
         <div class="row">
-          <a class="btn" href="${d.downloadUrl}" download onclick="event.stopPropagation()">Download</a>
+          <a class="btn" href="${d.downloadUrl}" download target="_blank" rel="noopener"
+             onclick="event.stopPropagation()">Download</a>
         </div>
         <div class="foot">
-          <a class="code" href="#/${d.kind}/${d.code}" onclick="event.stopPropagation()">Code: ${d.code}</a>
+          <a class="code" href="#/${route}/${d.code}" onclick="event.stopPropagation()">Code: ${d.code}</a>
           <span>${d.date}</span>
         </div>
       </div>
     </article>`;
 }
+
 
 
 function renderList(kind){
@@ -408,22 +417,25 @@ function renderList(kind){
 
 
   function router(){
-  const hash = location.hash || "#/figma";
-  const [, section, code] = hash.split("/"); // ["", "figma", "A4-001"]
-
-  if(!section || section === "figma"){
-    if(code){ renderDetail(code); return; }
-    renderList("figma"); return;
+    const hash = location.hash || "#/figma";
+    const [, section, code] = hash.split("/");
+  
+    // figma
+    if (!section || section === "figma") {
+      if (code){ renderDetail(code); return; }
+      renderList("figma"); return;
+    }
+  
+    // printables (accept both)
+    if (section === "printables" || section === "printable") {
+      if (code){ renderDetail(code); return; }
+      renderList("printable"); return;
+    }
+  
+    // fallback
+    renderList("figma");
   }
 
-  if(section === "printables"){
-    if(code){ renderDetail(code); return; }
-    renderList("printable"); return;
-  }
-
-  // Fallback
-  renderList("figma");
-}
 
   window.addEventListener("hashchange",router);
   window.addEventListener("load",router);
@@ -461,6 +473,7 @@ function renderList(kind){
   </script>
 </body>
 </html>
+
 
 
 
