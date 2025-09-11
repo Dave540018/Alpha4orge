@@ -73,7 +73,14 @@
   header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.85);backdrop-filter:saturate(1.2) blur(8px);border-bottom:1px solid var(--ring)}
   .wrap{max-width:1200px;margin:0 auto;padding:14px 16px}
   .brand{display:flex;align-items:center;gap:12px}
-  .logo{width:36px;height:36px;border-radius:12px;background:var(--panel);border:1px solid var(--ring);display:grid;place-items:center;font-weight:800;color:var(--accent)}
+  /* Logo container now wraps an <img> */
+.logo{
+  width:36px;height:36px;border-radius:12px;
+  background:var(--panel);border:1px solid var(--ring);
+  display:grid;place-items:center;overflow:hidden;
+}
+.logo img{width:100%;height:100%;object-fit:contain;display:block}
+
   h1{font-size:20px;margin:0}
   .sub{color:var(--muted);font-size:12px}
   .nav{display:flex;gap:10px;margin-top:10px}
@@ -135,13 +142,18 @@
 <header>
   <div class="wrap brand" style="display:flex;justify-content:space-between;align-items:center;">
     <!-- Left side: Logo + Title -->
+    <!-- Left side: Logo + Title -->
     <div style="display:flex;align-items:center;gap:12px;">
-      <div class="logo">A4</div>
+      <a class="logo" href="index.html" aria-label="Alpha4orge home">
+        <img src="https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Logo.svg"
+             alt="Alpha4orge logo" width="36" height="36" loading="eager">
+      </a>
       <div>
         <h1 style="margin:0;font-size:20px;">Alpha4orge</h1>
         <div class="sub" style="font-size:12px;color:#6b7280">Inspiring Creation, Creating Inspiration.</div>
       </div>
     </div>
+
 
     <!-- Right side: Navbar -->
     <nav class="nav" id="nav" style="display:flex;gap:14px;">
@@ -236,6 +248,22 @@
     downloadUrl: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Mario.Box.Printables.zip",
     date: "Sep 10, 2025"
   }
+
+  {
+  kind: "printable",
+  title: "Pokemon TCG Green Pack (Free Tier)",
+  tags: ["Free","Printable","Pokemon","TCG"],
+  // grid/gallery thumbnail
+  preview: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Pack.Review.png",
+  // images on the detail page (hero is taken from preview; these go in the “shots” grid)
+  images: [
+    "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Exeggutor.EX_Pokmon.TCGP.png"
+  ],
+  // main download
+  downloadUrl: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/TCG.Pokemon.Green.Pack.zip",
+  date: "Sep 12, 2025"
+}
+
 ];
   const pad=n=>String(n).padStart(3,"0");
   const slug=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"");
@@ -371,6 +399,7 @@ function renderList(kind){
   </script>
 </body>
 </html>
+
 
 
 
