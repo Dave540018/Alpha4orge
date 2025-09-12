@@ -80,6 +80,19 @@
 
     footer{border-top:1px solid var(--ring);margin-top:24px}
     .tiny{font-size:12px;color:var(--muted)}
+
+    /* Ad styling */
+    .ad-inline{ display:flex; justify-content:center; margin:16px 0; }
+    .ad-slab  { background:var(--panel); border:1px solid var(--ring); border-radius:var(--radius); padding:6px; }
+    
+    /* Hide tall sidebar ad on small screens, show 300x250 fallback instead */
+    #ad-side-tall { display:block; }
+    #ad-side-rect { display:none; }
+    @media (max-width: 980px){
+      #ad-side-tall { display:none; }
+      #ad-side-rect { display:block; }
+    }
+
   </style>
 </head>
 <body>
@@ -116,11 +129,16 @@
   </section>
 
   <aside class="sticky">
-    <!-- Paste your Adsterra banner/snippet here to show on blog only -->
-    <div id="adsterra-sidebar" class="ad">Blog sidebar ad</div>
-    <div style="height:12px"></div>
-    <div class="ad">You’re reading the Alpha4orge Blog 👋</div>
-  </aside>
+  <!-- 160x600 on desktop -->
+  <div id="ad-side-tall"  class="ad ad-slab">Loading ad…</div>
+  <div style="height:12px"></div>
+  <!-- 300x250 on mobile/tablet -->
+  <div id="ad-side-rect"  class="ad ad-slab">Loading ad…</div>
+
+  <div style="height:12px"></div>
+  <div class="ad">You’re reading the Alpha4orge Blog 👋</div>
+</aside>
+
 </main>
 
 <footer class="wrap">
@@ -174,18 +192,18 @@
 
   function postCard(p){
     return `
-      <article class="card" onclick="go('#/blog/${p.id}')">
-        <div class="thumb">${p.cover ? `<img src="${p.cover}" alt="${p.title}">` : ""}</div>
-        <div class="content">
-          <h3 class="title">${p.title}</h3>
-          <div class="excerpt">${p.excerpt}</div>
-          <div class="foot">
-            <span>${p.date}</span>
-            <span class="meta">${tagPills(p.tags)}</span>
-          </div>
+          $view.innerHTML = `
+      <article class="detail">
+        ${p.cover ? `<div class="hero"><img src="${p.cover}" alt="${p.title}"></div>` : ""}
+        <h2>${p.title}</h2>
+        <div class="meta" style="margin-bottom:8px;">
+          <span>${p.date}</span> ${tagPills(p.tags)}
         </div>
+        <div class="prose" id="articleBody">${p.content}</div>
+        <div class="back"><a href="#/blog">← Back to blog</a></div>
       </article>
     `;
+
   }
 
   function renderList(){
@@ -241,5 +259,77 @@
     }
   });
 </script>
+<script>
+  // ========== Adsterra helpers ==========
+  // Safely load a single Adsterra unit inside a container
+  function loadAdsterra(container, key, w, h){
+    if(!container) return;
+    container.innerHTML = ""; // clear placeholder
+    // 1) define atOptions visible to the next script
+    const s1 = document.createElement('script');
+    s1.type = 'text/javascript';
+    s1.text = `
+      atOptions = {
+        key: '${key}',
+        format: 'iframe',
+        height: ${h},
+        width: ${w},
+        params: {}
+      };
+    `;
+    // 2) loader script that reads atOptions
+    const s2 = document.createElement('script');
+    s2.type = 'text/javascript';
+    s2.src  = '//www.highperformanceformat.com/' + key + '/invoke.js';
+    // Append
+    container.appendChild(s1);
+    container.appendChild(s2);
+  }
+
+  // Put ads into the sidebar (pick size by viewport)
+  function mountSidebarAds(){
+    // Tall desktop
+    loadAdsterra(document.getElementById('ad-side-tall'),
+      '001d2d159d6e43ef2e7fbbbcd1832bc4', 160, 600);
+    // Mobile/tablet fallback
+    loadAdsterra(document.getElementById('ad-side-rect'),
+      'f7c53ea38f793fd4f60f274c989e86a3', 300, 250);
+  }
+
+  // Insert 2 in-article 300x250 ads (after paragraph 1 and mid-article)
+  function mountInArticleAds(){
+    const body = document.getElementById('articleBody');
+    if(!body) return;
+    const paras = body.querySelectorAll('p');
+    if(paras.length){
+      const ad1 = document.createElement('div');
+      ad1.className = 'ad-inline ad-slab';
+      ad1.id = 'ad-article-1';
+      paras[0].after(ad1);
+      loadAdsterra(ad1, 'f7c53ea38f793fd4f60f274c989e86a3', 300, 250);
+    }
+    if(paras.length > 2){
+      const midIndex = Math.floor(paras.length/2);
+      const ad2 = document.createElement('div');
+      ad2.className = 'ad-inline ad-slab';
+      ad2.id = 'ad-article-2';
+      paras[midIndex].after(ad2);
+      loadAdsterra(ad2, 'f7c53ea38f793fd4f60f274c989e86a3', 300, 250);
+    }
+  }
+
+  // Mount sidebar ads once on page load
+  document.addEventListener('DOMContentLoaded', mountSidebarAds);
+
+  // Hook into your renderDetail to place in-article ads after the content renders
+  const _renderDetail = renderDetail;
+  renderDetail = function(id){
+    _renderDetail(id);
+    // give the DOM a tick to paint
+    setTimeout(mountInArticleAds, 0);
+  };
+</script>
+
 </body>
 </html>
+
