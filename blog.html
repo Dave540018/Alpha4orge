@@ -192,19 +192,20 @@
 
   function postCard(p){
     return `
-          $view.innerHTML = `
-      <article class="detail">
-        ${p.cover ? `<div class="hero"><img src="${p.cover}" alt="${p.title}"></div>` : ""}
-        <h2>${p.title}</h2>
-        <div class="meta" style="margin-bottom:8px;">
-          <span>${p.date}</span> ${tagPills(p.tags)}
+      <article class="card" onclick="go('#/blog/${p.id}')">
+        <div class="thumb">${p.cover ? `<img src="${p.cover}" alt="${p.title}">` : ""}</div>
+        <div class="content">
+          <h3 class="title">${p.title}</h3>
+          <div class="excerpt">${p.excerpt}</div>
+          <div class="foot">
+            <span>${p.date}</span>
+            <span class="meta">${tagPills(p.tags)}</span>
+          </div>
         </div>
-        <div class="prose" id="articleBody">${p.content}</div>
-        <div class="back"><a href="#/blog">← Back to blog</a></div>
       </article>
     `;
-
   }
+
 
   function renderList(){
     // ✅ newest first
@@ -223,12 +224,13 @@
         <div class="meta" style="margin-bottom:8px;">
           <span>${p.date}</span> ${tagPills(p.tags)}
         </div>
-        <div class="prose">${p.content}</div>
+        <div class="prose" id="articleBody">${p.content}</div>
         <div class="back"><a href="#/blog">← Back to blog</a></div>
       </article>
     `;
     highlightNav();
   }
+
 
   function go(hash){ location.hash = hash; }
 
@@ -332,4 +334,5 @@
 
 </body>
 </html>
+
 
