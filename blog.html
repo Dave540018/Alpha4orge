@@ -262,43 +262,55 @@
   });
 </script>
 <script>
-  // ========== Adsterra helpers ==========
-  // Safely load a single Adsterra unit inside a container
+  // ---- Adsterra helpers (unchanged) ----
   function loadAdsterra(container, key, w, h){
     if(!container) return;
     container.innerHTML = ""; // clear placeholder
-    // 1) define atOptions visible to the next script
     const s1 = document.createElement('script');
     s1.type = 'text/javascript';
     s1.text = `
-      atOptions = {
-        key: '${key}',
-        format: 'iframe',
-        height: ${h},
-        width: ${w},
-        params: {}
-      };
+      atOptions = { key: '${key}', format: 'iframe', height: ${h}, width: ${w}, params: {} };
     `;
-    // 2) loader script that reads atOptions
     const s2 = document.createElement('script');
     s2.type = 'text/javascript';
     s2.src  = '//www.highperformanceformat.com/' + key + '/invoke.js';
-    // Append
     container.appendChild(s1);
     container.appendChild(s2);
   }
 
-  // Put ads into the sidebar (pick size by viewport)
+  // ✅ Load ONLY the visible sidebar size to avoid atOptions collisions,
+  // and reload if the viewport crosses the breakpoint.
+  let _loadedVariant = "";  // "tall" | "rect" | ""
+
   function mountSidebarAds(){
-    // Tall desktop
-    loadAdsterra(document.getElementById('ad-side-tall'),
-      '001d2d159d6e43ef2e7fbbbcd1832bc4', 160, 600);
-    // Mobile/tablet fallback
-    loadAdsterra(document.getElementById('ad-side-rect'),
-      'f7c53ea38f793fd4f60f274c989e86a3', 300, 250);
+    const tallEl = document.getElementById('ad-side-tall');
+    const rectEl = document.getElementById('ad-side-rect');
+    if(!tallEl || !rectEl) return;
+
+    const isDesktop = window.matchMedia('(min-width: 981px)').matches;
+
+    if(isDesktop && _loadedVariant !== "tall"){
+      rectEl.innerHTML = "";                 // clear hidden slot
+      loadAdsterra(tallEl, '001d2d159d6e43ef2e7fbbbcd1832bc4', 160, 600);
+      _loadedVariant = "tall";
+    } else if(!isDesktop && _loadedVariant !== "rect"){
+      tallEl.innerHTML = "";                 // clear hidden slot
+      loadAdsterra(rectEl, 'f7c53ea38f793fd4f60f274c989e86a3', 300, 250);
+      _loadedVariant = "rect";
+    }
   }
 
-  // Insert 2 in-article 300x250 ads (after paragraph 1 and mid-article)
+  // Debounced resize: if user rotates phone or resizes window, swap units
+  let _rzTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(_rzTimer);
+    _rzTimer = setTimeout(mountSidebarAds, 200);
+  });
+
+  // Mount once after DOM is ready
+  document.addEventListener('DOMContentLoaded', mountSidebarAds);
+
+  // In-article ads (unchanged)
   function mountInArticleAds(){
     const body = document.getElementById('articleBody');
     if(!body) return;
@@ -320,19 +332,17 @@
     }
   }
 
-  // Mount sidebar ads once on page load
-  document.addEventListener('DOMContentLoaded', mountSidebarAds);
-
-  // Hook into your renderDetail to place in-article ads after the content renders
+  // Keep your existing hook:
   const _renderDetail = renderDetail;
   renderDetail = function(id){
     _renderDetail(id);
-    // give the DOM a tick to paint
     setTimeout(mountInArticleAds, 0);
   };
 </script>
 
+
 </body>
 </html>
+
 
 
