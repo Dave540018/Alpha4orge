@@ -9,6 +9,82 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
   <style>
+
+    :root{
+  --link: #0ea5e9;         /* normal link color */
+  --link-hover: #0284c7;   /* hover color */
+  --amazon: #ff9900;       /* Amazon accent */
+}
+
+/* Default link look */
+.prose a, .content a {
+  color: var(--link);
+  text-decoration: none;
+  font-weight: 600;
+  position: relative;
+  transition: color .15s ease;
+}
+
+/* Animated underline */
+.prose a::after, .content a::after {
+  content: "";
+  position: absolute;
+  left: 0; bottom: -2px;
+  width: 100%; height: 2px;
+  background: linear-gradient(90deg, var(--link), #22c55e);
+  transform: scaleX(.25);
+  transform-origin: left;
+  opacity: .55;
+  transition: transform .2s ease, opacity .2s ease;
+}
+
+.prose a:hover, .content a:hover { color: var(--link-hover); }
+.prose a:hover::after, .content a:hover::after {
+  transform: scaleX(1);
+  opacity: 1;
+}
+
+/* Keyboard focus visibility */
+.prose a:focus-visible, .content a:focus-visible {
+  outline: 2px solid var(--link);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ===== Special styling for Amazon links ===== */
+/* catches amazon.in / amazon.com / amzn.to */
+.prose a[href*="amazon"], .prose a[href*="amzn.to"],
+.content a[href*="amazon"], .content a[href*="amzn.to"] {
+  color: var(--amazon);
+}
+
+.prose a[href*="amazon"]::after,
+.prose a[href*="amzn.to"]::after,
+.content a[href*="amazon"]::after,
+.content a[href*="amzn.to"]::after {
+  background: linear-gradient(90deg, var(--amazon), #ffb84d);
+}
+
+/* tiny cart emoji as a leading badge (no extra HTML needed) */
+.prose a[href*="amazon"]::before,
+.prose a[href*="amzn.to"]::before,
+.content a[href*="amazon"]::before,
+.content a[href*="amzn.to"]::before {
+  content: "🛒";
+  margin-right: 6px;
+  filter: drop-shadow(0 1px 0 rgba(0,0,0,.1));
+}
+
+/* Optional: make Amazon links look like pill buttons on hover */
+.prose a[href*="amazon"]:hover,
+.prose a[href*="amzn.to"]:hover,
+.content a[href*="amazon"]:hover,
+.content a[href*="amzn.to"]:hover {
+  text-decoration: none;
+  background: rgba(255,153,0,.08);
+  border-radius: 6px;
+  padding: 2px 4px;
+}
     :root{
       --bg:#fafbfc; --panel:#ffffff; --ink:#1f2937; --muted:#6b7280; --ring:#e5e7eb;
       --accent:#0ea5e9; --radius:14px;
@@ -483,6 +559,7 @@
 
 </body>
 </html>
+
 
 
 
