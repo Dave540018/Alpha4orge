@@ -217,6 +217,49 @@
   .part{grid-template-columns:160px 1fr}
 }
 
+/* ---- Prompt highlight + CTA ---- */
+.prompt {
+  margin: 10px 0 14px;
+  padding: 12px 14px;
+  background:#0f172a;
+  color:#e5e7eb;
+  border:1px solid var(--ring);
+  border-radius:12px;
+  overflow:auto;
+  font: 13px/1.5 ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+  white-space: pre-wrap;
+}
+.prompt .label{
+  display:inline-block;
+  font-weight:700;
+  font-size:12px;
+  color:#a5b4fc;
+  margin-bottom:6px;
+}
+
+/* two-up images around the trendy variant */
+.img-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin: 10px 0 16px;
+}
+.img-row img{
+  width:100%; height:auto; display:block;
+  border:1px solid var(--ring); border-radius:12px; background:#f7fafc;
+}
+@media (max-width: 720px){
+  .img-row{ grid-template-columns:1fr; }
+}
+
+/* small inline CTA */
+.smart-cta{
+  display:inline-block; margin:10px 0; padding:8px 12px;
+  border:1px solid var(--ring); border-radius:999px;
+  background:var(--panel); font-weight:700;
+}
+
+
 
   </style>
 </head>
@@ -479,7 +522,80 @@
 
     <p>Next time, I’ll share a lighter, even more budget-friendly gaming setup for casual players. Until then—happy building!</p>
   `
+},
+{
+  id: "A4-B004",
+  title: "How to Make a “Nano Banana” 3D Model with Your Own Photo – Free with Gemini",
+  date: "Sep 16, 2025",
+  tags: ["AI","Gemini","Tutorial"],
+  cover: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Nano.Banana.3D.Model.1.png",
+  excerpt: "Turn any selfie into a mini collectible figure image using Google Gemini—free. Copy-paste prompts included.",
+  content: `
+    <p>The “Nano Banana” trend has exploded seemingly overnight—and for good reason.
+    It’s fun, eye-catching, and thanks to today’s image-generation super-models, anyone can create one for free.
+    With just a single photo and Google’s Gemini you can turn yourself (or a friend) into a miniature collectible figurine in minutes.</p>
+
+    <div class="ad-inline ad-slab">
+      <a href="https://www.revenuecpmgate.com/kxhp7p756?key=7e42848b0d850bc014d63178da587f42"
+         target="_blank" rel="nofollow noopener" class="smart-cta">🎁 Trending AI Deals & Freebies</a>
+    </div>
+
+    <p>Follow these simple steps and you’ll have your own share-worthy 3D Nano Banana image before you finish your coffee.</p>
+
+    <h3>1️⃣ Pick (or Prep) Your Photo</h3>
+    <p>A clean image works best, especially one without a background. If your photo already has a transparent background—great!
+    If not, quickly remove it with the free tool <a href="https://remove.bg" target="_blank" rel="noopener nofollow">remove.bg</a>.</p>
+
+    <h3>2️⃣ Open Google Gemini</h3>
+    <p>You don’t need any paid software—just a free Google account. Go to <a href="https://gemini.google.com/app" target="_blank" rel="noopener">gemini.google.com/app</a> and sign in.</p>
+
+    <h3>3️⃣ Upload Your Picture</h3>
+    <p>Click the “+” (plus) icon in Gemini’s chat box and select your photo. You’ll see the preview above the prompt field.</p>
+
+    <h3>4️⃣ Enter a 3D-Model Prompt</h3>
+    <p>Paste one of these ready-to-use prompts under your uploaded image.</p>
+
+    <div class="prompt">
+      <div class="label">✍️ Classic 3D Model Prompt</div>
+Create a 1/7 scale commercialized figurine of the person in the uploaded photo,
+in a realistic style and a real environment.
+Place the figurine on a computer desk with a round transparent acrylic base (no text).
+On the computer screen, show the 3D modeling process of this figurine.
+Next to the computer screen, place a toy packaging box with
+high-quality collectible figure artwork. Don’t change the face.
+    </div>
+
+    <h4>✍️ Trendy Studio Variant</h4>
+
+    <!-- two images around the Trendy Studio Variant -->
+    <div class="img-row">
+      <img src="https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Sample.Character.png" alt="Trendy studio variant example 1" loading="lazy">
+      <img src="https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Nano.Banana.3D.Model.2.png" alt="Trendy studio variant example 2" loading="lazy">
+    </div>
+
+    <div class="prompt">
+      <div class="label">Copy-paste this</div>
+Create a 1/7-scale commercialized figurine of the person in the uploaded photo,
+rendered in realistic high detail inside a stylish, modern creator workspace that feels like a popular tech-studio setup.
+Place the figurine on a sleek computer desk with a round transparent acrylic base (leave the base blank—no text).
+On the ultra-wide monitor, show the 3D modeling process of this figurine—bright, vivid interface elements glowing slightly for a dynamic look.
+Next to the monitor, display a premium toy packaging box, designed like a high-end collectible figure release, with sharp, glossy artwork that echoes the figurine’s design.
+Use soft key lighting and trendy neon accents for a polished, share-worthy “viral studio shot.”
+Keep the person’s facial features exactly as in the photo.
+    </div>
+
+    <h3>5️⃣ Download Your Nano Banana</h3>
+    <p>Within a minute or two Gemini will render the final image. Click the download option—no watermark, no fees.</p>
+
+    <p><strong>Share Your Creation:</strong> post it and tag <code>#NanoBanana</code> to join the trend!</p>
+
+    <div class="ad-inline ad-slab">
+      <a href="https://www.revenuecpmgate.com/kxhp7p756?key=7e42848b0d850bc014d63178da587f42"
+         target="_blank" rel="nofollow noopener" class="smart-cta">🧠 More AI Prompts & Earning Ideas</a>
+    </div>
+  `
 }
+
 
 
   ];
@@ -646,15 +762,3 @@
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
