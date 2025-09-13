@@ -1,0 +1,23 @@
+{
+  "name": "Alpha4orge – Free Figma Templates & Gaming Guides",
+  "short_name": "Alpha4orge",
+  "description": "Alpha4orge shares free Figma templates, printables and in-depth gaming PC build guides to inspire designers and gamers worldwide.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0ea5e9",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/web-app-manifest-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48 32x32 16x16",
+      "type": "image/x-icon"
+    }
+  ]
+}
