@@ -238,8 +238,6 @@
      <!-- 300×250 #1 -->
 <div id="home-ad-rect-1" class="ad-inline ad-slab">Loading ad…</div>
 
-
-
 <!-- Optional “Sponsored” smartlink box (static link) -->
 <div class="ad-slab" style="margin:16px 0; text-align:left">
   <div style="font-weight:700;margin-bottom:6px">Sponsored</div>
@@ -251,7 +249,6 @@
     Explore Deals →
   </a>
 </div>
-  <!-- New mobile banner ad (320×50) -->
 <div id="home-ad-banner-1" class="ad-inline ad-slab">Loading ad…</div>
   <!-- ✅ Sidebar Rectangle (shows everywhere) -->
   <div class="ad ad-rectangle">
@@ -513,35 +510,54 @@ function renderList(kind){
   }
 });
   </script>
- <script>
-  // generic loader
-  function loadAdsterra(container, key, w, h){
-    if(!container) return;
-    container.innerHTML = "";
-    const s1 = document.createElement('script');
-    s1.type = 'text/javascript';
-    s1.text = `
-      atOptions = { key: '${key}', format: 'iframe', height: ${h}, width: ${w}, params: {} };
-    `;
-    const s2 = document.createElement('script');
-    s2.type = 'text/javascript';
-    s2.src  = '//www.highperformanceformat.com/' + key + '/invoke.js';
-    container.appendChild(s1);
-    container.appendChild(s2);
+<script>
+  // Promise-based sequential loader to avoid atOptions collisions
+  function loadAdsterraSequential(container, key, w, h) {
+    return new Promise((resolve) => {
+      if (!container) return resolve(false);
+      // Ensure container is visible (basic guard)
+      const style = window.getComputedStyle(container);
+      if (style.display === 'none' || style.visibility === 'hidden') return resolve(false);
+
+      container.innerHTML = ''; // clear placeholder
+
+      // 1) define global atOptions for this unit
+      const def = document.createElement('script');
+      def.type = 'text/javascript';
+      def.text = `
+        window.atOptions = {
+          key: '${key}',
+          format: 'iframe',
+          height: ${h},
+          width: ${w},
+          params: {}
+        };
+      `;
+
+      // 2) load the invoke script that reads window.atOptions
+      const inv = document.createElement('script');
+      inv.type = 'text/javascript';
+      inv.src  = 'https://www.highperformanceformat.com/' + key + '/invoke.js';
+      inv.onload = () => resolve(true);
+      inv.onerror = () => resolve(false);
+
+      container.appendChild(def);
+      container.appendChild(inv);
+    });
   }
 
-  // mount both homepage ads
-  function mountHomeAds(){
-    // existing 300×250 key
-    const KEY_RECT_1   = 'f7c53ea38f793fd4f60f274c989e86a3';
-    // new 320×50 key you just created
-    const KEY_BANNER_1 = '4404d2d96e9fdd2085c017e2ecbf8d84';
+  async function mountHomeAds() {
+    // Keys
+    const KEY_RECT_1   = 'f7c53ea38f793fd4f60f274c989e86a3'; // 300x250
+    const KEY_BANNER_1 = '4404d2d96e9fdd2085c017e2ecbf8d84'; // 320x50
 
+    // Containers
     const rect1   = document.getElementById('home-ad-rect-1');
     const banner1 = document.getElementById('home-ad-banner-1');
 
-    if (rect1)   loadAdsterra(rect1,   KEY_RECT_1,   300, 250);
-    if (banner1) loadAdsterra(banner1, KEY_BANNER_1, 320,  50);
+    // Load sequentially to prevent atOptions races
+    await loadAdsterraSequential(rect1,   KEY_RECT_1,   300, 250);
+    await loadAdsterraSequential(banner1, KEY_BANNER_1, 320,  50);
   }
 
   document.addEventListener('DOMContentLoaded', mountHomeAds);
@@ -550,8 +566,6 @@ function renderList(kind){
 
 </body>
 </html>
-
-
 
 
 
