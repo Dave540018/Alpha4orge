@@ -307,6 +307,14 @@
   font-size: 14px;
 }
 
+/* Adsterra slots – fixed footprints to avoid layout shift */
+#adst-rect  { width:300px; max-width:100%; min-height:250px; margin-top:12px }
+#adst-banner{ width:320px; max-width:100%; min-height:50px;  margin-top:12px }
+
+/* Reuse your existing frame styles */
+.ad-inline { display:flex; justify-content:center; margin:12px 0; }
+.ad-slab   { background:var(--panel); border:1px solid var(--ring); border-radius:var(--radius); padding:6px; }
+
 
 
   </style>
@@ -359,6 +367,13 @@
       Explore Deals →
     </a>
   </div>
+
+
+<!-- Adsterra: 300×250 rectangle -->
+<div id="adst-rect" class="ad-inline ad-slab" aria-label="Advertisement">Loading…</div>
+
+<!-- Adsterra: 320×50 banner -->
+<div id="adst-banner" class="ad-inline ad-slab" aria-label="Advertisement">Loading…</div>
 </aside>
 
 
@@ -983,6 +998,57 @@ Keep the person’s facial features exactly as in the photo.
     _renderDetail(id);
     setTimeout(mountInArticleAds, 0);
   };
+</script>
+<script>
+  // Promise-based sequential loader to avoid atOptions collisions
+  function loadAdsterraInto(container, key, w, h) {
+    return new Promise((resolve) => {
+      if (!container) return resolve(false);
+      const style = getComputedStyle(container);
+      if (style.display === 'none' || style.visibility === 'hidden') return resolve(false);
+
+      container.innerHTML = ''; // clear placeholder
+
+      // Define atOptions for this unit
+      const def = document.createElement('script');
+      def.type = 'text/javascript';
+      def.text = `
+        window.atOptions = {
+          key: '${key}',
+          format: 'iframe',
+          height: ${h},
+          width: ${w},
+          params: {}
+        };
+      `;
+
+      // Invoke loader
+      const inv = document.createElement('script');
+      inv.type = 'text/javascript';
+      inv.src  = 'https://www.highperformanceformat.com/' + key + '/invoke.js';
+      inv.onload = () => resolve(true);
+      inv.onerror = () => resolve(false);
+
+      container.appendChild(def);
+      container.appendChild(inv);
+    });
+  }
+
+  async function mountBlogSidebarAds() {
+    // Keys you provided
+    const KEY_RECT_1   = 'f7c53ea38f793fd4f60f274c989e86a3'; // 300x250
+    const KEY_BANNER_1 = '4404d2d96e9fdd2085c017e2ecbf8d84'; // 320x50
+
+    const rect   = document.getElementById('adst-rect');
+    const banner = document.getElementById('adst-banner');
+
+    // Load sequentially to prevent atOptions collisions
+    await loadAdsterraInto(rect,   KEY_RECT_1,   300, 250);
+    await loadAdsterraInto(banner, KEY_BANNER_1, 320,  50);
+  }
+
+  // Only runs if the containers are present (safe to include site-wide)
+  document.addEventListener('DOMContentLoaded', mountBlogSidebarAds);
 </script>
 
 
