@@ -259,6 +259,54 @@
   background:var(--panel); font-weight:700;
 }
 
+/* Build tables */
+.build-table{
+  width:100%;
+  border-collapse: collapse;
+  margin: 10px 0 14px;
+  font-size: 14px;
+}
+.build-table th,
+.build-table td{
+  border:1px solid var(--ring);
+  padding:10px;
+  vertical-align: top;
+}
+.build-table thead th{
+  background:#f8fafc;
+  font-weight:700;
+}
+.build-table tbody tr:nth-child(even){
+  background:#fbfdff;
+}
+
+.build-table a{
+  display:inline-flex;          /* stable box */
+  align-items:center;
+  gap:6px;
+  padding:2px 4px;              /* same padding at rest and hover */
+  border-radius:6px;
+  white-space:nowrap;           /* no wrapping that stretches cells */
+}
+
+
+
+/* Callout blocks */
+.callout{
+  background: #f8fafc;
+  border:1px solid var(--ring);
+  border-radius: 12px;
+  padding: 12px;
+  margin: 10px 0 18px;
+}
+.callout p{ margin:8px 0; }
+
+/* Soft note at the end */
+.note{
+  color: var(--muted);
+  font-size: 14px;
+}
+
 
 
   </style>
@@ -362,7 +410,7 @@
  {
   id: "A4-B003",
   title: "Budget Gaming PC Under ₹42,000 That Punches Above Its Price",
-  date: "Sep 15, 2025",
+  date: "Sep 14, 2025",
   tags: ["Gaming PC","Build Guide","India"],
   cover: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/ChatGPT.Image.Sep.13.2025.02_12_13.AM.png",
   excerpt: "Smooth 1080p gaming for just ₹42K! A carefully selected RX 6500 XT build that saves 25–35% vs pre-builts without cutting corners.",
@@ -526,7 +574,7 @@
 {
   id: "A4-B004",
   title: "How to Make a “Nano Banana” 3D Model with Your Own Photo – Free with Gemini",
-  date: "Sep 16, 2025",
+  date: "Sep 15, 2025",
   tags: ["AI","Gemini","Tutorial"],
   cover: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Nano.Banana.3D.Model.4.png",
   excerpt: "Turn any selfie into a mini collectible figure image using Google Gemini—free. Copy-paste prompts included.",
@@ -594,7 +642,185 @@ Keep the person’s facial features exactly as in the photo.
          target="_blank" rel="nofollow noopener" class="smart-cta">🧠 More AI Prompts & Earning Ideas</a>
     </div>
   `
+},
+{
+  id: "A4-B0GTA6",
+  title: "You Can't Play GTA 6 If You Don't Have These Specs/Rig – See Where Your Rig Ranks & How to Upgrade",
+  date: "Sep 16, 2025",
+  tags: ["GTA 6","Build Guide","PC Gaming"],
+  cover: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/GTA6.PC.Picture1.png",
+  excerpt: "Check where your PC ranks for GTA 6—then pick from three proven build tiers (Low / Mid / High) with upgrade advice and Amazon links for India.",
+  content: `
+    <p>Rockstar hasn’t released the official PC requirements for <strong>GTA 6</strong> yet, but leaks and industry chatter give us a pretty clear picture of the horsepower you’ll need.</p>
+    <p>To help you plan ahead, here are <strong>three build tiers—Low / Mid / High—</strong>so you can check where your existing setup stands and decide whether you’re ready to play at launch.</p>
+    <p><strong>First, look at your own hardware.</strong><br>
+    If your CPU, GPU and RAM are close to one of these tiers, you can expect a similar experience.<br>
+    If you fall below a tier, you may need to lower settings or upgrade parts to hit smooth framerates.</p>
+
+    <hr>
+
+    <h3>🟢 LOW / ENTRY – 1080p • Low→Medium • ~30–45 FPS</h3>
+    <p><em>Goal: A playable experience at 1080p with the best value per rupee and an easy upgrade path later.</em></p>
+
+    <table class="build-table">
+      <thead><tr><th>Part</th><th>Details</th><th>Link</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>CPU</strong></td>
+          <td>AMD RYZEN 5 3400G (4C/8T, up to 4.2 GHz, AM4)</td>
+          <td><a href="https://amzn.to/47GJIpn" target="_blank" rel="noopener">Amazon</a></td>
+        </tr>
+        <tr>
+          <td><strong>Motherboard</strong></td>
+          <td>GIGABYTE B550M DS3H (mATX, PCIe 4.0, DDR4)</td>
+          <td><a href="https://amzn.to/3KpIo0c" target="_blank" rel="noopener">Amazon</a></td>
+        </tr>
+        <tr>
+          <td><strong>RAM</strong></td>
+          <td>Crucial 8 GB DDR4-3200 CL22 ×2 (16 GB total)</td>
+          <td><a href="https://amzn.to/46hovQs" target="_blank" rel="noopener">Amazon</a></td>
+        </tr>
+        <tr>
+          <td><strong>GPU</strong></td>
+          <td>ASRock Radeon RX 6600 8 GB GDDR6</td>
+          <td><a href="https://amzn.to/3Ip6J5N" target="_blank" rel="noopener">Amazon</a></td>
+        </tr>
+        <tr>
+          <td><strong>Storage</strong></td>
+          <td>Crucial P3 Plus 500 GB PCIe 4.0 NVMe</td>
+          <td><a href="https://amzn.to/4nvwbFw" target="_blank" rel="noopener">Amazon</a></td>
+        </tr>
+        <tr>
+          <td><strong>PSU</strong></td>
+          <td>Corsair CX550 — 550 W, 80+ Bronze</td>
+          <td><a href="https://amzn.to/4nqxCVY" target="_blank" rel="noopener">Amazon</a></td>
+        </tr>
+        <tr>
+          <td><strong>Case</strong></td>
+          <td>Ant Esports Elite 1200 (mesh airflow)</td>
+          <td><a href="https://amzn.to/4nSFCzp" target="_blank" rel="noopener">Amazon</a></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout">
+      <p><strong>Why this works:</strong> RX 6600 + Ryzen 5 is a proven 1080p combo. Run GTA 6 with textures on <strong>Medium</strong>, shadows/RT <strong>off</strong>, moderate crowd/draw distance. Consider <strong>FSR Performance/Quality</strong> for extra smoothness.</p>
+      <p><strong>Easy future upgrades:</strong> Bump to <strong>32 GB RAM</strong>, swap GPU to <strong>RX 6700 XT / RTX 3060 Ti</strong>, add a <strong>1 TB NVMe</strong>.</p>
+    </div>
+
+    <hr>
+
+    <h3>🟠 MID / MEDIUM – 1080p High or 1440p Medium • ~60–75 FPS</h3>
+    <p><em>Goal: Smooth 60 FPS gaming with prettier visuals and extra headroom.</em></p>
+
+    <table class="build-table">
+      <thead><tr><th>Part</th><th>Details</th><th>Link</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>CPU</strong></td>
+          <td>AMD Ryzen 5 5600X (6C/12T, 3.7–4.6 GHz)</td>
+          <td><a href="https://amzn.to/4pHrpHh" target="_blank" rel="noopener">Amazon</a></td>
+        </tr>
+        <tr>
+          <td><strong>Motherboard</strong></td>
+          <td>GIGABYTE B550M DS3H (mATX, PCIe 4.0, DDR4)</td>
+          <td><a href="https://amzn.to/41XnpYR" target="_blank" rel="noopener">Amazon</a></td>
+        </tr>
+        <tr>
+          <td><strong>RAM</strong></td>
+          <td>XPG Gammix D30 16 GB 3200 MHz <em>or</em> Patriot Viper Steel 32 GB (2×16) 3200 MHz</td>
+          <td><a href="https://amzn.to/4mCrDwB" target="_blank" rel="noopener">Amazon 16 GB</a> &nbsp;•&nbsp; <a href="https://amzn.to/3VOGYPp" target="_blank" rel="noopener">Amazon 32 GB</a></td>
+        </tr>
+        <tr>
+          <td><strong>GPU</strong></td>
+          <td>ASRock Radeon RX 7700 XT 12 GB GDDR6 OC</td>
+          <td><a href="https://amzn.to/4gnzPit" target="_blank" rel="noopener">Amazon</a></td>
+        </tr>
+        <tr>
+          <td><strong>Storage</strong></td>
+          <td>Crucial P3 1 TB PCIe 3.0 NVMe</td>
+          <td><a href="https://amzn.to/3VSC5os" target="_blank" rel="noopener">Amazon</a></td>
+        </tr>
+        <tr>
+          <td><strong>PSU</strong></td>
+          <td>Cooler Master MWE 650 V3 — 650 W, 80+ Bronze</td>
+          <td><a href="https://amzn.to/3ImJppk" target="_blank" rel="noopener">Amazon</a></td>
+        </tr>
+        <tr>
+          <td><strong>Case</strong></td>
+          <td>Ant Esports ICE-300 Mesh Mid-Tower</td>
+          <td><a href="https://amzn.to/3IjbBcL" target="_blank" rel="noopener">Amazon</a></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout">
+      <p><strong>What to expect:</strong> 1080p <strong>High/Very High</strong> around <strong>60–75 FPS</strong>; 1440p <strong>Medium/High</strong> with FSR. 12 GB VRAM handles big textures and dense city scenes without stutter.</p>
+      <p><strong>Intel alternative:</strong> i5-12400F + B660 motherboard works great with the same GPU/RAM/SSD/PSU.</p>
+    </div>
+
+    <hr>
+
+    <h3>🔴 HIGH / ULTRA – 1440p Ultra or 4K High • 60 FPS+</h3>
+    <p><em>Goal: Top-tier visuals, long draw distance, and 4K gaming with DLSS/FSR enabled.</em></p>
+
+    <table class="build-table">
+      <thead><tr><th>Part</th><th>Details</th><th>Link</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>CPU</strong></td>
+          <td>AMD Ryzen 7 7800X3D (8C/16T, 4.2–5.6 GHz)</td>
+          <td><a href="https://amzn.to/4nBgzR3" target="_blank" rel="noopener">Amazon</a></td>
+        </tr>
+        <tr>
+          <td><strong>Cooler</strong></td>
+          <td>Cooler Master MasterLiquid ML240L RGB V2 (240 mm AIO)</td>
+          <td><a href="https://amzn.to/4nu7MAf" target="_blank" rel="noopener">Amazon</a></td>
+        </tr>
+        <tr>
+          <td><strong>Motherboard</strong></td>
+          <td>MSI MAG B650 Tomahawk WiFi (AM5, DDR5)</td>
+          <td><a href="https://amzn.to/4gqSLwL" target="_blank" rel="noopener">Amazon</a></td>
+        </tr>
+        <tr>
+          <td><strong>RAM</strong></td>
+          <td>TeamGroup T-Force Delta RGB 32 GB (2×16) DDR5-6000 CL30</td>
+          <td><a href="https://amzn.to/47GLG9f" target="_blank" rel="noopener">Amazon</a></td>
+        </tr>
+        <tr>
+          <td><strong>GPU</strong></td>
+          <td>Choose one: Sapphire Nitro+ RX 7900 XTX 24 GB • ASRock RX 7900 XTX 24 GB • Gigabyte RTX 4070 Ti Super 16 GB</td>
+          <td><a href="https://amzn.to/46DYFaG" target="_blank" rel="noopener">Sapphire</a> &nbsp;•&nbsp; <a href="https://amzn.to/4puUJk8" target="_blank" rel="noopener">ASRock</a> &nbsp;•&nbsp; <a href="https://amzn.to/3VNLvBI" target="_blank" rel="noopener">Gigabyte RTX 4070 Ti Super</a></td>
+        </tr>
+        <tr>
+          <td><strong>Storage</strong></td>
+          <td>Crucial P3 Plus 2 TB PCIe 4.0 NVMe</td>
+          <td><a href="https://amzn.to/4gqHpsB" target="_blank" rel="noopener">Amazon</a></td>
+        </tr>
+        <tr>
+          <td><strong>PSU</strong></td>
+          <td>MSI MAG A850GL PCIe5 — 850 W, 80+ Gold, Fully Modular</td>
+          <td><a href="https://amzn.to/3Iou8Ew" target="_blank" rel="noopener">Amazon</a></td>
+        </tr>
+        <tr>
+          <td><strong>Case</strong></td>
+          <td>Lian Li Lancool 216 RGB Mid-Tower</td>
+          <td><a href="https://amzn.to/3JXUH41" target="_blank" rel="noopener">Amazon</a></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout">
+      <p><strong>What to expect:</strong> 1440p <strong>Ultra</strong> at <strong>90–120 FPS</strong> (depending on settings) and 4K <strong>High/Ultra</strong> at a stable <strong>60 FPS+</strong> with DLSS/FSR. Big VRAM + Ryzen 7’s 3D cache keep frametimes smooth in the busiest city scenes.</p>
+      <p><strong>Cost-optimized high-tier alternative:</strong> Ryzen 7 5800X3D + B550 + DDR4-32 GB + RX 7900 XT or RTX 4070 Ti. Slightly older platform but still superb gaming for less.</p>
+    </div>
+
+    <hr>
+
+    <p class="note"><em>these are the best options on amazon I could find for the Indian peps, i also have USA list but I haven't added it on here, if you want it, please DM on Instagram and i will sent you the link for the page</em></p>
+  `
 }
+
 
 
 
@@ -762,5 +988,4 @@ Keep the person’s facial features exactly as in the photo.
 
 </body>
 </html>
-
 
