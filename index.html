@@ -256,7 +256,9 @@
     Explore Deals →
   </a>
 </div>
-<div id="home-ad-banner-1" class="ad-inline ad-slab">Loading ad…</div>
+<!--<div id="home-ad-banner-1" class="ad-inline ad-slab">Loading ad…</div>-->
+<!-- 468×60 Sidebar Banner -->
+
   <!-- ✅ Sidebar Rectangle (shows everywhere) 
   <div class="ad ad-rectangle">
     <ins class="adsbygoogle"
@@ -293,6 +295,8 @@
 <style>
 .seo-intro{background:#fff;border:1px solid var(--ring);border-radius:12px;padding:12px;margin-bottom:12px}
 </style>
+
+
   
 <main class="wrap grid">
   <section id="mainArea">
@@ -480,9 +484,12 @@ function renderList(kind){
     highlightNav("#/figma");
   }
 
-  function renderDetail(code){
+ async function renderDetail(code){
   const d = withCodes.find(x => x.code === code);
-  if(!d){ viewEl.innerHTML = `<div class="detail"><h2>Not found</h2></div>`; return; }
+  if(!d){ 
+    viewEl.innerHTML = `<div class="detail"><h2>Not found</h2></div>`; 
+    return; 
+  }
 
   const isUrl = v => typeof v === "string" && /^https?:\/\//i.test(v);
   const tagRow = d.tags.map(t => `<span class="tag">${t}</span>`).join(' ');
@@ -502,8 +509,11 @@ function renderList(kind){
     ? `<div class="thumb" style="margin-bottom:12px"><img src="${d.preview}" alt="${d.title}" loading="lazy"></div>`
     : "";
 
-  // routeBack is the list route the item came from
   const routeBack = d.kind === "printable" ? "#/printables" : "#/figma";
+
+  // IDs for ad containers
+  const adUnderDlId   = `ad-under-dl-${d.code}`;   // 320×50
+  const ad468Id       = `ad-468-${d.code}`;        // 468×60
 
   viewEl.innerHTML = `
     <div class="detail">
@@ -511,14 +521,48 @@ function renderList(kind){
       <h2>${d.title}</h2>
       <div class="tiny">Code: <strong>${d.code}</strong></div>
       <div class="meta" style="margin-top:6px">${tagRow}</div>
-      <div class="row">
+
+      <div class="row" style="margin-bottom:6px">
         <a class="btn" href="${d.downloadUrl}" download>Download</a>
       </div>
+
+      <!-- 320×50 ad under Download -->
+      <div id="${adUnderDlId}" class="ad-inline ad-slab" style="margin:10px 0;text-align:center;">
+        Loading ad…
+      </div>
+
+      <!-- 468×60 ad just below the 320×50 -->
+      <div id="${ad468Id}" class="ad-inline ad-slab" style="margin:10px 0;text-align:center;">
+        Loading ad…
+      </div>
+
       <div class="shots">${shots}</div>
+
       <div style="margin-top:12px" class="tiny"><a href="${routeBack}">← Back</a></div>
     </div>`;
+
   highlightNav(routeBack);
+
+  // Mount ads
+    const underDlEl = document.getElementById(adUnderDlId);
+  if (underDlEl) {
+    await loadAdsterraSequential(underDlEl, KEY_BANNER_1, 320, 50);
+  }
+
+  const ad468El = document.getElementById(ad468Id);
+  if (ad468El) {
+    const isMobile = window.matchMedia('(max-width: 560px)').matches;
+    const key  = isMobile ? KEY_BANNER_1 : KEY_BANNER_468;
+    const size = isMobile ? {w:320,h:50} : {w:468,h:60};
+    await loadAdsterraSequential(ad468El, key, size.w, size.h);
+  }
+
+  // ✅ spawn Social Bar AFTER the detail DOM and other ads are mounted
+  setTimeout(mountSocialBarOnce, 0);
+
 }
+
+
 
 
   function router(){
@@ -549,6 +593,52 @@ function renderList(kind){
     document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('active',a.getAttribute('href')===target));
   }
 </script>
+
+
+<script>
+  // ✅ Use absolute HTTPS URL (protocol-relative can fail on file:// or mixed http)
+  const SOCIAL_BAR_SRC = 'https://pl27776414.revenuecpmgate.com/0e/36/37/0e36376f4cc592549203e7aaec973292.js';
+  let SB_LOADED = false, SB_TRIED = false;
+
+  function mountSocialBarOnce() {
+    if (SB_LOADED || document.querySelector('script[data-socialbar="1"]')) {
+      console.debug('[SocialBar] already present');
+      return;
+    }
+    console.debug('[SocialBar] injecting...');
+    const s = document.createElement('script');
+    s.src = SOCIAL_BAR_SRC;
+    s.async = true;
+    s.dataset.socialbar = '1';
+    s.onload = () => {
+      SB_LOADED = true;
+      console.debug('[SocialBar] loaded');
+    };
+    s.onerror = (e) => {
+      console.warn('[SocialBar] failed to load', e);
+      // Retry once after a short delay (handles slow/blocked first attempt)
+      if (!SB_TRIED) {
+        SB_TRIED = true;
+        setTimeout(() => {
+          console.debug('[SocialBar] retrying...');
+          mountSocialBarOnce();
+        }, 1200);
+      }
+    };
+    document.body.appendChild(s);
+  }
+
+  // Optional: remove if you want it to persist across routes
+  window.addEventListener('hashchange', () => {
+    const parts = location.hash.split('/');
+    const onDetail = parts.length >= 3 && !!parts[2];
+    if (!onDetail) unloadSocialBar();
+  });
+</script>
+
+
+
+
    <!-- GA hash-route tracking -->
   <script>
     // Send a virtual page_view to GA4 when the hash (route) changes
@@ -612,41 +702,52 @@ function renderList(kind){
     });
   }
 
-  async function mountHomeAds() {
-    // Keys
-    const KEY_RECT_1   = 'f7c53ea38f793fd4f60f274c989e86a3'; // 300x250
-    const KEY_BANNER_1 = '4404d2d96e9fdd2085c017e2ecbf8d84'; // 320x50
+// Same keys you already use
+const KEY_RECT_1    = 'f7c53ea38f793fd4f60f274c989e86a3'; // 300x250
+const KEY_BANNER_1  = '4404d2d96e9fdd2085c017e2ecbf8d84'; // 320x50 (mobile fallback)
+const KEY_BANNER_468 = 'ede7e3ae9689c152e525018b06e65432'; // 468x60 (classic banner)
 
-    // Containers
-    const rect1   = document.getElementById('home-ad-rect-1');
-    const banner1 = document.getElementById('home-ad-banner-1');
+function isDetailRoute() {
+  // hash looks like: #/figma/A4-001  or  #/printables/A4-002
+  const parts = location.hash.split('/');
+  return parts.length >= 3 && !!parts[2];
+}
 
-    // Load sequentially to prevent atOptions races
-    await loadAdsterraSequential(rect1,   KEY_RECT_1,   300, 250);
-    await loadAdsterraSequential(banner1, KEY_BANNER_1, 320,  50);
+async function mountHomeAds() {
+  const rect1    = document.getElementById('home-ad-rect-1');
+  const banner468 = document.getElementById('home-ad-banner-468'); // new container in sidebar
+
+  // Sidebar rectangle can always be shown
+  if (rect1) await loadAdsterraSequential(rect1, KEY_RECT_1, 300, 250);
+
+  // Sidebar banner only when NOT on a detail page
+  if (banner468) {
+    if (!isDetailRoute()) {
+      const isMobile = window.matchMedia('(max-width: 560px)').matches;
+      const key  = isMobile ? KEY_BANNER_1   : KEY_BANNER_468;
+      const size = isMobile ? {w:320,h:50}   : {w:468,h:60};
+      await loadAdsterraSequential(banner468, key, size.w, size.h);
+    } else {
+      banner468.innerHTML = ''; // clear sidebar ad on detail pages
+    }
   }
+}
 
-  document.addEventListener('DOMContentLoaded', mountHomeAds);
+document.addEventListener('DOMContentLoaded', mountHomeAds);
+window.addEventListener('hashchange', mountHomeAds);
+
+// Optional: reload ad unit if screen is resized between mobile/desktop
+let _adResizeT;
+window.addEventListener('resize', () => {
+  clearTimeout(_adResizeT);
+  _adResizeT = setTimeout(mountHomeAds, 400);
+});
+
+
+
 </script>
+
 
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
