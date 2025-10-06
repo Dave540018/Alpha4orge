@@ -1,0 +1,664 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Comics (Manhwa) – Alpha4orge</title>
+<meta name="description" content="Original Manhwa-style comics by Alpha4orge. Read chapters online with a clean, mobile-friendly reader."/>
+<link rel="canonical" href="https://alpha4orge.store/comics.html">
+
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="icon" href="/Logonew.ico" sizes="any">
+  <!-- Favicons / PWA -->
+<link rel="icon" href="/Logonew.ico" sizes="any">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#0ea5e9">
+
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:#fafbfc; --panel:#ffffff; --ink:#1f2937; --muted:#6b7280; --ring:#e5e7eb;
+    --accent:#0ea5e9; --radius:14px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;color:var(--ink);background:var(--bg)}
+  a{color:inherit;text-decoration:none}
+
+  /* Header / Nav */
+  header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.85);backdrop-filter:saturate(1.2) blur(8px);border-bottom:1px solid var(--ring)}
+  .wrap{max-width:1200px;margin:0 auto;padding:14px 16px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{
+    width:36px;height:36px;border-radius:12px;background:var(--panel);border:1px solid var(--ring);
+    display:grid;place-items:center;overflow:hidden;
+  }
+  .logo img{width:100%;height:100%;object-fit:contain;display:block}
+  h1{font-size:20px;margin:0}
+  .sub{color:var(--muted);font-size:12px}
+  .nav{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
+  .nav a{padding:8px 12px;border:1px solid var(--ring);border-radius:999px;background:var(--panel);font-weight:600;font-size:13px}
+  .nav a.active{border-color:#cbd5e1;color:#0f172a}
+  .menu-btn{
+    display:none;border:1px solid var(--ring);background:var(--panel);
+    border-radius:10px;padding:8px 10px;font-weight:700;cursor:pointer;
+  }
+  @media (max-width: 680px){
+    header .brand{flex-wrap:wrap}
+    .menu-btn{display:block}
+    .nav{display:none;width:100%;margin-top:8px;gap:8px;flex-wrap:wrap;}
+    .nav.open{display:flex}
+    .nav a{flex:1 1 auto; text-align:center}
+  }
+
+  /* Layout */
+  .grid{display:grid;grid-template-columns:1fr;gap:18px}
+  @media(min-width:980px){ .grid{grid-template-columns:3fr 1fr} }
+  .sticky{position:sticky;top:96px}
+  .ad-inline{ display:flex; justify-content:center; margin:16px 0; }
+  .ad-slab  { background:#ffffff; border:1px solid #e5e7eb; border-radius:14px; padding:6px; text-align:center }
+
+  /* Cards / Gallery (reused) */
+  .gallery{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+  .card{grid-column:span 4;background:var(--panel);border:1px solid var(--ring);border-radius:16px;overflow:hidden;transition:transform .12s ease;cursor:pointer}
+  .card:hover{transform:translateY(-2px)}
+  .card.wide{grid-column:span 6}
+  @media(max-width:900px){ .card{grid-column:span 6} .card.wide{grid-column:span 12} }
+  @media(max-width:560px){ .card,.card.wide{grid-column:span 12} }
+  .thumb{background:#f7fafc;border-bottom:1px solid var(--ring);aspect-ratio:16/10;display:block;overflow:hidden}
+  .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+
+  .content{padding:14px}
+  .title{font-weight:800;margin:0 0 6px;font-size:16px}
+  .meta{font-size:12px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+  .tag{background:#f1f5f9;border:1px solid var(--ring);padding:4px 8px;border-radius:999px;font-size:11px}
+  .foot{display:flex;align-items:center;justify-content:space-between;margin-top:10px;font-size:12px;color:var(--muted)}
+  .code{font-weight:800}
+
+  .detail{background:var(--panel);border:1px solid var(--ring);border-radius:16px;padding:16px}
+  .tiny{font-size:12px;color:var(--muted)}
+
+  /* Buttons (shared) */
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .btn{border:1px solid var(--ring);background:var(--panel);padding:9px 12px;border-radius:10px;font-weight:700;color:#0b5cab;cursor:pointer}
+  .btn.primary{ background:#0ea5e9; color:#fff; border-color:#0ea5e9 }
+  .btn.ghost{ background:#fff; color:#0ea5e9; border-color:#bae6fd }
+  .btn.disabled{ opacity:.45; pointer-events:none; }
+
+  /* --- Comics Reader specific (your provided styles) --- */
+  .reader-head{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:10px; margin-bottom:10px;
+  }
+  .reader-title{ font-weight:800; font-size:18px; margin:0 }
+  .reader-controls{ display:flex; gap:8px; align-items:center }
+  .reader-controls .spacer{ flex:1 }
+  .select{
+    border:1px solid var(--ring); background:#fff; border-radius:10px;
+    padding:8px 10px; font-weight:600;
+  }
+  .reader-pages{
+    max-width:900px; margin:0 auto;
+    display:flex; flex-direction:column; gap:12px;
+  }
+  .reader-pages .page{
+    background:#fff; border:1px solid var(--ring); border-radius:12px;
+    display:flex; justify-content:center; align-items:center; padding:8px;
+  }
+  .reader-pages .page img{
+    max-width:100%; height:auto; display:block;
+  }
+  @media (min-width: 980px){
+    .reader-head { position:sticky; top:76px; background:rgba(255,255,255,.85); backdrop-filter:blur(6px); padding:8px 10px; border:1px solid var(--ring); border-radius:12px; }
+  }
+
+
+/* === Seamless reader strip (override) === */
+.reader-pages{
+  max-width: 980px;          /* adjust to your taste */
+  margin: 0 auto;
+  display: block;            /* no flex gaps */
+  line-height: 0;            /* kill tiny whitespace between images */
+}
+.reader-pages .page{         /* neutralize the old box styles */
+  background: transparent;
+  border: 0; border-radius: 0;
+  padding: 0; margin: 0;
+}
+.reader-pages .page img{
+  display: block;
+  width: 100%;               /* fill the reader width */
+  height: auto;
+  margin: 0;                 /* no gaps */
+}
+
+/* Top & bottom inline ad bars inside the reader */
+.reader-ad{
+  line-height: normal;
+  display: flex; justify-content: center;
+  padding: 10px 0; margin: 8px 0;
+}
+
+/* Floating (sticky) side ads that follow scroll */
+.ad-float{
+  position: fixed;
+  top: 96px;                 /* sits under your sticky header */
+  z-index: 15;
+}
+.ad-float.left  { left: 12px; }
+.ad-float.right { right: 12px; }
+/* Hide side rails on small screens */
+@media (max-width: 1200px){
+  .ad-float{ display:none; }
+}
+
+
+/* ========= Responsive tweaks for Comics reader ========= */
+
+/* Tablet (<= 900px): use full content width and bigger tap targets */
+@media (max-width: 900px){
+  .wrap { padding-left: 12px; padding-right: 12px; }
+  .detail { padding: 10px; }
+  .reader-head { position: sticky; top: 68px; padding: 8px; gap: 10px; }
+  .reader-title { font-size: 16px; }
+  .select { padding: 10px 12px; font-size: 14px; }
+  .btn { padding: 12px 14px; font-size: 14px; border-radius: 12px; }
+  .reader-pages { max-width: 100%; } /* let images fill container */
+}
+
+/* Phone (<= 560px): truly edge-to-edge images and stacked controls */
+@media (max-width: 560px){
+  html, body { overflow-x: hidden; } /* avoid sideways scroll */
+  .detail { padding: 6px; }
+
+  /* Edge-to-edge strip */
+  .reader-pages{
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: 50%;
+    transform: translateX(-50%);
+    line-height: 0;
+  }
+  .reader-pages .page{ padding: 0; margin: 0; border: 0; border-radius: 0; }
+  .reader-pages .page img{
+    width: 100vw;          /* fill the screen width */
+    max-width: 100vw;
+    height: auto;
+    display: block;
+  }
+
+  /* Controls */
+  .reader-head{ top: 60px; padding: 6px; gap: 8px; }
+  .reader-head > div{ gap: 8px; flex-wrap: wrap; }
+  .reader-controls{ gap: 8px; }
+  .btn{ padding: 12px 14px; font-size: 14px; }
+
+  /* Ad rails off on small screens */
+  .ad-float{ display: none !important; }
+
+  /* Keep last image/controls clear of Social Bar */
+  .reader-pages,
+  #reader-ad-bottom,
+  .reader-controls:last-of-type{
+    padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* Reader ad bars: ensure banners scale down nicely on small screens */
+.reader-ad{ display:flex; justify-content:center; padding:8px 0; }
+.reader-ad iframe, .reader-ad > div{ max-width:100%; height:auto; }
+
+/* Buttons: keep disabled state obvious yet touch-safe */
+.btn.disabled{ opacity:.45; pointer-events:none; }
+
+
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap brand" style="display:flex;justify-content:space-between;align-items:center;">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <a class="logo" href="index.html" aria-label="Alpha4orge home">
+        <img src="https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Logonew.png"
+             alt="Alpha4orge logo" width="36" height="36" loading="eager">
+      </a>
+      <div>
+        <h1 style="margin:0;font-size:20px;">Alpha4orge</h1>
+        <div class="sub">Inspiring Creation, Creating Inspiration.</div>
+      </div>
+    </div>
+
+    <button class="menu-btn" id="menuBtn" aria-label="Toggle menu">Menu</button>
+    <nav class="nav" id="nav" style="display:flex;gap:14px;">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="blog.html">Blog</a>
+      <a href="contact.html">Contact</a>
+      <a href="comics.html" class="active">Comics</a> <!-- ✅ Only added here -->
+    </nav>
+  </div>
+</header>
+
+<!-- Floating side rails -->
+<div id="ad-float-left"  class="ad-float left">
+  <div style="width:160px;height:600px;border:1px dashed #e5e7eb;border-radius:12px;display:grid;place-items:center;background:#fff">
+    160×600 Ad
+  </div>
+</div>
+<div id="ad-float-right" class="ad-float right">
+  <div style="width:160px;height:600px;border:1px dashed #e5e7eb;border-radius:12px;display:grid;place-items:center;background:#fff">
+    160×600 Ad
+  </div>
+</div>
+
+
+
+<main class="wrap grid">
+  <!-- Main content -->
+  <section id="mainArea">
+    <div class="detail" id="introBox" style="margin-bottom:12px">
+      <h2 style="margin:0 0 6px">Comics (Manhwa)</h2>
+      <p class="tiny" style="margin:4px 0 0">Original series in chapters. Click any cover to start reading.</p>
+    </div>
+    <div id="view"></div>
+  </section>
+
+  <!-- Sticky sidebar ads -->
+  <aside class="sticky">
+    <div id="ad-rect" class="ad-inline ad-slab">Loading ad…</div>
+    <div class="ad-slab" style="margin:16px 0; text-align:left">
+      <div style="font-weight:700;margin-bottom:6px">Sponsored</div>
+      <p class="tiny" style="margin:6px 0;color:#6b7280">
+        Hand-picked gaming deals & freebies.
+      </p>
+      <a href="https://www.revenuecpmgate.com/kxhp7p756?key=7e42848b0d850bc014d63178da587f42"
+         target="_blank" rel="nofollow noopener" class="btn" style="display:inline-block;margin-top:6px">
+        Explore Deals →
+      </a>
+    </div>
+  </aside>
+</main>
+
+<footer class="wrap" style="border-top:1px solid var(--ring);margin-top:24px">
+  <p class="tiny">
+    © Alpha4orge. Please don’t re-host files without attribution.
+    · <a href="privacy.html">Privacy Policy</a>
+    · <a href="terms.html">Terms of Service</a>
+  </p>
+</footer>
+
+<script>
+  // Mobile nav toggle
+  document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('menuBtn');
+    const nav = document.getElementById('nav');
+    if(btn && nav) btn.addEventListener('click', () => nav.classList.toggle('open'));
+  });
+
+  // --- Simple helpers for query params ---
+  function qs(name){
+    const url = new URL(location.href);
+    return url.searchParams.get(name);
+  }
+  function setQuery(obj){
+    const url = new URL(location.href);
+    Object.entries(obj).forEach(([k,v]) => {
+      if (v === null || v === undefined) url.searchParams.delete(k);
+      else url.searchParams.set(k, v);
+    });
+    history.pushState({}, '', url);
+    render();
+  }
+
+  // --- Data (replace with your real images/URLs) ---
+  const comics = [
+    {
+      id: "rewind-of-natilton",
+      title: "Rewind of Natilton",
+      tags: ["Manhwa","Fantasy","Original"],
+      cover: "https://picsum.photos/seed/natilton/640/400",
+      chapters: [
+        { num: 1, pages: [
+          "https://picsum.photos/seed/n1p1/900/1300",
+          "https://picsum.photos/seed/n1p2/900/1300",
+          "https://picsum.photos/seed/n1p3/900/1300",
+        ]},
+        { num: 2, pages: [
+          "https://picsum.photos/seed/n2p1/900/1300",
+          "https://picsum.photos/seed/n2p2/900/1300",
+        ]},
+      ]
+    },
+    {
+      id: "The-Reincarnated-Tycoon-Who-Only-Lives-for-His-Wife",
+      title: "The Reincarnated Tycoon Who Only Lives for His Wife",
+      tags: ["Manhwa","Romance"],
+      cover: "https://picsum.photos/seed/hueg/640/400",
+      chapters: [
+        { num: 1, pages: [
+          "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.1/The.Reincarnated.Tycoon.Who.Only.Lives.for.His.Wife.1.webp",
+          "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.1/The.Reincarnated.Tycoon.Who.Only.Lives.for.His.Wife.2.webp",
+          "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.1/The.Reincarnated.Tycoon.Who.Only.Lives.for.His.Wife.3.webp",
+          "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.1/The.Reincarnated.Tycoon.Who.Only.Lives.for.His.Wife.4.webp",
+          "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.1/The.Reincarnated.Tycoon.Who.Only.Lives.for.His.Wife.5.webp",
+          "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.1/The.Reincarnated.Tycoon.Who.Only.Lives.for.His.Wife.6.webp",
+          "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.1/The.Reincarnated.Tycoon.Who.Only.Lives.for.His.Wife.7.webp",
+          "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.1/The.Reincarnated.Tycoon.Who.Only.Lives.for.His.Wife.8.webp",
+          "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.1/The.Reincarnated.Tycoon.Who.Only.Lives.for.His.Wife.9.webp",
+          "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.1/The.Reincarnated.Tycoon.Who.Only.Lives.for.His.Wife.10.webp",
+          "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.1/The.Reincarnated.Tycoon.Who.Only.Lives.for.His.Wife.11.webp",
+          "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.1/The.Reincarnated.Tycoon.Who.Only.Lives.for.His.Wife.12.webp",
+          "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.1/The.Reincarnated.Tycoon.Who.Only.Lives.for.His.Wife.13.webp",
+          "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.1/The.Reincarnated.Tycoon.Who.Only.Lives.for.His.Wife.14.webp",
+          "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.1/The.Reincarnated.Tycoon.Who.Only.Lives.for.His.Wife.15.webp",
+          "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.1/The.Reincarnated.Tycoon.Who.Only.Lives.for.His.Wife.16.webp",
+          "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.1/The.Reincarnated.Tycoon.Who.Only.Lives.for.His.Wife.17.webp",
+          "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.1/The.Reincarnated.Tycoon.Who.Only.Lives.for.His.Wife.18.webp",
+          "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.1/The.Reincarnated.Tycoon.Who.Only.Lives.for.His.Wife.19.webp",
+          "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.1/The.Reincarnated.Tycoon.Who.Only.Lives.for.His.Wife.20.webp",
+          "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.1/The.Reincarnated.Tycoon.Who.Only.Lives.for.His.Wife.21.webp",
+          "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.1/The.Reincarnated.Tycoon.Who.Only.Lives.for.His.Wife.22.webp",
+          "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.1/The.Reincarnated.Tycoon.Who.Only.Lives.for.His.Wife.23.webp",
+          "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.1/The.Reincarnated.Tycoon.Who.Only.Lives.for.His.Wife.24.webp",
+          "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.1/The.Reincarnated.Tycoon.Who.Only.Lives.for.His.Wife.25.webp",
+          "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.1/The.Reincarnated.Tycoon.Who.Only.Lives.for.His.Wife.26.webp",
+          "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.1/The.Reincarnated.Tycoon.Who.Only.Lives.for.His.Wife.27.webp",
+          "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.1/The.Reincarnated.Tycoon.Who.Only.Lives.for.His.Wife.28.webp"
+        ]},
+        // no chapter 2 yet → Next disabled
+      ]
+    }
+  ];
+
+  // --- Query functions ---
+  const findSeries = id => comics.find(s => s.id === id);
+  const chapterOf = (series, n) => series?.chapters.find(c => c.num === n);
+  const nextChapterNumber = (series, n) => series?.chapters.some(c => c.num === n+1) ? n+1 : null;
+  const prevChapterNumber = (series, n) => series?.chapters.some(c => c.num === n-1) ? n-1 : null;
+
+  const viewEl = document.getElementById('view');
+  const introBox = document.getElementById('introBox');
+
+  // --- UI builders ---
+  function comicsCard(s){
+    const tags = (s.tags||[]).map(t=>`<span class="tag">${t}</span>`).join(' ');
+    return `
+      <article class="card" onclick="setQuery({series:'${s.id}'})">
+        <div class="thumb"><img src="${s.cover}" alt="${s.title} cover" loading="lazy"></div>
+        <div class="content">
+          <h3 class="title">${s.title}</h3>
+          <div class="meta">${tags}</div>
+          <div class="foot">
+            <span>Chapters: ${s.chapters.length}</span>
+            <a class="code" href="javascript:void(0)" onclick="event.stopPropagation();setQuery({series:'${s.id}'})">Read →</a>
+          </div>
+        </div>
+      </article>`;
+  }
+
+  function renderCollection(){
+    introBox.style.display = '';
+    viewEl.innerHTML = `
+      <div class="gallery">
+        ${comics.map(comicsCard).join('')}
+      </div>
+    `;
+  }
+
+  function renderSeries(seriesId){
+    const s = findSeries(seriesId);
+    if (!s){
+      viewEl.innerHTML = `<div class="detail"><h2>Not found</h2><div class="tiny"><a href="comics.html">← Back</a></div></div>`;
+      return;
+    }
+    introBox.style.display = 'none';
+    const chapterLinks = s.chapters
+      .sort((a,b)=>a.num-b.num)
+      .map(c=>`<a class="btn" href="javascript:void(0)" onclick="setQuery({series:'${s.id}',chapter:'${c.num}'})">Chapter ${c.num}</a>`)
+      .join(' ');
+
+    viewEl.innerHTML = `
+      <div class="detail">
+        <div class="thumb" style="margin-bottom:12px"><img src="${s.cover}" alt="${s.title} cover" loading="lazy"></div>
+        <h2>${s.title}</h2>
+        <div class="meta" style="margin-top:6px">${(s.tags||[]).map(t=>`<span class="tag">${t}</span>`).join(' ')}</div>
+        <div class="row" style="margin:12px 0;">${chapterLinks || '<span class="tiny">No chapters yet</span>'}</div>
+        <div class="tiny"><a href="javascript:void(0)" onclick="setQuery({series:null,chapter:null})">← Back to Comics</a></div>
+      </div>
+    `;
+  }
+
+  function renderReader(seriesId, chapterNumRaw){
+  const s = findSeries(seriesId);
+  const n = Number(chapterNumRaw||1);
+  const chap = chapterOf(s, n);
+
+  if (!s || !chap){
+    viewEl.innerHTML = `<div class="detail"><h2>Not found</h2><div class="tiny"><a href="javascript:void(0)" onclick="setQuery({series:null,chapter:null})">← Back</a></div></div>`;
+    return;
+  }
+  introBox.style.display = 'none';
+
+  const prev = prevChapterNumber(s, n);
+  const next = nextChapterNumber(s, n);
+
+  const pagesHtml = chap.pages.map((src,i)=>`
+    <div class="page">
+      <img src="${src}" alt="${s.title} — Chapter ${n} — Page ${i+1}" loading="lazy">
+    </div>`).join('');
+
+  viewEl.innerHTML = `
+    <div class="detail" style="padding:12px">  <!-- keep the header chrome, thin padding -->
+      <div class="reader-head">
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap">
+          <h3 class="reader-title">${s.title} — Chapter ${n}</h3>
+          <select class="select" onchange="setQuery({series:'${s.id}',chapter:this.value})">
+            ${s.chapters.sort((a,b)=>a.num-b.num).map(c=>`<option value="${c.num}" ${c.num===n?'selected':''}>Chapter ${c.num}</option>`).join('')}
+          </select>
+          <a class="btn ghost" href="javascript:void(0)" onclick="setQuery({series:'${s.id}',chapter:null})">All Chapters</a>
+          <a class="btn ghost" href="javascript:void(0)" onclick="setQuery({series:null,chapter:null})">Comics</a>
+        </div>
+
+        <div class="reader-controls">
+          <span class="spacer"></span>
+          <a class="btn ${prev? '':'disabled'}"
+             ${prev? `href="javascript:void(0)" onclick="setQuery({series:'${s.id}',chapter:'${prev}'})"`:'aria-disabled="true"'}>← Prev</a>
+          <a class="btn primary ${next? '':'disabled'}" style="margin-left:6px"
+             ${next? `href="javascript:void(0)" onclick="setQuery({series:'${s.id}',chapter:'${next}'})"`:'aria-disabled="true" title="Next chapter not uploaded yet"'}>Next →</a>
+        </div>
+      </div>
+
+      <!-- TOP ad bar -->
+      <div id="reader-ad-top" class="reader-ad">
+        <div style="width:728px;max-width:100%;height:90px;border:1px dashed #e5e7eb;border-radius:12px;display:grid;place-items:center;background:#fff">
+          728×90 Ad (Top)
+        </div>
+      </div>
+
+      <!-- SEAMLESS STRIP -->
+      <div class="reader-pages">${pagesHtml}</div>
+
+      <!-- BOTTOM ad bar -->
+      <div id="reader-ad-bottom" class="reader-ad">
+        <div style="width:728px;max-width:100%;height:90px;border:1px dashed #e5e7eb;border-radius:12px;display:grid;place-items:center;background:#fff">
+          728×90 Ad (Bottom)
+        </div>
+      </div>
+
+      <!-- Bottom controls duplicated for convenience -->
+      <div class="reader-controls" style="margin-top:10px">
+        <span class="spacer"></span>
+        <a class="btn ${prev? '':'disabled'}"
+           ${prev? `href="javascript:void(0)" onclick="setQuery({series:'${s.id}',chapter:'${prev}'})"`:'aria-disabled="true"'}>← Prev</a>
+        <a class="btn primary ${next? '':'disabled'}" style="margin-left:6px"
+           ${next? `href="javascript:void(0)" onclick="setQuery({series:'${s.id}',chapter:'${next}'})"`:'aria-disabled="true" title="Next chapter not uploaded yet"'}>Next →</a>
+      </div>
+    </div>
+  `;
+}
+
+  // Main render based on ?series & ?chapter
+  function render(){
+    const seriesId = qs('series');
+    const chapter  = qs('chapter');
+
+    if (!seriesId){
+      renderCollection();
+      return;
+    }
+    if (seriesId && !chapter){
+      renderSeries(seriesId);
+      return;
+    }
+    renderReader(seriesId, chapter);
+  }
+
+  // First render & popstate for back/forward
+  window.addEventListener('DOMContentLoaded', render);
+  window.addEventListener('popstate', render);
+
+  // --- (Optional) Minimal ad loader placeholder ---
+  (function mountAd(){
+    const el = document.getElementById('ad-rect');
+    if (!el) return;
+    el.textContent = '';
+    const box = document.createElement('div');
+    box.style.width = '300px';
+    box.style.height = '250px';
+    box.style.display = 'grid';
+    box.style.placeItems = 'center';
+    box.style.border = '1px dashed #e5e7eb';
+    box.style.borderRadius = '10px';
+    box.textContent = 'Your 300×250 Ad';
+    el.appendChild(box);
+  })();
+</script>
+
+<script>
+/* ------------------------------
+   Adsterra: single-loader helper
+   ------------------------------ */
+
+const KEY_RECT_300x250 = 'f7c53ea38f793fd4f60f274c989e86a3';
+const KEY_SKY_160x600  = '001d2d159d6e43ef2e7fbbbcd1832bc4';
+const KEY_BANNER_468x60= 'ede7e3ae9689c152e525018b06e65432';
+const KEY_BANNER_320x50= '4404d2d96e9fdd2085c017e2ecbf8d84';
+const KEY_BAR_728x90   = 'eb1a078043c7129e0f97b92e26a08a3e';   // ✅ NEW: bottom bar
+const SOCIAL_BAR_SRC   = '//pl27776414.revenuecpmgate.com/0e/36/37/0e36376f4cc592549203e7aaec973292.js';
+
+function loadAdsterra(container, key, w, h){
+  if(!container) return;
+  container.innerHTML = '';
+  const def = document.createElement('script');
+  def.type = 'text/javascript';
+  def.text = `
+    window.atOptions = {
+      'key': '${key}',
+      'format': 'iframe',
+      'height': ${h},
+      'width': ${w},
+      'params': {}
+    };
+  `;
+  const inv = document.createElement('script');
+  inv.type = 'text/javascript';
+  inv.src = `//www.highperformanceformat.com/${key}/invoke.js`;
+  container.appendChild(def);
+  container.appendChild(inv);
+}
+
+/* ---------------------------------
+   Mounters for each page/situation
+   --------------------------------- */
+
+// sidebar 300x250 (list/series pages)
+function mountComicsListAds(){
+  const box = document.getElementById('ad-rect');
+  if (box) loadAdsterra(box, KEY_RECT_300x250, 300, 250);
+}
+
+// floating rails 160x600 (desktop only)
+let RAILS_LOADED = false;
+function mountRails(){
+  if (window.matchMedia('(max-width: 1200px)').matches) return;
+  if (RAILS_LOADED) return;
+  const left  = document.querySelector('#ad-float-left');
+  const right = document.querySelector('#ad-float-right');
+  if (left)  loadAdsterra(left,  KEY_SKY_160x600, 160, 600);
+  if (right) loadAdsterra(right, KEY_SKY_160x600, 160, 600);
+  RAILS_LOADED = true;
+}
+
+// reader: top uses 468x60 (desktop) / 320x50 (mobile)
+//         bottom uses 728x90 (desktop) / 320x50 (mobile)
+function mountReaderAds(){
+  const isMobile = window.matchMedia('(max-width: 560px)').matches;
+
+  // TOP
+  const topKey  = isMobile ? KEY_BANNER_320x50 : KEY_BANNER_468x60;
+  const topSize = isMobile ? {w:320,h:50}      : {w:468,h:60};
+  const topBar  = document.getElementById('reader-ad-top');
+  if (topBar) loadAdsterra(topBar, topKey, topSize.w, topSize.h);
+
+  // BOTTOM (✅ use your 728x90 unit on desktop)
+  const bottomKey  = isMobile ? KEY_BANNER_320x50 : KEY_BAR_728x90;
+  const bottomSize = isMobile ? {w:320,h:50}      : {w:728,h:90};
+  const botBar     = document.getElementById('reader-ad-bottom');
+  if (botBar) loadAdsterra(botBar, bottomKey, bottomSize.w, bottomSize.h);
+
+  // rails as well
+  mountRails();
+
+  // Social Bar (only on reader pages)
+  if (!document.querySelector('script[data-socialbar="1"]')) {
+    const s = document.createElement('script');
+    s.src = SOCIAL_BAR_SRC;
+    s.async = true;
+    s.dataset.socialbar = '1';
+    document.body.appendChild(s);
+  }
+}
+
+/* ---------------------------------
+   Hook into your existing renders
+   --------------------------------- */
+
+const _renderCollection = renderCollection;
+renderCollection = function(){
+  _renderCollection();
+  setTimeout(mountComicsListAds, 0);
+};
+
+const _renderSeries = renderSeries;
+renderSeries = function(seriesId){
+  _renderSeries(seriesId);
+  setTimeout(mountComicsListAds, 0);
+};
+
+const _renderReader = renderReader;
+renderReader = function(seriesId, chapterNumRaw){
+  _renderReader(seriesId, chapterNumRaw);
+  setTimeout(mountReaderAds, 0);
+};
+
+let _adResizeT;
+window.addEventListener('resize', () => {
+  clearTimeout(_adResizeT);
+  _adResizeT = setTimeout(() => {
+    RAILS_LOADED = false;
+    mountRails();
+  }, 300);
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  mountComicsListAds(); // for list/series landings
+});
+</script>
+
+
+</body>
+</html>
