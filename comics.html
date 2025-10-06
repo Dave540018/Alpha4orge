@@ -160,32 +160,33 @@
 
 /* Tablet (<= 900px): use full content width and bigger tap targets */
 @media (max-width: 900px){
-  .wrap { padding-left: 12px; padding-right: 12px; }
-  .detail { padding: 10px; }
-  .reader-head { position: sticky; top: 68px; padding: 8px; gap: 10px; }
-  .reader-title { font-size: 16px; }
-  .select { padding: 10px 12px; font-size: 14px; }
-  .btn { padding: 12px 14px; font-size: 14px; border-radius: 12px; }
-  .reader-pages { max-width: 100%; } /* let images fill container */
+  :root{ --tablet-gutter: 16px; }
+  .wrap { padding-left: var(--tablet-gutter); padding-right: var(--tablet-gutter); }
+  .detail { padding: var(--tablet-gutter); }
+  .reader-pages { max-width: 100%; margin: 0 auto; }
+  .reader-pages .page img{ width: 100%; }
 }
 
-/* Phone (<= 560px): truly edge-to-edge images and stacked controls */
-@media (max-width: 560px){
-  html, body { overflow-x: hidden; } /* avoid sideways scroll */
-  .detail { padding: 6px; }
 
-  /* Edge-to-edge strip */
+/* Phone (<= 560px): centered with equal side padding */
+@media (max-width: 560px){
+  :root{ --mobile-gutter: 14px; }        /* tweak gutter here */
+
+  html, body { overflow-x: hidden; }
+  .wrap { padding-left: var(--mobile-gutter); padding-right: var(--mobile-gutter); }
+  .detail { padding: var(--mobile-gutter); }
+
+  /* Center the strip — no 100vw/translate hack */
   .reader-pages{
-    width: 100vw;
-    max-width: 100vw;
-    margin-left: 50%;
-    transform: translateX(-50%);
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;                      /* centers the column */
+    padding-left: 0; padding-right: 0;
     line-height: 0;
   }
   .reader-pages .page{ padding: 0; margin: 0; border: 0; border-radius: 0; }
   .reader-pages .page img{
-    width: 100vw;          /* fill the screen width */
-    max-width: 100vw;
+    width: 100%;                          /* fit to column width */
     height: auto;
     display: block;
   }
@@ -196,7 +197,7 @@
   .reader-controls{ gap: 8px; }
   .btn{ padding: 12px 14px; font-size: 14px; }
 
-  /* Ad rails off on small screens */
+  /* Hide floating rails on small screens */
   .ad-float{ display: none !important; }
 
   /* Keep last image/controls clear of Social Bar */
