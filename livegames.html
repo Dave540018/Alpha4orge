@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jake's Empire: From Rags to AI Superintelligence - The Ultimate Challenge</title>
+    <link rel="stylesheet" href="livegamesstyle.css">
+</head>
+<body>
+    <!-- Simple Introduction Modal -->
+    <div id="storyModal" class="modal story-modal">
+        <div class="modal-content story-content">
+            <div class="story-header">
+                <h1>💰 Money Clicker Empire 💰</h1>
+            </div>
+            <div class="story-text" id="storyText">
+                <div class="intro-content">
+                    <p class="game-description"><strong>Click to make money and build your business empire!</strong></p>
+                    
+                    <p class="story-text">Start from nothing and reach AI Superintelligence.</p>
+                    
+                    <div class="challenge-warning">
+                        <h4>⚠️ Challenge Warnings:</h4>
+                        <div class="warning-points">
+                            <p>• Market crashes can cause major losses</p>
+                            <p>• Emergency savings protect your wealth</p>
+                            <p>• Strategic business investments required</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="story-footer">
+                <button id="startGame" class="btn btn--primary btn--lg">Start Game</button>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="game-container">
+        <!-- Top Status Bar -->
+        <div class="status-bar">
+            <div class="money-display">
+                <div class="character-avatar" id="characterAvatar">👤</div>
+                <div class="money-info">
+                    <div class="current-money">$<span id="currentMoney">0</span></div>
+                    <div class="income-rate">$<span id="incomeRate">0</span>/sec</div>
+                    <div class="debt-indicator hidden" id="debtIndicator">
+                        <span class="debt-label">DEBT:</span>
+                        <span class="debt-amount">-$<span id="debtAmount">0</span></span>
+                    </div>
+                </div>
+            </div>
+            <div class="lifetime-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Total Earned:</span>
+                    <span class="stat-value">$<span id="totalEarned">0</span></span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">High Score:</span>
+                    <span class="stat-value">$<span id="highScore">0</span></span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Clicks:</span>
+                    <span class="stat-value" id="totalClicks">0</span>
+                </div>
+            </div>
+            
+
+        </div>
+
+        <!-- Main Game Area -->
+        <div class="main-content">
+            <!-- Left Sidebar - Click Upgrades -->
+            <div class="sidebar left-sidebar">
+                <h3 class="sidebar-title">💪 Click Upgrades</h3>
+                <div class="upgrades-list" id="clickUpgrades">
+                    <!-- Click upgrades will be dynamically generated -->
+                </div>
+                
+                <h3 class="sidebar-title">⚡ Multipliers</h3>
+                <div class="upgrades-list" id="multipliers">
+                    <!-- Multipliers will be dynamically generated -->
+                </div>
+
+                <h3 class="sidebar-title">💰 Financial Management</h3>
+                <div class="financial-panel">
+                    <div class="savings-section">
+                        <h4>Emergency Savings</h4>
+                        <div class="savings-display">
+                            <div class="savings-amount">$<span id="savingsAmount">0</span></div>
+                            <div class="savings-interest">+<span id="savingsInterest">2</span>%/min</div>
+                        </div>
+                        <div class="savings-controls">
+                            <input type="number" id="savingsInput" placeholder="Amount" class="form-control savings-input">
+                            <div class="savings-buttons">
+                                <button id="depositBtn" class="btn btn--primary btn--sm">Deposit</button>
+                                <button id="withdrawBtn" class="btn btn--secondary btn--sm">Withdraw</button>
+                            </div>
+                        </div>
+                        <div class="savings-warning" id="savingsWarning">
+                            <span class="warning-icon">⚠️</span>
+                            <span class="warning-text">Low savings - high risk!</span>
+                        </div>
+                    </div>
+                    
+                    <div class="insurance-section">
+                        <h4>Business Insurance</h4>
+                        <div class="insurance-display">
+                            <div class="insurance-status" id="insuranceStatus">Inactive</div>
+                            <div class="insurance-cost">Cost: <span id="insuranceCost">$0</span>/month</div>
+                        </div>
+                        <button id="insuranceBtn" class="btn btn--secondary btn--sm">Purchase Insurance</button>
+                    </div>
+                </div>
+
+                <h3 class="sidebar-title">⚡ Challenge Status</h3>
+                <div class="challenge-status" id="challengeStatus">
+                    <div class="challenge-stat">
+                        <span class="challenge-label">Market Health:</span>
+                        <span class="challenge-value" id="marketHealth">Stable</span>
+                    </div>
+                    <div class="challenge-stat">
+                        <span class="challenge-label">Risk Level:</span>
+                        <span class="challenge-value" id="riskLevel">Low</span>
+                    </div>
+
+                    <div class="challenge-stat">
+                        <span class="challenge-label">Crisis Survival:</span>
+                        <span class="challenge-value crisis-survival" id="crisisSurvival">0/10</span>
+                    </div>
+                </div>
+
+                <h3 class="sidebar-title">🏆 Achievements</h3>
+                <div class="achievements-list" id="achievementsList">
+                    <!-- Achievements will be dynamically generated -->
+                </div>
+            </div>
+
+            <!-- Center Area - Main Click Button -->
+            <div class="center-area">
+
+                
+                <div class="business-tier">
+                    <h2 id="currentTier">Street Vendor</h2>
+                    <div class="tier-description" id="tierDescription">Humble beginnings on the street corner</div>
+                    <div class="tier-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="tierProgress"></div>
+                        </div>
+                        <div class="progress-text">
+                            Progress to <span id="nextTierName">Small Business Owner</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="click-area">
+                    <div class="click-tip">
+                        💡 <strong>Tip:</strong> Hold the button or space bar to click continuously!
+                    </div>
+                    <button id="moneyButton" class="money-button">
+                        <div class="button-content">
+                            <div class="money-symbol">$</div>
+                            <div class="click-value">+$<span id="clickValue">1</span></div>
+                        </div>
+                        <div class="button-glow"></div>
+                    </button>
+                </div>
+
+                <div class="click-stats">
+                    <div class="click-stat">
+                        <span class="label">Click Power:</span>
+                        <span class="value">$<span id="displayClickValue">1</span></span>
+                    </div>
+                    <div class="click-stat">
+                        <span class="label">Manual CPS:</span>
+                        <span class="value" id="manualCPS">0</span>
+                    </div>
+                    <div class="click-stat hold-indicator" id="holdIndicator" style="display: none;">
+                        <span class="label">Hold Mode:</span>
+                        <span class="value hold-active">ACTIVE</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Sidebar - Business Ventures -->
+            <div class="sidebar right-sidebar">
+                <h3 class="sidebar-title">🏢 Business Ventures</h3>
+                <div class="businesses-list" id="businessesList">
+                    <!-- Businesses will be dynamically generated -->
+                </div>
+
+                <h3 class="sidebar-title">👔 Managers</h3>
+                <div class="managers-list" id="managersList">
+                    <!-- Managers will be dynamically generated -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== Ads: Under Main Content ===== -->
+        <div class="ads-row" aria-label="sponsored">
+        <!-- 728×90 (Desktop / Large) -->
+        <div class="ad-slot ad-728">
+            <script type="text/javascript">
+            atOptions = {
+                'key'    : 'eb1a078043c7129e0f97b92e26a08a3e',
+                'format' : 'iframe',
+                'height' : 90,
+                'width'  : 728,
+                'params' : {}
+            };
+            </script>
+            <script type="text/javascript" src="https://www.highperformanceformat.com/eb1a078043c7129e0f97b92e26a08a3e/invoke.js"></script>
+        </div>
+
+        <!-- 468×60 (Desktop / Medium) -->
+        <div class="ad-slot ad-468">
+            <script type="text/javascript">
+            atOptions = {
+                'key'    : 'ede7e3ae9689c152e525018b06e65432',
+                'format' : 'iframe',
+                'height' : 60,
+                'width'  : 468,
+                'params' : {}
+            };
+            </script>
+            <script type="text/javascript" src="https://www.highperformanceformat.com/ede7e3ae9689c152e525018b06e65432/invoke.js"></script>
+        </div>
+
+        <!-- 320×50 (Mobile) -->
+        <div class="ad-slot ad-320">
+            <script type="text/javascript">
+            atOptions = {
+                'key'    : '4404d2d96e9fdd2085c017e2ecbf8d84',
+                'format' : 'iframe',
+                'height' : 50,
+                'width'  : 320,
+                'params' : {}
+            };
+            </script>
+            <script type="text/javascript" src="https://www.highperformanceformat.com/4404d2d96e9fdd2085c017e2ecbf8d84/invoke.js"></script>
+        </div>
+        </div>
+
+        <!-- Bottom Bar - Prestige & Special Features -->
+        <div class="bottom-bar">
+            <button id="prestigeButton" class="prestige-btn" disabled>
+                <span class="prestige-icon">⭐</span>
+                <span class="prestige-text">Prestige Available at $1Q</span>
+            </button>
+            
+            <div class="special-features">
+                <button id="emergencyLoan" class="feature-btn loan-btn" style="display: none;">
+                    <span class="feature-icon">🆘</span>
+                    <span class="feature-text">Emergency Loan</span>
+                </button>
+                
+                <button id="offlineEarnings" class="feature-btn" style="display: none;">
+                    <span class="feature-icon">⏰</span>
+                    <span class="feature-text">Collect Offline Earnings</span>
+                </button>
+                
+                <button id="saveGame" class="feature-btn">
+                    <span class="feature-icon">💾</span>
+                    <span class="feature-text">Manual Save</span>
+                </button>
+                
+                <div id="autoSaveIndicator" class="feature-btn auto-save-indicator" style="display: none;">
+                    <span class="feature-icon">✓</span>
+                    <span class="feature-text">Auto-Saved</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Money Particles Container -->
+    <div id="particlesContainer"></div>
+
+    <!-- Achievement Notification -->
+    <div id="achievementNotification" class="achievement-notification hidden">
+        <div class="notification-content">
+            <div class="notification-icon">🏆</div>
+            <div class="notification-text">
+                <div class="notification-title">Achievement Unlocked!</div>
+                <div class="notification-description" id="achievementText"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Crisis Notification -->
+    <div id="crisisNotification" class="crisis-notification hidden">
+        <div class="notification-content">
+            <div class="notification-icon" id="crisisIcon">💥</div>
+            <div class="notification-text">
+                <div class="notification-title" id="crisisTitle">FINANCIAL CRISIS!</div>
+                <div class="notification-description" id="crisisText"></div>
+            </div>
+            <div class="crisis-actions">
+                <button id="payInsurance" class="crisis-button" style="display: none;">Use Insurance</button>
+                <button id="acceptLoss" class="crisis-button secondary">Accept Loss</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Challenge Notification -->
+    <div id="challengeNotification" class="challenge-notification hidden">
+        <div class="notification-content">
+            <div class="notification-icon" id="challengeIcon">⚠️</div>
+            <div class="notification-text">
+                <div class="notification-title" id="challengeTitle">Challenge Event!</div>
+                <div class="notification-description" id="challengeText"></div>
+            </div>
+            <button id="challengeButton" class="challenge-button" style="display: none;">Fight Back!</button>
+        </div>
+    </div>
+
+    <!-- Challenge Status Bar -->
+    <div id="challengeStatusBar" class="challenge-status-bar hidden">
+        <div class="status-content">
+            <div class="status-icon" id="statusIcon">📊</div>
+            <div class="status-text" id="statusText">Economic Recession Active</div>
+            <div class="status-timer" id="statusTimer">120s</div>
+        </div>
+    </div>
+
+    <!-- Prestige Modal -->
+    <div id="prestigeModal" class="modal hidden">
+        <div class="modal-content">
+            <h2>⭐ Prestige Reset ⭐</h2>
+            <p>Reset your progress for permanent bonuses!</p>
+            <div class="prestige-benefits">
+                <div class="benefit-item">
+                    <span class="benefit-icon">💎</span>
+                    <span class="benefit-text">+<span id="prestigeBonus">0</span>% permanent click multiplier</span>
+                </div>
+                <div class="benefit-item">
+                    <span class="benefit-icon">⚡</span>
+                    <span class="benefit-text">Faster progression on restart</span>
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button id="confirmPrestige" class="btn btn--primary">Prestige Now!</button>
+                <button id="cancelPrestige" class="btn btn--secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Over Modal -->
+    <div id="gameOverModal" class="modal hidden">
+        <div class="modal-content game-over-content">
+            <h2>💸 BANKRUPTCY! 💸</h2>
+            <h3>Jake's Empire Has Collapsed!</h3>
+            <p class="game-over-message">Jake's debt has spiraled out of control. The empire crumbles under financial pressure.</p>
+            <div class="game-over-separator">GAME OVER</div>
+            <div class="modal-buttons">
+                <button id="restartAfterGameOver" class="btn btn--primary">Start Fresh</button>
+            </div>
+            <p class="game-over-footer">"Sometimes you have to lose everything to appreciate what you had." - Jake</p>
+        </div>
+    </div>
+
+    <!-- Asset Seizure Notification -->
+    <div id="assetSeizureNotification" class="crisis-notification hidden">
+        <div class="notification-content">
+            <div class="notification-icon" id="seizureIcon">🚨</div>
+            <div class="notification-text">
+                <div class="notification-title" id="seizureTitle">ASSET SEIZURE!</div>
+                <div class="notification-description" id="seizureText"></div>
+            </div>
+            <div class="seizure-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="seizureProgress"></div>
+                </div>
+                <div class="progress-text" id="seizureProgressText">Liquidating assets...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Victory Modal -->
+    <div id="victoryModal" class="modal hidden">
+        <div class="modal-content victory-content">
+            <h2>🌟 UNIVERSAL SOVEREIGN! 🌟</h2>
+            <h3 id="victoryTitle">Jake Has Achieved Ultimate Cosmic Dominance!</h3>
+            <p class="victory-message" id="victoryMessage">From a struggling convenience store clerk to the ruler of the universe - Jake's transformation is complete!</p>
+            <div class="victory-separator">ULTIMATE VICTORY ACHIEVED!</div>
+            <p class="victory-story" id="victoryStory">Jake now controls wealth that spans galaxies, his name echoing through the cosmos as the ultimate business emperor.</p>
+            <div class="modal-buttons">
+                <button id="continueVictory" class="btn btn--primary">Continue Empire</button>
+                <button id="restartVictory" class="btn btn--secondary">New Challenge</button>
+            </div>
+            <p class="victory-footer">"The universe is just the beginning..." - Jake Martinez, Universal Sovereign</p>
+        </div>
+    </div>
+
+    <!-- Emergency Loan Modal -->
+    <div id="loanModal" class="modal hidden">
+        <div class="modal-content loan-content">
+            <h2>🆘 Emergency Loan</h2>
+            <p>Get out of debt with an emergency loan, but beware of the high interest rates!</p>
+            <div class="loan-details">
+                <div class="loan-amount">Loan Amount: $<span id="loanAmount">50000</span></div>
+                <div class="loan-interest">Interest Rate: 25% per minute</div>
+                <div class="loan-warning">⚠️ Failure to repay will result in business seizures!</div>
+            </div>
+            <div class="modal-buttons">
+                <button id="acceptLoan" class="btn btn--primary">Accept Loan</button>
+                <button id="declineLoan" class="btn btn--secondary">Decline</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="livegamesapp.js"></script>
+</body>
+</html>
