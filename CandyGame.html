@@ -83,51 +83,57 @@
       align-items:center;
     }
 
+    /* ✅ Candy uses image icons */
     .candy{
-      width: var(--candy);
-      height: var(--candy);
-      border-radius: 50%;
-      cursor: pointer;
-      transition: transform .2s cubic-bezier(0.175,0.885,0.32,1.275), filter .2s;
-      box-shadow: inset -3px -3px 6px rgba(0,0,0,0.2), 0 4px 6px rgba(0,0,0,0.15);
-      position: relative;
-      touch-action: manipulation; /* ✅ better mobile tap */
-    }
+        width: var(--candy);
+        height: var(--candy);
+        border-radius: 50%;
+        cursor: pointer;
+        position: relative;
 
+        /* image rendering */
+        background-color: transparent;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+
+        /* keep it subtle so image stays clean */
+        box-shadow: 0 6px 10px rgba(0,0,0,0.18);
+        transition: transform .18s cubic-bezier(0.175,0.885,0.32,1.275), filter .18s;
+        touch-action: manipulation;
+        }
+
+    /* ✅ Touch/selection brightness max 25% */
     .candy.selected{
-      transform: scale(1.15);
-      filter: brightness(1.2);
-      box-shadow: 0 0 15px rgba(255,255,255,0.9);
-      animation: pulse 1s infinite;
-      z-index: 10;
+    transform: scale(1.12);
+    filter: brightness(1.15);          /* <= 25% brightness */
+    outline: 3px solid rgba(255,255,255,0.65);
+    box-shadow: 0 0 12px rgba(255,255,255,0.35), 0 6px 10px rgba(0,0,0,0.18);
+    z-index: 10;
     }
-
     @keyframes pulse{
       0%{ transform: scale(1.15); }
       50%{ transform: scale(1.25); }
       100%{ transform: scale(1.15); }
     }
+    /* ✅ Base candy images */
+    .candy.red    { background-image: url("images/Dragonfruit%20Glow%20Candy.png"); }
+    .candy.blue   { background-image: url("images/Moon%20Crystal%20Candy.png"); }
+    .candy.yellow { background-image: url("images/Sun%20Nectar%20Candy.png"); }
+    .candy.green  { background-image: url("images/Aurora%20Mint%20Candy.png"); }
+    .candy.purple { background-image: url("images/Galaxy%20Grape%20Candy.png"); }
+    .candy.orange { background-image: url("images/Tangerine%20Ember%20Candy.png"); }
 
-    .red    { background: radial-gradient(circle at 30% 30%, #ff8e8e, var(--candy-red)); }
-    .blue   { background: radial-gradient(circle at 30% 30%, #82ccff, var(--candy-blue)); }
-    .yellow { background: radial-gradient(circle at 30% 30%, #fff0a5, var(--candy-yellow)); }
-    .green  { background: radial-gradient(circle at 30% 30%, #5dfacb, var(--candy-green)); }
-    .purple { background: radial-gradient(circle at 30% 30%, #d1ccff, var(--candy-purple)); }
-    .orange { background: radial-gradient(circle at 30% 30%, #ffcc8e, var(--candy-orange)); }
-
-    .candy.striped::after{
-      content:'';
-      position:absolute;
-      inset:0;
-      background: repeating-linear-gradient(
-        45deg,
-        rgba(255,255,255,0.4),
-        rgba(255,255,255,0.4) 5px,
-        transparent 5px,
-        transparent 10px
-      );
-      border-radius:50%;
-      animation: spin 3s linear infinite;
+    /* ✅ Powerup overlays */
+    .candy.striped::after,
+    .candy.bomb::after{
+    content: "";
+    position: absolute;
+    inset: -2px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    pointer-events: none;
     }
 
     .candy.bomb{
@@ -143,6 +149,9 @@
       opacity:.6;
     }
 
+    .candy.striped::after { background-image: url("images/Prismatic%20Ribbon%20Blaster.png"); }
+    .candy.bomb::after    { background-image: url("images/Nebula%20Core%20Bomb.png"); }
+   
     @keyframes bombPulse{ 0%{transform:scale(.95);} 50%{transform:scale(1.05);} 100%{transform:scale(.95);} }
     @keyframes spin{ from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
 
