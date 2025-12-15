@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Candy Score Challenge Deluxe</title>
+
   <style>
     :root {
       --bg-gradient: linear-gradient(135deg, #8BC6EC 0%, #9599E2 100%);
@@ -16,7 +17,6 @@
       --candy-purple: #a29bfe;
       --candy-orange: #ff9f43;
 
-      /* ✅ Responsive sizing knobs */
       --cell: 65px;
       --gap: 8px;
       --pad: 10px;
@@ -25,92 +25,89 @@
 
     * { box-sizing: border-box; }
 
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Inter', sans-serif;
+    body{
+      margin:0;
+      font-family: Inter, sans-serif;
       background: var(--bg-gradient);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden; /* Prevent scroll on mobile during play */
-      touch-action: none;
+      min-height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      overflow:hidden;
     }
 
-    .game-layout {
-      display: flex;
-      gap: 30px;
-      align-items: flex-start;
-      max-width: 1100px;
-      width: 100%;
-      padding: 20px;
-      transition: transform 0.1s;
+    .game-layout{
+      display:flex;
+      gap:30px;
+      align-items:flex-start;
+      max-width:1100px;
+      width:100%;
+      padding:20px;
     }
 
-    /* Screen Shake Animation */
-    .shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
-    @keyframes shake {
-      10%, 90% { transform: translate3d(-2px, 0, 0); }
-      20%, 80% { transform: translate3d(4px, 0, 0); }
-      30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
-      40%, 60% { transform: translate3d(6px, 0, 0); }
+    .shake{ animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+    @keyframes shake{
+      10%,90%{ transform: translate3d(-2px,0,0); }
+      20%,80%{ transform: translate3d(4px,0,0); }
+      30%,50%,70%{ transform: translate3d(-6px,0,0); }
+      40%,60%{ transform: translate3d(6px,0,0); }
     }
 
-    .board-container {
-      position: relative;
-      background: rgba(255, 255, 255, 0.25);
-      padding: 15px;
-      border-radius: 30px;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-      flex: 0 0 auto;
+    .board-container{
+      background: rgba(255,255,255,0.25);
+      padding:15px;
+      border-radius:30px;
+      box-shadow:0 15px 35px rgba(0,0,0,0.2);
       backdrop-filter: blur(10px);
+      flex:0 0 auto;
     }
 
-    .grid {
-      display: grid;
+    .grid{
+      display:grid;
       grid-template-columns: repeat(8, var(--cell));
       grid-template-rows: repeat(8, var(--cell));
       gap: var(--gap);
-      background: rgba(0, 0, 0, 0.1);
+      background: rgba(0,0,0,0.1);
       padding: var(--pad);
       border-radius: 20px;
       position: relative;
     }
 
-    .cell {
+    .cell{
       width: var(--cell);
       height: var(--cell);
-      background: rgba(255, 255, 255, 0.15);
+      background: rgba(255,255,255,0.15);
       border-radius: 12px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      position: relative;
+      display:flex;
+      justify-content:center;
+      align-items:center;
     }
 
-    .candy {
+    .candy{
       width: var(--candy);
       height: var(--candy);
       border-radius: 50%;
       cursor: pointer;
-      transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.2s;
-      z-index: 2;
+      transition: transform .2s cubic-bezier(0.175,0.885,0.32,1.275), filter .2s;
       box-shadow: inset -3px -3px 6px rgba(0,0,0,0.2), 0 4px 6px rgba(0,0,0,0.15);
       position: relative;
+      touch-action: manipulation; /* ✅ better mobile tap */
     }
 
-    .candy.selected {
+    .candy.selected{
       transform: scale(1.15);
       filter: brightness(1.2);
-      z-index: 10;
-      box-shadow: 0 0 15px rgba(255, 255, 255, 0.9);
+      box-shadow: 0 0 15px rgba(255,255,255,0.9);
       animation: pulse 1s infinite;
+      z-index: 10;
     }
 
-    @keyframes pulse { 0% { transform: scale(1.15); } 50% { transform: scale(1.25); } 100% { transform: scale(1.15); } }
+    @keyframes pulse{
+      0%{ transform: scale(1.15); }
+      50%{ transform: scale(1.25); }
+      100%{ transform: scale(1.15); }
+    }
 
-    /* Basic Colors */
     .red    { background: radial-gradient(circle at 30% 30%, #ff8e8e, var(--candy-red)); }
     .blue   { background: radial-gradient(circle at 30% 30%, #82ccff, var(--candy-blue)); }
     .yellow { background: radial-gradient(circle at 30% 30%, #fff0a5, var(--candy-yellow)); }
@@ -118,13 +115,10 @@
     .purple { background: radial-gradient(circle at 30% 30%, #d1ccff, var(--candy-purple)); }
     .orange { background: radial-gradient(circle at 30% 30%, #ffcc8e, var(--candy-orange)); }
 
-    /* --- POWER UPS --- */
-    
-    /* Striped (Match 4) - Row Blaster */
-    .candy.striped::after {
-      content: '';
-      position: absolute;
-      inset: 0;
+    .candy.striped::after{
+      content:'';
+      position:absolute;
+      inset:0;
       background: repeating-linear-gradient(
         45deg,
         rgba(255,255,255,0.4),
@@ -132,157 +126,198 @@
         transparent 5px,
         transparent 10px
       );
-      border-radius: 50%;
+      border-radius:50%;
       animation: spin 3s linear infinite;
     }
 
-    /* Bomb (Match 5) - Area Blaster */
-    .candy.bomb {
+    .candy.bomb{
       border: 3px solid white;
       animation: bombPulse 1s ease-in-out infinite;
     }
-    .candy.bomb::before {
-      content: '';
-      position: absolute;
-      inset: 25%;
-      background: white;
-      border-radius: 50%;
-      opacity: 0.6;
+    .candy.bomb::before{
+      content:'';
+      position:absolute;
+      inset:25%;
+      background:white;
+      border-radius:50%;
+      opacity:.6;
     }
-    @keyframes bombPulse { 0% { transform: scale(0.95); } 50% { transform: scale(1.05); } 100% { transform: scale(0.95); } }
-    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
+    @keyframes bombPulse{ 0%{transform:scale(.95);} 50%{transform:scale(1.05);} 100%{transform:scale(.95);} }
+    @keyframes spin{ from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
 
-    /* --- EFFECTS --- */
-    
-    /* Floating Text */
-    .floating-text {
-      position: absolute;
-      color: white;
-      font-weight: 900;
-      font-size: 24px;
-      text-shadow: 2px 2px 0px rgba(0,0,0,0.5);
-      pointer-events: none;
-      z-index: 100;
+    .floating-text{
+      position:absolute;
+      color:white;
+      font-weight:900;
+      font-size:24px;
+      text-shadow: 2px 2px 0 rgba(0,0,0,0.5);
+      pointer-events:none;
+      z-index:100;
       animation: floatUp 1s forwards;
     }
-    @keyframes floatUp {
-      0% { transform: translateY(0) scale(1); opacity: 1; }
-      100% { transform: translateY(-50px) scale(1.2); opacity: 0; }
+    @keyframes floatUp{
+      0%{ transform: translateY(0) scale(1); opacity:1;}
+      100%{ transform: translateY(-50px) scale(1.2); opacity:0;}
     }
 
-    /* Particles */
-    .particle {
-      position: absolute;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 50;
-      animation: pop 0.6s ease-out forwards;
+    .particle{
+      position:absolute;
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      pointer-events:none;
+      z-index:50;
+      animation: pop .6s ease-out forwards;
     }
-    @keyframes pop {
-      0% { transform: translate(0,0) scale(1); opacity: 1; }
-      100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+    @keyframes pop{
+      0%{ transform: translate(0,0) scale(1); opacity:1;}
+      100%{ transform: translate(var(--tx), var(--ty)) scale(0); opacity:0;}
     }
 
-
-    /* UI Panels */
-    .ui-panel {
-      flex: 1;
+    .ui-panel{
+      flex:1;
       background: var(--panel-bg);
       border-radius: 35px;
-      padding: 30px;
+      padding: 22px;
       box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
+      display:flex;
+      flex-direction:column;
+      gap: 14px;
       min-width: 320px;
     }
 
-    .score-box {
-      background: white;
-      padding: 18px 20px;
-      border-radius: 25px;
-      text-align: center;
+    .score-box{
+      background:white;
+      padding: 14px 16px;
+      border-radius: 22px;
+      text-align:center;
       border: 2px solid #fff;
       box-shadow: 0 5px 15px rgba(0,0,0,0.05);
     }
 
-    .label { font-size: 13px; font-weight: bold; color: #aaa; text-transform: uppercase; }
-    .value { font-size: 40px; font-weight: 800; color: #444; margin: 6px 0 0; }
-    .subvalue { font-size: 15px; font-weight: 700; color: #666; margin-top: 6px; }
+    .label{ font-size:12px; font-weight:900; color:#aaa; text-transform:uppercase; }
+    .value{ font-size:38px; font-weight:900; color:#444; margin: 6px 0 0; }
+    .subvalue{ font-size:15px; font-weight:800; color:#666; margin-top:6px; }
 
-    .moves-left {
+    /* ✅ Score + Moves row */
+    .stat-row{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .moves-left{
       background: var(--accent-pink);
-      color: white;
-      padding: 15px;
-      border-radius: 20px;
-      text-align: center;
-      box-shadow: 0 10px 20px rgba(255, 107, 157, 0.4);
+      color:white;
+      padding: 14px 16px;
+      border-radius: 22px;
+      text-align:center;
+      box-shadow: 0 10px 20px rgba(255,107,157,0.4);
     }
 
     /* Leaderboard */
-    .lb { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; text-align: left; }
-    .lb-row {
-      display: flex; justify-content: space-between; gap: 12px;
-      background: #f7f7f7; border-radius: 14px; padding: 10px 12px;
-      font-weight: 700; color: #444;
+    .lb{ display:flex; flex-direction:column; gap:8px; text-align:left; }
+    .lb-row{
+      display:flex; justify-content:space-between; gap:12px;
+      background:#f7f7f7;
+      border-radius:14px;
+      padding:10px 12px;
+      font-weight:800;
+      color:#444;
     }
-    .lb-left { display: flex; gap: 10px; align-items: center; min-width: 0; }
-    .lb-rank {
-      width: 26px; height: 26px; border-radius: 999px;
-      display: grid; place-items: center; font-size: 12px;
-      background: #fff; border: 1px solid #eee; flex: 0 0 auto;
+    .lb-left{ display:flex; gap:10px; align-items:center; min-width:0; }
+    .lb-rank{
+      width:26px; height:26px; border-radius:999px;
+      display:grid; place-items:center; font-size:12px;
+      background:#fff; border:1px solid #eee;
+      flex: 0 0 auto;
     }
-    .lb-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 180px; }
-    .lb-score { font-weight: 900; }
+    .lb-name{
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      max-width: 180px;
+    }
+    .lb-score{ font-weight: 900; }
 
-    @keyframes shrink { to { transform: scale(0); opacity: 0; } }
-    .matching { animation: shrink 0.25s forwards; }
+    /* ✅ let leaderboard show fully: scroll inside only if needed */
+    .leaderboard-box{
+      text-align:left;
+    }
+    .leaderboard-scroll{
+      max-height: 260px;
+      overflow:auto;
+      padding-right: 4px;
+    }
 
-    #game-over-modal {
-      display: none; position: fixed; inset: 0;
-      background: rgba(0,0,0,0.8); z-index: 1000;
-      justify-content: center; align-items: center; padding: 14px;
+    .matching{ animation: shrink .25s forwards; }
+    @keyframes shrink{ to{ transform: scale(0); opacity:0; } }
+
+    #game-over-modal{
+      display:none;
+      position:fixed;
+      inset:0;
+      background: rgba(0,0,0,0.8);
+      z-index:1000;
+      justify-content:center;
+      align-items:center;
+      padding: 14px;
       backdrop-filter: blur(5px);
     }
 
-    .modal-content {
-      background: white; padding: 26px; border-radius: 24px;
-      text-align: center; max-width: 420px; width: 100%;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    .modal-content{
+      background:white;
+      padding:26px;
+      border-radius:24px;
+      text-align:center;
+      max-width:420px;
+      width:100%;
+      box-shadow:0 20px 60px rgba(0,0,0,0.4);
     }
 
-    button {
-      background: #2ecc71; color: white; border: none;
-      padding: 15px 40px; border-radius: 50px;
-      font-size: 20px; font-weight: bold; cursor: pointer;
-      margin-top: 20px; width: 100%; max-width: 320px;
-      transition: transform 0.1s;
+    button{
+      background:#2ecc71;
+      color:white;
+      border:none;
+      padding:15px 40px;
+      border-radius:50px;
+      font-size:20px;
+      font-weight:900;
+      cursor:pointer;
+      margin-top:20px;
+      width:100%;
+      max-width:320px;
     }
-    button:active { transform: scale(0.95); }
+    button:active{ transform: scale(.95); }
 
-    /* ✅ Mobile responsiveness */
-    @media (max-width: 900px) {
-      .game-layout { flex-direction: column; align-items: center; gap: 16px; padding: 12px; max-width: 520px; }
-      .ui-panel { width: 100%; min-width: unset; padding: 18px; border-radius: 26px; order: 2; }
-      .board-container { width: 100%; display: flex; justify-content: center; order: 1; }
+    @media (max-width: 900px){
+      .game-layout{
+        flex-direction: column;
+        align-items:center;
+        gap: 14px;
+        padding: 12px;
+        max-width: 520px;
+      }
+      .ui-panel{ width:100%; min-width:unset; padding: 16px; border-radius: 26px; }
+      .board-container{ width:100%; display:flex; justify-content:center; }
+      .leaderboard-scroll{ max-height: 220px; }
     }
 
-    @media (max-width: 520px) {
-      :root {
+    @media (max-width: 520px){
+      :root{
         --cell: min(11vw, 46px);
         --gap: 5px;
         --pad: 8px;
         --candy: calc(var(--cell) - 8px);
       }
-      .value { font-size: 32px; }
+      .value{ font-size: 30px; }
+      .leaderboard-scroll{ max-height: 200px; }
     }
   </style>
 </head>
-<body>
 
+<body>
   <div class="game-layout" id="gameLayout">
     <div class="board-container">
       <div class="grid" id="grid"></div>
@@ -294,34 +329,39 @@
         <div class="subvalue" id="playerName">-</div>
       </div>
 
-      <div class="score-box">
-        <div class="label">Score</div>
-        <div class="value" id="score">0</div>
+      <!-- ✅ Score + Moves in one row -->
+      <div class="stat-row">
+        <div class="score-box">
+          <div class="label">Score</div>
+          <div class="value" id="score">0</div>
+        </div>
+
+        <div class="moves-left">
+          <div class="label" style="color: rgba(255,255,255,0.85)">Moves</div>
+          <div class="value" id="moves" style="color:white;">25</div>
+        </div>
       </div>
 
-      <div class="moves-left">
-        <div class="label" style="color: rgba(255,255,255,0.8)">Moves Left</div>
-        <div class="value" id="moves" style="color: white">25</div>
+      <div class="score-box leaderboard-box">
+        <div class="label" style="text-align:center;">Leaderboard (Top 5)</div>
+        <div class="leaderboard-scroll">
+          <div class="lb" id="leaderboard"></div>
+        </div>
       </div>
 
       <div style="margin-top: auto; padding: 12px; background: #fff; border: 1px solid #eee; border-radius: 18px;">
         <p style="font-size: 12px; color: #666; margin: 0; line-height: 1.5;">
           <b>POWER UPS:</b><br>
-          ⚡ <b>Match 4:</b> Creates Striped Candy (Clears Row)<br>
-          💣 <b>Match 5:</b> Creates Bomb Candy (Clears 3x3)
+          ⚡ <b>Match 4:</b> Striped (Clears Row)<br>
+          💣 <b>Match 5:</b> Bomb (Clears 3x3)
         </p>
-      </div>
-
-      <div class="score-box">
-        <div class="label">Leaderboard</div>
-        <div class="lb" id="leaderboard"></div>
       </div>
     </div>
   </div>
 
   <div id="game-over-modal">
     <div class="modal-content">
-      <h1 id="gameOverTitle" style="font-size: 2.2em; color: var(--accent-pink); margin: 0;">Game Over!</h1>
+      <h1 style="font-size: 2.2em; color: var(--accent-pink); margin: 0;">Game Over!</h1>
       <p id="gameOverReason">You scored:</p>
       <div class="value" id="final-score">0</div>
       <button onclick="location.reload()">Try Again</button>
@@ -337,8 +377,8 @@
     const gameLayout = document.getElementById('gameLayout');
 
     const width = 8;
-    const candyColors = ['red', 'blue', 'yellow', 'green', 'purple', 'orange'];
-    
+    const candyColors = ['red','blue','yellow','green','purple','orange'];
+
     let squares = [];
     let score = 0;
     let moves = 25;
@@ -347,12 +387,9 @@
     let secondSelected = null;
     let isBusy = false;
 
-    // Google Script URL (Keep yours)
+    // ✅ your Apps Script URL
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwFzTnRSSv5t4-z5Iu1U_z5cTcX7I7WlmQkyuNkF6T7THrjO6lDs59lGS1tG2OkzPmU5A/exec";
 
-    // --- Audio Context for SFX (Simulated visually via particles) ---
-
-    // --- API Functions ---
     async function submitScoreToSheet(name, score) {
       try {
         await fetch(SCRIPT_URL, {
@@ -366,7 +403,7 @@
     function renderTop5(top5) {
       const list = Array.isArray(top5) ? top5 : [];
       if (list.length === 0) {
-        leaderboardEl.innerHTML = `<div class="subvalue" style="text-align:center;">Loading...</div>`;
+        leaderboardEl.innerHTML = `<div class="subvalue" style="text-align:center;">No scores yet</div>`;
         return;
       }
       leaderboardEl.innerHTML = list.slice(0,5).map((x, i) => `
@@ -388,67 +425,29 @@
         renderTop5(data.top5 || []);
       } catch (e) {
         console.log("Top5 fetch failed:", e);
-        leaderboardEl.innerHTML = `<div class="subvalue">Offline</div>`;
+        leaderboardEl.innerHTML = `<div class="subvalue" style="text-align:center;">Offline</div>`;
       }
     }
 
-    // --- Player Setup ---
     let playerName = (prompt("Enter your name for the scoreboard:") || "Player").trim();
     if (!playerName) playerName = "Player";
     playerNameEl.textContent = playerName;
     loadGlobalTop5();
 
-    // --- Helpers ---
-    function getColor(el) {
-      if (!el) return null;
-      for (const c of candyColors) if (el.classList.contains(c)) return c;
+    function getColor(el){
+      if(!el) return null;
+      for(const c of candyColors) if(el.classList.contains(c)) return c;
       return null;
     }
-    
-    function setColor(el, colorOrNull) {
-      for (const c of candyColors) el.classList.remove(c);
-      el.classList.remove('striped', 'bomb'); // Remove powerups on color change
-      if (colorOrNull) el.classList.add(colorOrNull);
+
+    function setColor(el, colorOrNull){
+      for(const c of candyColors) el.classList.remove(c);
+      el.classList.remove('striped','bomb');
+      if(colorOrNull) el.classList.add(colorOrNull);
     }
 
-    function isStriped(el) { return el.classList.contains('striped'); }
-    function isBomb(el) { return el.classList.contains('bomb'); }
-
-    // --- Visual Effects ---
-    function spawnParticles(element, colorName) {
-      const rect = element.getBoundingClientRect();
-      const boardRect = gridElement.getBoundingClientRect();
-      
-      // Calculate relative position within the grid container
-      const x = rect.left - boardRect.left + (rect.width / 2);
-      const y = rect.top - boardRect.top + (rect.height / 2);
-
-      const colorMap = {
-        red: '#ff5e5e', blue: '#54a0ff', yellow: '#feca57', 
-        green: '#1dd1a1', purple: '#a29bfe', orange: '#ff9f43'
-      };
-      const hex = colorMap[colorName] || '#fff';
-
-      for(let i=0; i<8; i++) {
-        const p = document.createElement('div');
-        p.classList.add('particle');
-        p.style.background = hex;
-        p.style.left = x + 'px';
-        p.style.top = y + 'px';
-        
-        // Random explosion direction
-        const angle = Math.random() * Math.PI * 2;
-        const velocity = 30 + Math.random() * 50;
-        const tx = Math.cos(angle) * velocity;
-        const ty = Math.sin(angle) * velocity;
-        
-        p.style.setProperty('--tx', `${tx}px`);
-        p.style.setProperty('--ty', `${ty}px`);
-        
-        gridElement.appendChild(p);
-        setTimeout(() => p.remove(), 600);
-      }
-    }
+    function isStriped(el){ return el.classList.contains('striped'); }
+    function isBomb(el){ return el.classList.contains('bomb'); }
 
     function showFloatingText(element, text) {
       const rect = element.getBoundingClientRect();
@@ -465,47 +464,51 @@
       setTimeout(() => el.remove(), 1000);
     }
 
-    function screenShake() {
+    function screenShake(){
       gameLayout.classList.remove('shake');
-      void gameLayout.offsetWidth; // Trigger reflow
+      void gameLayout.offsetWidth;
       gameLayout.classList.add('shake');
     }
 
-    // --- Board Logic ---
-    function createBoard() {
+    function createBoard(){
       gridElement.innerHTML = '';
       squares = [];
-      for (let i = 0; i < width * width; i++) {
+
+      for(let i=0;i<width*width;i++){
         const cell = document.createElement('div');
         cell.classList.add('cell');
 
         const candy = document.createElement('div');
         candy.classList.add('candy');
-        candy.setAttribute('id', i);
+        candy.id = i;
 
-        const randomColor = candyColors[Math.floor(Math.random() * candyColors.length)];
+        const randomColor = candyColors[Math.floor(Math.random()*candyColors.length)];
         candy.classList.add(randomColor);
+
+        // ✅ better mobile input
+        candy.addEventListener('pointerdown', (e) => {
+          e.preventDefault();
+          handleCandyTap.call(candy);
+        });
 
         cell.appendChild(candy);
         gridElement.appendChild(cell);
-
         squares.push(candy);
-        candy.addEventListener('click', handleCandyClick);
       }
-      // Initial check (silent)
+
       setTimeout(() => checkAllMatches(true, false), 100);
     }
 
-    function clearSelection() {
-      if (firstSelected) firstSelected.classList.remove('selected');
+    function clearSelection(){
+      if(firstSelected) firstSelected.classList.remove('selected');
       firstSelected = null;
       secondSelected = null;
     }
 
-    function swapCandies(c1, c2) {
+    function swapCandies(c1, c2){
       const color1 = getColor(c1);
       const color2 = getColor(c2);
-      
+
       const p1Striped = isStriped(c1);
       const p1Bomb = isBomb(c1);
       const p2Striped = isStriped(c2);
@@ -514,48 +517,47 @@
       setColor(c1, color2);
       setColor(c2, color1);
 
-      // Swap powerup states
       if(p2Striped) c1.classList.add('striped');
       if(p2Bomb) c1.classList.add('bomb');
       if(p1Striped) c2.classList.add('striped');
       if(p1Bomb) c2.classList.add('bomb');
     }
 
-    function areAdjacent(id1, id2) {
-      return [id1 - 1, id1 + 1, id1 - width, id1 + width].includes(id2);
+    function areAdjacent(id1, id2){
+      return [id1-1,id1+1,id1-width,id1+width].includes(id2);
     }
 
-    function consumeMove() {
+    function consumeMove(){
       moves--;
-      movesElement.innerText = moves;
-      if (moves <= 0) {
+      movesElement.textContent = moves;
+      if(moves <= 0){
         endGame("Out of moves!");
         return false;
       }
       return true;
     }
 
-    function handleCandyClick() {
-      if (moves <= 0 || isBusy) return;
+    function handleCandyTap(){
+      if(moves <= 0 || isBusy) return;
 
-      if (!firstSelected) {
+      if(!firstSelected){
         firstSelected = this;
         this.classList.add('selected');
         return;
       }
 
       secondSelected = this;
-      if (firstSelected === secondSelected) {
+      if(firstSelected === secondSelected){
         clearSelection();
         return;
       }
 
-      if (!consumeMove()) return;
+      if(!consumeMove()) return;
 
       const id1 = parseInt(firstSelected.id, 10);
       const id2 = parseInt(secondSelected.id, 10);
 
-      if (!areAdjacent(id1, id2)) {
+      if(!areAdjacent(id1, id2)){
         clearSelection();
         firstSelected = this;
         firstSelected.classList.add('selected');
@@ -566,191 +568,154 @@
       swapCandies(firstSelected, secondSelected);
 
       setTimeout(() => {
-        const matched = checkAllMatches(true, true); // true=doClear, true=isPlayerMove
-        if (!matched) {
-          // Swap back if no match
+        const matched = checkAllMatches(true, true);
+        if(!matched){
           swapCandies(firstSelected, secondSelected);
-          isBusy = false;
-        } else {
-          // Match found
-          isBusy = false; 
         }
         clearSelection();
+        isBusy = false;
       }, 250);
     }
 
-    // --- Match Logic with Powerups ---
-
-    function checkAllMatches(doClear, isPlayerMove) {
-      // We use a Set to collect unique indices that need to be cleared
+    function checkAllMatches(doClear, isPlayerMove){
       let matchedIndices = new Set();
-      let powerUpCreation = []; // Store where to create new powerups
+      let powerUpCreation = [];
 
-      // 1. Scan horizontal
-      for(let r=0; r<width; r++) {
-        for(let c=0; c<width-2; c++) {
+      // horizontal
+      for(let r=0;r<width;r++){
+        for(let c=0;c<width-2;c++){
           let i = r*width + c;
-          let match = [i];
           let color = getColor(squares[i]);
           if(!color) continue;
 
+          let match = [i];
           let k = c+1;
-          while(k < width) {
+          while(k < width){
             let next = r*width + k;
-            if(getColor(squares[next]) === color) {
-              match.push(next);
-              k++;
-            } else break;
+            if(getColor(squares[next]) === color){ match.push(next); k++; }
+            else break;
           }
 
-          if(match.length >= 3) {
+          if(match.length >= 3){
             match.forEach(idx => matchedIndices.add(idx));
-            if(match.length === 4) powerUpCreation.push({idx: match[1], type: 'striped'});
-            if(match.length >= 5) powerUpCreation.push({idx: match[2], type: 'bomb'});
-            c = k - 1; // skip checked
+            if(match.length === 4) powerUpCreation.push({idx: match[1], type:'striped'});
+            if(match.length >= 5) powerUpCreation.push({idx: match[2], type:'bomb'});
+            c = k - 1;
           }
         }
       }
 
-      // 2. Scan vertical
-      for(let c=0; c<width; c++) {
-        for(let r=0; r<width-2; r++) {
+      // vertical
+      for(let c=0;c<width;c++){
+        for(let r=0;r<width-2;r++){
           let i = r*width + c;
-          let match = [i];
           let color = getColor(squares[i]);
           if(!color) continue;
 
+          let match = [i];
           let k = r+1;
-          while(k < width) {
+          while(k < width){
             let next = k*width + c;
-            if(getColor(squares[next]) === color) {
-              match.push(next);
-              k++;
-            } else break;
+            if(getColor(squares[next]) === color){ match.push(next); k++; }
+            else break;
           }
 
-          if(match.length >= 3) {
+          if(match.length >= 3){
             match.forEach(idx => matchedIndices.add(idx));
-            if(match.length === 4) powerUpCreation.push({idx: match[1], type: 'striped'});
-            if(match.length >= 5) powerUpCreation.push({idx: match[2], type: 'bomb'});
+            if(match.length === 4) powerUpCreation.push({idx: match[1], type:'striped'});
+            if(match.length >= 5) powerUpCreation.push({idx: match[2], type:'bomb'});
             r = k - 1;
           }
         }
       }
 
-      if (matchedIndices.size === 0) return false;
-      if (!doClear) return true;
+      if(matchedIndices.size === 0) return false;
+      if(!doClear) return true;
 
-      // 3. Process Power-up Explosions (Stripes and Bombs included in the match)
-      // We keep adding to matchedIndices if a powerup is triggered
+      // trigger powerups inside matches
       let processing = Array.from(matchedIndices);
       let processed = new Set();
 
-      while(processing.length > 0) {
+      while(processing.length){
         let currentIdx = processing.pop();
         if(processed.has(currentIdx)) continue;
         processed.add(currentIdx);
-        matchedIndices.add(currentIdx);
 
         let el = squares[currentIdx];
-        
-        // If Striped
-        if(isStriped(el)) {
+
+        if(isStriped(el)){
           let rowStart = Math.floor(currentIdx / width) * width;
-          for(let k=0; k<width; k++) {
-            let target = rowStart + k;
-            if(!matchedIndices.has(target)) processing.push(target);
+          for(let k=0;k<width;k++){
+            let t = rowStart + k;
+            if(!matchedIndices.has(t)) processing.push(t);
+            matchedIndices.add(t);
           }
         }
 
-        // If Bomb
-        if(isBomb(el)) {
+        if(isBomb(el)){
           let cx = currentIdx % width;
           let cy = Math.floor(currentIdx / width);
-          for(let y = cy-1; y <= cy+1; y++) {
-            for(let x = cx-1; x <= cx+1; x++) {
-              if(x>=0 && x<width && y>=0 && y<width) {
-                let target = y*width + x;
-                if(!matchedIndices.has(target)) processing.push(target);
+          for(let y=cy-1;y<=cy+1;y++){
+            for(let x=cx-1;x<=cx+1;x++){
+              if(x>=0 && x<width && y>=0 && y<width){
+                let t = y*width + x;
+                if(!matchedIndices.has(t)) processing.push(t);
+                matchedIndices.add(t);
               }
             }
           }
         }
       }
 
-      // 4. Calculate Score & Effects
       let points = matchedIndices.size * 20;
-      if (matchedIndices.size > 5) points += 100;
-      if (matchedIndices.size > 10) points += 500;
+      if(matchedIndices.size > 5) points += 100;
+      if(matchedIndices.size > 10) points += 500;
+
       score += points;
-      scoreElement.innerText = score;
+      scoreElement.textContent = score;
 
       if(matchedIndices.size > 4) screenShake();
 
-      // Get center of match for floating text
       let centerIdx = Array.from(matchedIndices)[Math.floor(matchedIndices.size/2)];
-      if(isPlayerMove && centerIdx !== undefined) {
-         showFloatingText(squares[centerIdx], `+${points}`);
+      if(isPlayerMove && centerIdx !== undefined){
+        showFloatingText(squares[centerIdx], `+${points}`);
       }
 
-      // 5. Remove candies and Apply Effects
       matchedIndices.forEach(idx => {
         const el = squares[idx];
-        const color = getColor(el);
-        if(color) spawnParticles(el, color);
-        
-        el.classList.add('matching'); // shrink animation
-        
-        // Remove powerup visual classes immediately so they don't look weird shrinking
-        // but keep the element in DOM for a moment
+        el.classList.add('matching');
         setTimeout(() => {
-          el.classList.remove('matching', 'striped', 'bomb');
+          el.classList.remove('matching','striped','bomb');
           setColor(el, null);
         }, 220);
       });
 
-      // 6. Create NEW Power-ups (prevent them from being cleared in this turn)
-      // We must remove these indices from the "clear list" technically, 
-      // but simpler is to re-apply the color/class AFTER clearing.
       setTimeout(() => {
         powerUpCreation.forEach(p => {
-          // If the slot is empty (it should be), put a powerup there
           const el = squares[p.idx];
-          // Pick a random color for the powerup if it was cleared, or keep existing
           let c = candyColors[Math.floor(Math.random()*candyColors.length)];
           setColor(el, c);
-          if(p.type === 'striped') {
-            el.classList.add('striped');
-            if(isPlayerMove) showFloatingText(el, "STRIPE!");
-          }
-          if(p.type === 'bomb') {
-            el.classList.add('bomb');
-            if(isPlayerMove) showFloatingText(el, "BOMB!");
-          }
+          if(p.type === 'striped') el.classList.add('striped');
+          if(p.type === 'bomb') el.classList.add('bomb');
         });
       }, 230);
 
       return true;
     }
 
-    function refillBoard() {
-      // Drop Down Logic
-      for (let c = 0; c < width; c++) {
-        for (let r = width - 1; r >= 0; r--) {
-          let idx = r * width + c;
-          if (!getColor(squares[idx])) {
-            // Find nearest candy above
-            for (let k = r - 1; k >= 0; k--) {
-              let aboveIdx = k * width + c;
-              let color = getColor(squares[aboveIdx]);
-              if (color) {
-                // Move color and powerup status
-                setColor(squares[idx], color);
-                if(isStriped(squares[aboveIdx])) squares[idx].classList.add('striped');
-                if(isBomb(squares[aboveIdx])) squares[idx].classList.add('bomb');
-
-                // Clear above
-                setColor(squares[aboveIdx], null);
+    function refillBoard(){
+      for(let c=0;c<width;c++){
+        for(let r=width-1;r>=0;r--){
+          let idx = r*width + c;
+          if(!getColor(squares[idx])){
+            for(let k=r-1;k>=0;k--){
+              let above = k*width + c;
+              let col = getColor(squares[above]);
+              if(col){
+                setColor(squares[idx], col);
+                if(isStriped(squares[above])) squares[idx].classList.add('striped');
+                if(isBomb(squares[above])) squares[idx].classList.add('bomb');
+                setColor(squares[above], null);
                 break;
               }
             }
@@ -758,38 +723,31 @@
         }
       }
 
-      // Fill top gaps
-      for (let i = 0; i < width; i++) {
-        if (!getColor(squares[i])) {
-          const randomColor = candyColors[Math.floor(Math.random() * candyColors.length)];
-          setColor(squares[i], randomColor);
+      for(let i=0;i<width;i++){
+        if(!getColor(squares[i])){
+          setColor(squares[i], candyColors[Math.floor(Math.random()*candyColors.length)]);
         }
       }
     }
 
-    function endGame(reasonText) {
+    function endGame(reasonText){
       document.getElementById('game-over-modal').style.display = 'flex';
-      document.getElementById('final-score').innerText = score;
+      document.getElementById('final-score').textContent = score;
       document.getElementById('gameOverReason').textContent = reasonText || "You scored:";
 
       submitScoreToSheet(playerName, score);
+      setTimeout(loadGlobalTop5, 900);
       moves = 0;
     }
 
-    // --- Loop ---
     createBoard();
 
     setInterval(() => {
-      if (isBusy || moves <= 0) return;
-      // Auto-check for cascading matches
-      const cleared = checkAllMatches(true, false); 
-      if (cleared) {
-        setTimeout(refillBoard, 250);
-      } else {
-        refillBoard(); // Ensure grid is always full
-      }
+      if(isBusy || moves <= 0) return;
+      const cleared = checkAllMatches(true, false);
+      if(cleared) setTimeout(refillBoard, 250);
+      else refillBoard();
     }, 450);
   </script>
 </body>
 </html>
-```
