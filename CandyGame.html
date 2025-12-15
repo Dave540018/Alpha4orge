@@ -26,14 +26,14 @@
     * { box-sizing: border-box; }
 
     body{
-      margin:0;
-      font-family: Inter, sans-serif;
-      background: var(--bg-gradient);
-      min-height:100vh;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      overflow:hidden;
+    margin:0;
+    font-family: Inter, sans-serif;
+    background: var(--bg-gradient);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:stretch;           /* ✅ allow panel to take full height */
+    overflow:hidden;               /* ✅ keep page itself from scrolling */
     }
 
     .game-layout{
@@ -186,6 +186,31 @@
       gap: 14px;
       min-width: 320px;
     }
+
+    /* ✅ Make the UI panel scrollable on mobile (and even desktop if needed) */
+    .ui-panel{
+    max-height: calc(100dvh - 24px);     /* ✅ fit inside screen */
+    overflow: auto;                      /* ✅ scroll inside panel */
+    -webkit-overflow-scrolling: touch;   /* ✅ smooth iOS scrolling */
+    }
+
+    /* ✅ Mobile layout: board on top, scrollable panel below */
+    @media (max-width: 900px){
+    .game-layout{
+        height: 100dvh;                    /* ✅ full screen */
+        overflow: hidden;                  /* ✅ no body scroll */
+    }
+
+    .board-container{
+        flex: 0 0 auto;
+    }
+
+    .ui-panel{
+        flex: 1 1 auto;                    /* ✅ take remaining height */
+        min-height: 0;                     /* ✅ required for scroll to work */
+    }
+    }
+
 
     .score-box{
       background:white;
