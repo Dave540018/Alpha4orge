@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Candy Score Challenge</title>
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+      --panel-bg: rgba(255, 255, 255, 0.85);
+      --accent-pink: #ff6b9d;
+      --candy-red: #ff5e5e;
+      --candy-blue: #54a0ff;
+      --candy-yellow: #feca57;
+      --candy-green: #1dd1a1;
+      --candy-purple: #a29bfe;
+      --candy-orange: #ff9f43;
+
+      /* ✅ Responsive sizing knobs */
+      --cell: 65px;
+      --gap: 8px;
+      --pad: 10px;
+      --candy: 55px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-gradient);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    .game-layout {
+      display: flex;
+      gap: 30px;
+      align-items: flex-start;
+      max-width: 1100px;
+      width: 100%;
+      padding: 20px;
+    }
+
+    .board-container {
+      position: relative;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 15px;
+      border-radius: 30px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+      flex: 0 0 auto;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(8, var(--cell));
+      grid-template-rows: repeat(8, var(--cell));
+      gap: var(--gap);
+      background: rgba(0, 0, 0, 0.05);
+      padding: var(--pad);
+      border-radius: 20px;
+      touch-action: manipulation;
+    }
+
+    .cell {
+      width: var(--cell);
+      height: var(--cell);
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    .candy {
+      width: var(--candy);
+      height: var(--candy);
+      border-radius: 15px;
+      cursor: pointer;
+      transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.2s;
+      z-index: 2;
+      box-shadow: inset -3px -3px 6px rgba(0,0,0,0.2), 0 4px 6px rgba(0,0,0,0.1);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .candy.selected {
+      transform: scale(1.1);
+      outline: 4px solid white;
+      z-index: 3;
+      box-shadow: 0 0 20px rgba(255,255,255,0.8);
+    }
+
+    .red    { background: radial-gradient(circle at 30% 30%, #ff8e8e, var(--candy-red)); }
+    .blue   { background: radial-gradient(circle at 30% 30%, #82ccff, var(--candy-blue)); }
+    .yellow { background: radial-gradient(circle at 30% 30%, #fff0a5, var(--candy-yellow)); }
+    .green  { background: radial-gradient(circle at 30% 30%, #5dfacb, var(--candy-green)); }
+    .purple { background: radial-gradient(circle at 30% 30%, #d1ccff, var(--candy-purple)); }
+    .orange { background: radial-gradient(circle at 30% 30%, #ffcc8e, var(--candy-orange)); }
+
+    .ui-panel {
+      flex: 1;
+      background: var(--panel-bg);
+      border-radius: 35px;
+      padding: 30px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      min-width: 320px;
+    }
+
+    .score-box {
+      background: white;
+      padding: 18px 20px;
+      border-radius: 25px;
+      text-align: center;
+      border: 2px solid #f0f0f0;
+    }
+
+    .label { font-size: 13px; font-weight: bold; color: #aaa; text-transform: uppercase; }
+    .value { font-size: 40px; font-weight: 800; color: #444; margin: 6px 0 0; }
+    .subvalue { font-size: 15px; font-weight: 700; color: #666; margin-top: 6px; }
+
+    .moves-left {
+      background: var(--accent-pink);
+      color: white;
+      padding: 15px;
+      border-radius: 20px;
+      text-align: center;
+    }
+
+    /* Leaderboard */
+    .lb {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      text-align: left;
+    }
+    .lb-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      background: #f7f7f7;
+      border-radius: 14px;
+      padding: 10px 12px;
+      font-weight: 700;
+      color: #444;
+    }
+    .lb-left {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      min-width: 0;
+    }
+    .lb-rank {
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      font-size: 12px;
+      background: #fff;
+      border: 1px solid #eee;
+      flex: 0 0 auto;
+    }
+    .lb-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 180px;
+    }
+    .lb-score { font-weight: 900; }
+
+    @keyframes shrink { to { transform: scale(0); opacity: 0; } }
+    .matching { animation: shrink 0.3s forwards; }
+
+    #game-over-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+      padding: 14px;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 26px;
+      border-radius: 24px;
+      text-align: center;
+      max-width: 420px;
+      width: 100%;
+    }
+
+    button {
+      background: #2ecc71;
+      color: white;
+      border: none;
+      padding: 15px 40px;
+      border-radius: 50px;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 20px;
+      width: 100%;
+      max-width: 320px;
+    }
+
+    /* ✅ Mobile responsiveness */
+    @media (max-width: 900px) {
+      .game-layout {
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+        padding: 12px;
+        max-width: 520px;
+      }
+
+      .ui-panel {
+        width: 100%;
+        min-width: unset;
+        padding: 18px;
+        border-radius: 26px;
+      }
+
+      .board-container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+      }
+    }
+
+    /* ✅ Make board fit small screens (no overflow) */
+    @media (max-width: 520px) {
+      :root {
+        /* 8 cells + 7 gaps + padding must fit the screen */
+        --cell: min(11vw, 46px);
+        --gap: 6px;
+        --pad: 8px;
+        --candy: calc(var(--cell) - 10px);
+      }
+
+      .board-container {
+        padding: 10px;
+        border-radius: 22px;
+      }
+
+      .grid {
+        border-radius: 16px;
+      }
+
+      .score-box {
+        padding: 14px 14px;
+        border-radius: 18px;
+      }
+
+      .value {
+        font-size: 32px;
+      }
+
+      .lb-row {
+        padding: 8px 10px;
+        border-radius: 12px;
+      }
+
+      .lb-name {
+        max-width: 140px;
+      }
+    }
+
+    @media (max-width: 360px) {
+      :root {
+        --cell: 40px;
+        --gap: 5px;
+        --pad: 6px;
+        --candy: 30px;
+      }
+      .value { font-size: 28px; }
+      .label { font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="game-layout">
+    <div class="board-container">
+      <div class="grid" id="grid"></div>
+    </div>
+
+    <div class="ui-panel">
+      <div class="score-box">
+        <div class="label">Player</div>
+        <div class="subvalue" id="playerName">-</div>
+      </div>
+
+      <div class="score-box">
+        <div class="label">Score</div>
+        <div class="value" id="score">0</div>
+      </div>
+
+      <div class="score-box">
+        <div class="label">Leaderboard (Global Top 5)</div>
+        <div class="lb" id="leaderboard"></div>
+      </div>
+
+      <div class="moves-left">
+        <div class="label" style="color: rgba(255,255,255,0.8)">Moves Left</div>
+        <div class="value" id="moves" style="color: white">25</div>
+      </div>
+
+      <div style="margin-top: auto; padding: 12px; background: #f9f9f9; border-radius: 18px;">
+        <p style="font-size: 13px; color: #666; margin: 0;">
+          <b>Combo Bonus:</b><br>
+          3 Blocks: +100 pts<br>
+          4 Blocks: +400 pts<br>
+          5+ Blocks: +1000 pts
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div id="game-over-modal">
+    <div class="modal-content">
+      <h1 id="gameOverTitle" style="font-size: 2.2em; color: var(--accent-pink); margin: 0;">Game Over!</h1>
+      <p id="gameOverReason">You scored:</p>
+      <div class="value" id="final-score">0</div>
+      <button onclick="location.reload()">Try Again</button>
+    </div>
+  </div>
+
+  <script>
+    const gridElement = document.getElementById('grid');
+    const scoreElement = document.getElementById('score');
+    const movesElement = document.getElementById('moves');
+    const playerNameEl = document.getElementById('playerName');
+    const leaderboardEl = document.getElementById('leaderboard');
+
+    const width = 8;
+    const candyColors = ['red', 'blue', 'yellow', 'green', 'purple', 'orange'];
+
+    let squares = [];
+    let score = 0;
+    let moves = 25;
+
+    let firstSelected = null;
+    let secondSelected = null;
+    let isBusy = false;
+
+    // ✅ Replace if needed
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwFzTnRSSv5t4-z5Iu1U_z5cTcX7I7WlmQkyuNkF6T7THrjO6lDs59lGS1tG2OkzPmU5A/exec";
+
+    async function submitScoreToSheet(name, score) {
+      try {
+        await fetch(SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ name, score })
+        });
+      } catch (e) {
+        console.log("Score submit failed:", e);
+      }
+    }
+
+    function renderTop5(top5) {
+      const list = Array.isArray(top5) ? top5 : [];
+      if (list.length === 0) {
+        leaderboardEl.innerHTML = `<div class="subvalue" style="text-align:center;">No scores yet</div>`;
+        return;
+      }
+      leaderboardEl.innerHTML = list.slice(0,5).map((x, i) => `
+        <div class="lb-row">
+          <div class="lb-left">
+            <div class="lb-rank">${i+1}</div>
+            <div class="lb-name">${(x.name ?? "Player")}</div>
+          </div>
+          <div class="lb-score">${Number(x.score ?? 0)}</div>
+        </div>
+      `).join("");
+    }
+
+    async function loadGlobalTop5() {
+      try {
+        const res = await fetch(SCRIPT_URL + "?t=" + Date.now());
+        const text = await res.text();
+        const data = JSON.parse(text);
+        renderTop5(data.top5 || []);
+      } catch (e) {
+        console.log("Top5 fetch failed:", e);
+        renderTop5([]);
+      }
+    }
+
+    // ---------- Player name ----------
+    let playerName = (prompt("Enter your name for the scoreboard:") || "Player").trim();
+    if (!playerName) playerName = "Player";
+    playerNameEl.textContent = playerName;
+
+    // Load leaderboard
+    loadGlobalTop5();
+
+    // ---------- Helpers ----------
+    function getColor(el) {
+      for (const c of candyColors) if (el.classList.contains(c)) return c;
+      return null;
+    }
+    function setColor(el, colorOrNull) {
+      for (const c of candyColors) el.classList.remove(c);
+      if (colorOrNull) el.classList.add(colorOrNull);
+    }
+
+    // ---------- Board ----------
+    function createBoard() {
+      for (let i = 0; i < width * width; i++) {
+        const cell = document.createElement('div');
+        cell.classList.add('cell');
+
+        const candy = document.createElement('div');
+        candy.classList.add('candy');
+        candy.setAttribute('id', i);
+
+        const randomColor = candyColors[Math.floor(Math.random() * candyColors.length)];
+        candy.classList.add(randomColor);
+
+        cell.appendChild(candy);
+        gridElement.appendChild(cell);
+
+        squares.push(candy);
+        candy.addEventListener('click', handleCandyClick);
+      }
+      setTimeout(() => checkAllMatches(true), 30);
+    }
+
+    function clearSelection() {
+      if (firstSelected) firstSelected.classList.remove('selected');
+      firstSelected = null;
+      secondSelected = null;
+    }
+
+    function swapCandies(c1, c2) {
+      const color1 = getColor(c1);
+      const color2 = getColor(c2);
+      setColor(c1, color2);
+      setColor(c2, color1);
+    }
+
+    function areAdjacent(id1, id2) {
+      return [id1 - 1, id1 + 1, id1 - width, id1 + width].includes(id2);
+    }
+
+    function consumeMove() {
+      moves--;
+      movesElement.innerText = moves;
+      if (moves <= 0) {
+        endGame("Out of moves!");
+        return false;
+      }
+      return true;
+    }
+
+    function handleCandyClick() {
+      if (moves <= 0 || isBusy) return;
+
+      if (!firstSelected) {
+        firstSelected = this;
+        this.classList.add('selected');
+        return;
+      }
+
+      secondSelected = this;
+      if (!consumeMove()) return;
+
+      const id1 = parseInt(firstSelected.id, 10);
+      const id2 = parseInt(secondSelected.id, 10);
+
+      if (!areAdjacent(id1, id2)) {
+        clearSelection();
+        firstSelected = this;
+        firstSelected.classList.add('selected');
+        return;
+      }
+
+      isBusy = true;
+      swapCandies(firstSelected, secondSelected);
+
+      setTimeout(() => {
+        const hasMatchNow = hasAnyMatch();
+        if (!hasMatchNow) swapCandies(firstSelected, secondSelected);
+        else checkAllMatches(true);
+
+        clearSelection();
+        isBusy = false;
+      }, 220);
+    }
+
+    function hasAnyMatch() { return checkAllMatches(false); }
+
+    function checkAllMatches(doClear) {
+      let matched = false;
+      for (let i = 0; i < 64; i++) {
+        if (checkMatchLine(i, 1, doClear)) matched = true;
+        if (checkMatchLine(i, width, doClear)) matched = true;
+      }
+      return matched;
+    }
+
+    function checkMatchLine(index, step, doClear) {
+      const startColor = getColor(squares[index]);
+      if (!startColor) return false;
+
+      const matchIndices = [index];
+
+      for (let i = 1; i < 8; i++) {
+        const next = index + (i * step);
+        if (next >= 64) break;
+        if (step === 1 && Math.floor(next / width) !== Math.floor(index / width)) break;
+
+        if (getColor(squares[next]) === startColor) matchIndices.push(next);
+        else break;
+      }
+
+      if (matchIndices.length >= 3) {
+        if (!doClear) return true;
+
+        const len = matchIndices.length;
+        if (len === 3) score += 100;
+        else if (len === 4) score += 400;
+        else score += 1000;
+
+        scoreElement.innerText = score;
+
+        matchIndices.forEach(idx => {
+          const el = squares[idx];
+          el.classList.remove('selected');
+          el.classList.add('matching');
+          setTimeout(() => {
+            el.classList.remove('matching');
+            setColor(el, null);
+          }, 280);
+        });
+
+        return true;
+      }
+      return false;
+    }
+
+    function refillBoard() {
+      for (let i = 0; i < 56; i++) {
+        const below = squares[i + width];
+        if (!getColor(below)) {
+          const color = getColor(squares[i]);
+          if (color) { setColor(below, color); setColor(squares[i], null); }
+        }
+      }
+      for (let i = 0; i < width; i++) {
+        if (!getColor(squares[i])) {
+          const randomColor = candyColors[Math.floor(Math.random() * candyColors.length)];
+          setColor(squares[i], randomColor);
+        }
+      }
+    }
+
+    function endGame(reasonText) {
+      document.getElementById('game-over-modal').style.display = 'flex';
+      document.getElementById('final-score').innerText = score;
+      document.getElementById('gameOverReason').textContent = reasonText || "You scored:";
+
+      submitScoreToSheet(playerName, score);
+      setTimeout(loadGlobalTop5, 900);
+      moves = 0;
+    }
+
+    createBoard();
+
+    setInterval(() => {
+      if (isBusy || moves <= 0) return;
+      const cleared = checkAllMatches(true);
+      if (cleared) setTimeout(refillBoard, 300);
+      else refillBoard();
+    }, 450);
+  </script>
+</body>
+</html>
