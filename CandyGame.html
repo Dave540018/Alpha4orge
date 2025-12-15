@@ -1,788 +1,978 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Candy Score Challenge Deluxe</title>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Candy Score Challenge Deluxe</title>
 
-  <style>
-    :root {
-      --bg-gradient: linear-gradient(135deg, #8BC6EC 0%, #9599E2 100%);
-      --panel-bg: rgba(255, 255, 255, 0.9);
-      --accent-pink: #ff6b9d;
-      --candy-red: #ff5e5e;
-      --candy-blue: #54a0ff;
-      --candy-yellow: #feca57;
-      --candy-green: #1dd1a1;
-      --candy-purple: #a29bfe;
-      --candy-orange: #ff9f43;
+    <style>
+        :root {
+        --bg-gradient: linear-gradient(135deg, #8BC6EC 0%, #9599E2 100%);
+        --panel-bg: rgba(255, 255, 255, 0.9);
+        --accent-pink: #ff6b9d;
+        --candy-red: #ff5e5e;
+        --candy-blue: #54a0ff;
+        --candy-yellow: #feca57;
+        --candy-green: #1dd1a1;
+        --candy-purple: #a29bfe;
+        --candy-orange: #ff9f43;
 
-      --cell: 65px;
-      --gap: 8px;
-      --pad: 10px;
-      --candy: 55px;
-    }
+        --cell: 65px;
+        --gap: 8px;
+        --pad: 10px;
+        --candy: 55px;
+        }
 
-    * { box-sizing: border-box; }
+        * { box-sizing: border-box; }
 
-    body{
-    margin:0;
-    font-family: Inter, sans-serif;
-    background: var(--bg-gradient);
-    min-height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:stretch;           /* ✅ allow panel to take full height */
-    overflow:hidden;               /* ✅ keep page itself from scrolling */
-    }
+        body{
+        margin:0;
+        font-family: Inter, sans-serif;
+        background: var(--bg-gradient);
+        min-height:100vh;
+        display:flex;
+        justify-content:center;
+        align-items:stretch;           /* ✅ allow panel to take full height */
+        overflow:hidden;               /* ✅ keep page itself from scrolling */
+        }
 
-    .game-layout{
-      display:flex;
-      gap:30px;
-      align-items:flex-start;
-      max-width:1100px;
-      width:100%;
-      padding:20px;
-    }
+        .game-layout{
+        display:flex;
+        gap:30px;
+        align-items:flex-start;
+        max-width:1100px;
+        width:100%;
+        padding:20px;
+        }
 
-    .shake{ animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
-    @keyframes shake{
-      10%,90%{ transform: translate3d(-2px,0,0); }
-      20%,80%{ transform: translate3d(4px,0,0); }
-      30%,50%,70%{ transform: translate3d(-6px,0,0); }
-      40%,60%{ transform: translate3d(6px,0,0); }
-    }
+        .shake{ animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes shake{
+        10%,90%{ transform: translate3d(-2px,0,0); }
+        20%,80%{ transform: translate3d(4px,0,0); }
+        30%,50%,70%{ transform: translate3d(-6px,0,0); }
+        40%,60%{ transform: translate3d(6px,0,0); }
+        }
 
-    .board-container{
-      background: rgba(255,255,255,0.25);
-      padding:15px;
-      border-radius:30px;
-      box-shadow:0 15px 35px rgba(0,0,0,0.2);
-      backdrop-filter: blur(10px);
-      flex:0 0 auto;
-    }
+        .board-container{
+        background: rgba(255,255,255,0.25);
+        padding:15px;
+        border-radius:30px;
+        box-shadow:0 15px 35px rgba(0,0,0,0.2);
+        backdrop-filter: blur(10px);
+        flex:0 0 auto;
+        }
 
-    .grid{
-      display:grid;
-      grid-template-columns: repeat(8, var(--cell));
-      grid-template-rows: repeat(8, var(--cell));
-      gap: var(--gap);
-      background: rgba(0,0,0,0.1);
-      padding: var(--pad);
-      border-radius: 20px;
-      position: relative;
-    }
-
-    .cell{
-      width: var(--cell);
-      height: var(--cell);
-      background: rgba(255,255,255,0.15);
-      border-radius: 12px;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-    }
-
-    /* ✅ Candy uses image icons */
-    .candy{
-        width: var(--candy);
-        height: var(--candy);
-        border-radius: 50%;
-        cursor: pointer;
+        .grid{
+        display:grid;
+        grid-template-columns: repeat(8, var(--cell));
+        grid-template-rows: repeat(8, var(--cell));
+        gap: var(--gap);
+        background: rgba(0,0,0,0.1);
+        padding: var(--pad);
+        border-radius: 20px;
         position: relative;
+        }
 
-        /* image rendering */
-        background-color: transparent;
+        .cell{
+        width: var(--cell);
+        height: var(--cell);
+        background: rgba(255,255,255,0.15);
+        border-radius: 12px;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        }
+
+        /* ✅ Candy uses image icons */
+        .candy{
+            width: var(--candy);
+            height: var(--candy);
+            border-radius: 50%;
+            cursor: pointer;
+            position: relative;
+
+            /* image rendering */
+            background-color: transparent;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: contain;
+
+            /* keep it subtle so image stays clean */
+            box-shadow: 0 6px 10px rgba(0,0,0,0.18);
+            transition: transform .18s cubic-bezier(0.175,0.885,0.32,1.275), filter .18s;
+            touch-action: manipulation;
+            }
+
+        /* ✅ Touch/selection brightness max 25% */
+        .candy.selected{
+        transform: scale(1.12);
+        filter: brightness(1.15);          /* <= 25% brightness */
+        outline: 3px solid rgba(255,255,255,0.65);
+        box-shadow: 0 0 12px rgba(255,255,255,0.35), 0 6px 10px rgba(0,0,0,0.18);
+        z-index: 10;
+        }
+        @keyframes pulse{
+        0%{ transform: scale(1.15); }
+        50%{ transform: scale(1.25); }
+        100%{ transform: scale(1.15); }
+        }
+        /* ✅ Base candy images */
+        .candy.red    { background-image: url("images/Dragonfruit%20Glow%20Candy.png"); }
+        .candy.blue   { background-image: url("images/Moon%20Crystal%20Candy.png"); }
+        .candy.yellow { background-image: url("images/Sun%20Nectar%20Candy.png"); }
+        .candy.green  { background-image: url("images/Aurora%20Mint%20Candy.png"); }
+        .candy.purple { background-image: url("images/Galaxy%20Grape%20Candy.png"); }
+        .candy.orange { background-image: url("images/Tangerine%20Ember%20Candy.png"); }
+
+        /* ✅ Powerup overlays */
+        /* ✅ Powerup overlays (variant-based) */
+        .candy.striped::after,
+        .candy.bomb::after{
+        content: "";
+        position: absolute;
+        inset: -2px;
         background-repeat: no-repeat;
         background-position: center;
         background-size: contain;
-
-        /* keep it subtle so image stays clean */
-        box-shadow: 0 6px 10px rgba(0,0,0,0.18);
-        transition: transform .18s cubic-bezier(0.175,0.885,0.32,1.275), filter .18s;
-        touch-action: manipulation;
+        pointer-events: none;
         }
 
-    /* ✅ Touch/selection brightness max 25% */
-    .candy.selected{
-    transform: scale(1.12);
-    filter: brightness(1.15);          /* <= 25% brightness */
-    outline: 3px solid rgba(255,255,255,0.65);
-    box-shadow: 0 0 12px rgba(255,255,255,0.35), 0 6px 10px rgba(0,0,0,0.18);
-    z-index: 10;
-    }
-    @keyframes pulse{
-      0%{ transform: scale(1.15); }
-      50%{ transform: scale(1.25); }
-      100%{ transform: scale(1.15); }
-    }
-    /* ✅ Base candy images */
-    .candy.red    { background-image: url("https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Dragonfruit.Glow.Candy.webp"); }
-    .candy.blue   { background-image: url("https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Moon.Crystal.Candy.webp"); }
-    .candy.yellow { background-image: url("https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Sun.Nectar.Candy.webp"); }
-    .candy.green  { background-image: url("https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Aurora.Mint.Candy.webp"); }
-    .candy.purple { background-image: url("https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Galaxy.Grape.Candy.webp"); }
-    .candy.orange { background-image: url("https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Tangerine.Ember.Candy.webp"); }
+        /* -------------------- STRIPED VARIANTS -------------------- */
+        .candy.striped.pu-red::after    { background-image: url("https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Prismatic.Ribbon.Blaster.Red.webp"); }
+        .candy.striped.pu-blue::after   { background-image: url("https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Prismatic.Ribbon.Blaster.Blue.webp"); }
+        .candy.striped.pu-yellow::after { background-image: url("https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Prismatic.Ribbon.Blaster.Yellow.webp"); }
+        .candy.striped.pu-green::after  { background-image: url("https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Prismatic.Ribbon.Blaster.Green.webp"); }
+        .candy.striped.pu-purple::after { background-image: url("https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Prismatic.Ribbon.Blaster.Violet.webp"); }
+        .candy.striped.pu-orange::after { background-image: url("https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Prismatic.Ribbon.Blaster.Orange.webp"); }
 
-    /* ✅ Powerup overlays */
-    .candy.striped::after,
-    .candy.bomb::after{
-    content: "";
-    position: absolute;
-    inset: -2px;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: contain;
-    pointer-events: none;
-    }
+        /* -------------------- BOMB VARIANTS -------------------- */
+        .candy.bomb.pu-red::after    { background-image: url("https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Nebula.Core.Bomb.red.webp"); }
+        .candy.bomb.pu-blue::after   { background-image: url("https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Nebula.Core.Bomb.Blue.webp"); }
+        .candy.bomb.pu-yellow::after { background-image: url("https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Nebula.Core.Bomb.Yellow.webp"); }
+        .candy.bomb.pu-green::after  { background-image: url("https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Nebula.Core.Bomb.Green.webp"); }
+        .candy.bomb.pu-purple::after { background-image: url("https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Nebula.Core.Bomb.Violet.webp"); }
+        .candy.bomb.pu-orange::after { background-image: url("https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Nebula.Core.Bomb.Orange.webp"); }
 
-    .candy.bomb{
-      border: 3px solid white;
-      animation: bombPulse 1s ease-in-out infinite;
-    }
-    .candy.bomb::before{
-      content:'';
-      position:absolute;
-      inset:25%;
-      background:white;
-      border-radius:50%;
-      opacity:.6;
-    }
+    
+        @keyframes bombPulse{ 0%{transform:scale(.95);} 50%{transform:scale(1.05);} 100%{transform:scale(.95);} }
+        @keyframes spin{ from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
 
-    .candy.striped::after { background-image: url("https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Prismatic.Ribbon.Blaster.webp"); }
-    .candy.bomb::after    { background-image: url("https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Nebula.Core.Bomb.webp"); }
-   
-    @keyframes bombPulse{ 0%{transform:scale(.95);} 50%{transform:scale(1.05);} 100%{transform:scale(.95);} }
-    @keyframes spin{ from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
+        .floating-text{
+        position:absolute;
+        color:white;
+        font-weight:900;
+        font-size:24px;
+        text-shadow: 2px 2px 0 rgba(0,0,0,0.5);
+        pointer-events:none;
+        z-index:100;
+        animation: floatUp 1s forwards;
+        }
+        @keyframes floatUp{
+        0%{ transform: translateY(0) scale(1); opacity:1;}
+        100%{ transform: translateY(-50px) scale(1.2); opacity:0;}
+        }
 
-    .floating-text{
-      position:absolute;
-      color:white;
-      font-weight:900;
-      font-size:24px;
-      text-shadow: 2px 2px 0 rgba(0,0,0,0.5);
-      pointer-events:none;
-      z-index:100;
-      animation: floatUp 1s forwards;
-    }
-    @keyframes floatUp{
-      0%{ transform: translateY(0) scale(1); opacity:1;}
-      100%{ transform: translateY(-50px) scale(1.2); opacity:0;}
-    }
+        .particle{
+        position:absolute;
+        width:8px;
+        height:8px;
+        border-radius:50%;
+        pointer-events:none;
+        z-index:50;
+        animation: pop .6s ease-out forwards;
+        }
+        @keyframes pop{
+        0%{ transform: translate(0,0) scale(1); opacity:1;}
+        100%{ transform: translate(var(--tx), var(--ty)) scale(0); opacity:0;}
+        }
 
-    .particle{
-      position:absolute;
-      width:8px;
-      height:8px;
-      border-radius:50%;
-      pointer-events:none;
-      z-index:50;
-      animation: pop .6s ease-out forwards;
-    }
-    @keyframes pop{
-      0%{ transform: translate(0,0) scale(1); opacity:1;}
-      100%{ transform: translate(var(--tx), var(--ty)) scale(0); opacity:0;}
-    }
-
-    .ui-panel{
-      flex:1;
-      background: var(--panel-bg);
-      border-radius: 35px;
-      padding: 22px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-      display:flex;
-      flex-direction:column;
-      gap: 14px;
-      min-width: 320px;
-    }
-
-    /* ✅ Make the UI panel scrollable on mobile (and even desktop if needed) */
-    .ui-panel{
-    max-height: calc(100dvh - 24px);     /* ✅ fit inside screen */
-    overflow: auto;                      /* ✅ scroll inside panel */
-    -webkit-overflow-scrolling: touch;   /* ✅ smooth iOS scrolling */
-    }
-
-    /* ✅ Mobile layout: board on top, scrollable panel below */
-    @media (max-width: 900px){
-    .game-layout{
-        height: 100dvh;                    /* ✅ full screen */
-        overflow: hidden;                  /* ✅ no body scroll */
-    }
-
-    .board-container{
-        flex: 0 0 auto;
-    }
-
-    .ui-panel{
-        flex: 1 1 auto;                    /* ✅ take remaining height */
-        min-height: 0;                     /* ✅ required for scroll to work */
-    }
-    }
-
-
-    .score-box{
-      background:white;
-      padding: 14px 16px;
-      border-radius: 22px;
-      text-align:center;
-      border: 2px solid #fff;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-    }
-
-    .label{ font-size:12px; font-weight:900; color:#aaa; text-transform:uppercase; }
-    .value{ font-size:38px; font-weight:900; color:#444; margin: 6px 0 0; }
-    .subvalue{ font-size:15px; font-weight:800; color:#666; margin-top:6px; }
-
-    /* ✅ Score + Moves row */
-    .stat-row{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    .moves-left{
-      background: var(--accent-pink);
-      color:white;
-      padding: 14px 16px;
-      border-radius: 22px;
-      text-align:center;
-      box-shadow: 0 10px 20px rgba(255,107,157,0.4);
-    }
-
-    /* Leaderboard */
-    .lb{ display:flex; flex-direction:column; gap:8px; text-align:left; }
-    .lb-row{
-      display:flex; justify-content:space-between; gap:12px;
-      background:#f7f7f7;
-      border-radius:14px;
-      padding:10px 12px;
-      font-weight:800;
-      color:#444;
-    }
-    .lb-left{ display:flex; gap:10px; align-items:center; min-width:0; }
-    .lb-rank{
-      width:26px; height:26px; border-radius:999px;
-      display:grid; place-items:center; font-size:12px;
-      background:#fff; border:1px solid #eee;
-      flex: 0 0 auto;
-    }
-    .lb-name{
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
-      max-width: 180px;
-    }
-    .lb-score{ font-weight: 900; }
-
-    /* ✅ let leaderboard show fully: scroll inside only if needed */
-    .leaderboard-box{
-      text-align:left;
-    }
-    .leaderboard-scroll{
-      max-height: 260px;
-      overflow:auto;
-      padding-right: 4px;
-    }
-
-    .matching{ animation: shrink .25s forwards; }
-    @keyframes shrink{ to{ transform: scale(0); opacity:0; } }
-
-    #game-over-modal{
-      display:none;
-      position:fixed;
-      inset:0;
-      background: rgba(0,0,0,0.8);
-      z-index:1000;
-      justify-content:center;
-      align-items:center;
-      padding: 14px;
-      backdrop-filter: blur(5px);
-    }
-
-    .modal-content{
-      background:white;
-      padding:26px;
-      border-radius:24px;
-      text-align:center;
-      max-width:420px;
-      width:100%;
-      box-shadow:0 20px 60px rgba(0,0,0,0.4);
-    }
-
-    button{
-      background:#2ecc71;
-      color:white;
-      border:none;
-      padding:15px 40px;
-      border-radius:50px;
-      font-size:20px;
-      font-weight:900;
-      cursor:pointer;
-      margin-top:20px;
-      width:100%;
-      max-width:320px;
-    }
-    button:active{ transform: scale(.95); }
-
-    @media (max-width: 900px){
-      .game-layout{
-        flex-direction: column;
-        align-items:center;
+        .ui-panel{
+        flex:1;
+        background: var(--panel-bg);
+        border-radius: 35px;
+        padding: 22px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        display:flex;
+        flex-direction:column;
         gap: 14px;
-        padding: 12px;
-        max-width: 520px;
-      }
-      .ui-panel{ width:100%; min-width:unset; padding: 16px; border-radius: 26px; }
-      .board-container{ width:100%; display:flex; justify-content:center; }
-      .leaderboard-scroll{ max-height: 220px; }
-    }
+        min-width: 320px;
+        }
 
-    @media (max-width: 520px){
-      :root{
-        --cell: min(11vw, 46px);
-        --gap: 5px;
-        --pad: 8px;
-        --candy: calc(var(--cell) - 8px);
-      }
-      .value{ font-size: 30px; }
-      .leaderboard-scroll{ max-height: 200px; }
-    }
-  </style>
-</head>
+        /* ✅ Make the UI panel scrollable on mobile (and even desktop if needed) */
+        .ui-panel{
+        max-height: calc(100dvh - 24px);     /* ✅ fit inside screen */
+        overflow: auto;                      /* ✅ scroll inside panel */
+        -webkit-overflow-scrolling: touch;   /* ✅ smooth iOS scrolling */
+        }
 
-<body>
-  <div class="game-layout" id="gameLayout">
-    <div class="board-container">
-      <div class="grid" id="grid"></div>
-    </div>
+        /* ✅ Mobile layout: board on top, scrollable panel below */
+        @media (max-width: 900px){
+        .game-layout{
+            height: 100dvh;                    /* ✅ full screen */
+            overflow: hidden;                  /* ✅ no body scroll */
+        }
 
-    <div class="ui-panel">
-      <div class="score-box">
-        <div class="label">Player</div>
-        <div class="subvalue" id="playerName">-</div>
-      </div>
+        .board-container{
+            flex: 0 0 auto;
+        }
 
-      <!-- ✅ Score + Moves in one row -->
-      <div class="stat-row">
+        .ui-panel{
+            flex: 1 1 auto;                    /* ✅ take remaining height */
+            min-height: 0;                     /* ✅ required for scroll to work */
+        }
+        }
+
+
+        .score-box{
+        background:white;
+        padding: 14px 16px;
+        border-radius: 22px;
+        text-align:center;
+        border: 2px solid #fff;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .label{ font-size:12px; font-weight:900; color:#aaa; text-transform:uppercase; }
+        .value{ font-size:38px; font-weight:900; color:#444; margin: 6px 0 0; }
+        .subvalue{ font-size:15px; font-weight:800; color:#666; margin-top:6px; }
+
+        /* ✅ Score + Moves row */
+        .stat-row{
+        display:grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        }
+
+        .moves-left{
+        background: var(--accent-pink);
+        color:white;
+        padding: 14px 16px;
+        border-radius: 22px;
+        text-align:center;
+        box-shadow: 0 10px 20px rgba(255,107,157,0.4);
+        }
+
+        /* Leaderboard */
+        .lb{ display:flex; flex-direction:column; gap:8px; text-align:left; }
+        .lb-row{
+        display:flex; justify-content:space-between; gap:12px;
+        background:#f7f7f7;
+        border-radius:14px;
+        padding:10px 12px;
+        font-weight:800;
+        color:#444;
+        }
+        .lb-left{ display:flex; gap:10px; align-items:center; min-width:0; }
+        .lb-rank{
+        width:26px; height:26px; border-radius:999px;
+        display:grid; place-items:center; font-size:12px;
+        background:#fff; border:1px solid #eee;
+        flex: 0 0 auto;
+        }
+        .lb-name{
+        overflow:hidden;
+        text-overflow:ellipsis;
+        white-space:nowrap;
+        max-width: 180px;
+        }
+        .lb-score{ font-weight: 900; }
+
+        /* ✅ let leaderboard show fully: scroll inside only if needed */
+        .leaderboard-box{
+        text-align:left;
+        }
+        .leaderboard-scroll{
+        max-height: 260px;
+        overflow:auto;
+        padding-right: 4px;
+        }
+
+        .matching{ animation: shrink .25s forwards; }
+        @keyframes shrink{ to{ transform: scale(0); opacity:0; } }
+
+        #game-over-modal{
+        display:none;
+        position:fixed;
+        inset:0;
+        background: rgba(0,0,0,0.8);
+        z-index:1000;
+        justify-content:center;
+        align-items:center;
+        padding: 14px;
+        backdrop-filter: blur(5px);
+        }
+
+        .modal-content{
+        background:white;
+        padding:26px;
+        border-radius:24px;
+        text-align:center;
+        max-width:420px;
+        width:100%;
+        box-shadow:0 20px 60px rgba(0,0,0,0.4);
+        }
+
+        button{
+        background:#2ecc71;
+        color:white;
+        border:none;
+        padding:15px 40px;
+        border-radius:50px;
+        font-size:20px;
+        font-weight:900;
+        cursor:pointer;
+        margin-top:20px;
+        width:100%;
+        max-width:320px;
+        }
+        button:active{ transform: scale(.95); }
+
+        @media (max-width: 900px){
+        .game-layout{
+            flex-direction: column;
+            align-items:center;
+            gap: 14px;
+            padding: 12px;
+            max-width: 520px;
+        }
+        .ui-panel{ width:100%; min-width:unset; padding: 16px; border-radius: 26px; }
+        .board-container{ width:100%; display:flex; justify-content:center; }
+        .leaderboard-scroll{ max-height: 220px; }
+        }
+
+        @media (max-width: 520px){
+        :root{
+            --cell: min(11vw, 46px);
+            --gap: 5px;
+            --pad: 8px;
+            --candy: calc(var(--cell) - 8px);
+        }
+        .value{ font-size: 30px; }
+        .leaderboard-scroll{ max-height: 200px; }
+        }
+        .name-modal{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(8px);
+  display: grid;
+  place-items: center;
+  z-index: 2000;
+}
+
+.name-card{
+  width: min(420px, 92vw);
+  background: rgba(255,255,255,0.95);
+  border-radius: 26px;
+  padding: 18px 18px 16px;
+  box-shadow: 0 25px 70px rgba(0,0,0,0.35);
+  text-align: left;
+}
+
+.name-card h2{
+  margin: 0 0 6px;
+  font-size: 24px;
+  color: #222;
+  font-weight: 900;
+}
+
+.name-card p{
+  margin: 0 0 14px;
+  color: #666;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.name-card input{
+  width: 100%;
+  padding: 14px 14px;
+  border-radius: 16px;
+  border: 1px solid #e6e6e6;
+  outline: none;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.name-card input:focus{
+  border-color: rgba(255,107,157,0.6);
+  box-shadow: 0 0 0 4px rgba(255,107,157,0.15);
+}
+
+.name-btn{
+  margin-top: 12px;
+  width: 100%;
+  max-width: none;
+  background: var(--accent-pink);
+}
+
+.name-hint{
+  margin-top: 10px;
+  font-size: 12px;
+  color: #888;
+  font-weight: 700;
+}
+
+    </style>
+    </head>
+
+    <body>
+    <div class="game-layout" id="gameLayout">
+        <div class="board-container">
+        <div class="grid" id="grid"></div>
+        </div>
+
+        <div class="ui-panel">
         <div class="score-box">
-          <div class="label">Score</div>
-          <div class="value" id="score">0</div>
+            <div class="label">Player</div>
+            <div class="subvalue" id="playerName">-</div>
         </div>
 
-        <div class="moves-left">
-          <div class="label" style="color: rgba(255,255,255,0.85)">Moves</div>
-          <div class="value" id="moves" style="color:white;">25</div>
-        </div>
-      </div>
+        <!-- ✅ Score + Moves in one row -->
+        <div class="stat-row">
+            <div class="score-box">
+            <div class="label">Score</div>
+            <div class="value" id="score">0</div>
+            </div>
 
-      <div class="score-box leaderboard-box">
-        <div class="label" style="text-align:center;">Leaderboard (Top 5)</div>
-        <div class="leaderboard-scroll">
-          <div class="lb" id="leaderboard"></div>
+            <div class="moves-left">
+            <div class="label" style="color: rgba(255,255,255,0.85)">Moves</div>
+            <div class="value" id="moves" style="color:white;">25</div>
+            </div>
         </div>
-      </div>
 
-      <div style="margin-top: auto; padding: 12px; background: #fff; border: 1px solid #eee; border-radius: 18px;">
-        <p style="font-size: 12px; color: #666; margin: 0; line-height: 1.5;">
-          <b>POWER UPS:</b><br>
-          ⚡ <b>Match 4:</b> Striped (Clears Row)<br>
-          💣 <b>Match 5:</b> Bomb (Clears 3x3)
-        </p>
-      </div>
+        <div class="score-box leaderboard-box">
+            <div class="label" style="text-align:center;">Leaderboard (Top 5)</div>
+            <div class="leaderboard-scroll">
+            <div class="lb" id="leaderboard"></div>
+            </div>
+        </div>
+
+        <div style="margin-top: auto; padding: 12px; background: #fff; border: 1px solid #eee; border-radius: 18px;">
+            <p style="font-size: 12px; color: #666; margin: 0; line-height: 1.5;">
+            <b>POWER UPS:</b><br>
+            ⚡ <b>Match 4:</b> Striped (Clears Row)<br>
+            💣 <b>Match 5:</b> Bomb (Clears 3x3)
+            </p>
+        </div>
+        </div>
     </div>
-  </div>
 
-  <div id="game-over-modal">
-    <div class="modal-content">
-      <h1 style="font-size: 2.2em; color: var(--accent-pink); margin: 0;">Game Over!</h1>
-      <p id="gameOverReason">You scored:</p>
-      <div class="value" id="final-score">0</div>
-      <button onclick="location.reload()">Try Again</button>
-    </div>
-  </div>
-
-  <script>
-    const gridElement = document.getElementById('grid');
-    const scoreElement = document.getElementById('score');
-    const movesElement = document.getElementById('moves');
-    const playerNameEl = document.getElementById('playerName');
-    const leaderboardEl = document.getElementById('leaderboard');
-    const gameLayout = document.getElementById('gameLayout');
-
-    const width = 8;
-    const candyColors = ['red','blue','yellow','green','purple','orange'];
-
-    let squares = [];
-    let score = 0;
-    let moves = 25;
-
-    let firstSelected = null;
-    let secondSelected = null;
-    let isBusy = false;
-
-    // ✅ your Apps Script URL
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwFzTnRSSv5t4-z5Iu1U_z5cTcX7I7WlmQkyuNkF6T7THrjO6lDs59lGS1tG2OkzPmU5A/exec";
-
-    async function submitScoreToSheet(name, score) {
-      try {
-        await fetch(SCRIPT_URL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ name, score })
-        });
-      } catch (e) { console.log("Score submit failed:", e); }
-    }
-
-    function renderTop5(top5) {
-      const list = Array.isArray(top5) ? top5 : [];
-      if (list.length === 0) {
-        leaderboardEl.innerHTML = `<div class="subvalue" style="text-align:center;">No scores yet</div>`;
-        return;
-      }
-      leaderboardEl.innerHTML = list.slice(0,5).map((x, i) => `
-        <div class="lb-row">
-          <div class="lb-left">
-            <div class="lb-rank">${i+1}</div>
-            <div class="lb-name">${(x.name ?? "Player")}</div>
-          </div>
-          <div class="lb-score">${Number(x.score ?? 0)}</div>
+    <div id="game-over-modal">
+        <div class="modal-content">
+        <h1 style="font-size: 2.2em; color: var(--accent-pink); margin: 0;">Game Over!</h1>
+        <p id="gameOverReason">You scored:</p>
+        <div class="value" id="final-score">0</div>
+        <button onclick="location.reload()">Try Again</button>
         </div>
-      `).join("");
-    }
+    </div>
 
-    async function loadGlobalTop5() {
-      try {
-        const res = await fetch(SCRIPT_URL + "?t=" + Date.now());
-        const text = await res.text();
-        const data = JSON.parse(text);
-        renderTop5(data.top5 || []);
-      } catch (e) {
-        console.log("Top5 fetch failed:", e);
-        leaderboardEl.innerHTML = `<div class="subvalue" style="text-align:center;">Offline</div>`;
-      }
-    }
+        <!-- ✅ Modern name modal -->
+<div id="nameModal" class="name-modal">
+  <div class="name-card">
+    <h2>Start Playing</h2>
+    <p>Enter your name for the leaderboard</p>
+    <input id="nameInput" type="text" maxlength="18" placeholder="Your name..." />
+    <button id="nameBtn" class="name-btn">Play</button>
+    <div class="name-hint">Tip: Press Enter</div>
+  </div>
+</div>
 
-    let playerName = (prompt("Enter your name for the scoreboard:") || "Player").trim();
-    if (!playerName) playerName = "Player";
-    playerNameEl.textContent = playerName;
-    loadGlobalTop5();
+    <script>
+        const gridElement = document.getElementById('grid');
+        const scoreElement = document.getElementById('score');
+        const movesElement = document.getElementById('moves');
+        const playerNameEl = document.getElementById('playerName');
+        const leaderboardEl = document.getElementById('leaderboard');
+        const gameLayout = document.getElementById('gameLayout');
 
-    function getColor(el){
-      if(!el) return null;
-      for(const c of candyColors) if(el.classList.contains(c)) return c;
-      return null;
-    }
+        const width = 8;
+        const candyColors = ['red','blue','yellow','green','purple','orange'];
 
-    function setColor(el, colorOrNull){
-      for(const c of candyColors) el.classList.remove(c);
-      el.classList.remove('striped','bomb');
-      if(colorOrNull) el.classList.add(colorOrNull);
-    }
+        let squares = [];
+        let score = 0;
+        let moves = 25;
 
-    function isStriped(el){ return el.classList.contains('striped'); }
-    function isBomb(el){ return el.classList.contains('bomb'); }
+        let firstSelected = null;
+        let secondSelected = null;
+        let isBusy = false;
 
-    function showFloatingText(element, text) {
-      const rect = element.getBoundingClientRect();
-      const boardRect = gridElement.getBoundingClientRect();
-      const x = rect.left - boardRect.left;
-      const y = rect.top - boardRect.top;
+        // ✅ your Apps Script URL
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwFzTnRSSv5t4-z5Iu1U_z5cTcX7I7WlmQkyuNkF6T7THrjO6lDs59lGS1tG2OkzPmU5A/exec";
 
-      const el = document.createElement('div');
-      el.classList.add('floating-text');
-      el.innerText = text;
-      el.style.left = x + 'px';
-      el.style.top = y + 'px';
-      gridElement.appendChild(el);
-      setTimeout(() => el.remove(), 1000);
-    }
+        async function submitScoreToSheet(name, score) {
+        try {
+            await fetch(SCRIPT_URL, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify({ name, score })
+            });
+        } catch (e) { console.log("Score submit failed:", e); }
+        }
 
-    function screenShake(){
-      gameLayout.classList.remove('shake');
-      void gameLayout.offsetWidth;
-      gameLayout.classList.add('shake');
-    }
+        function renderTop5(top5) {
+        const list = Array.isArray(top5) ? top5 : [];
+        if (list.length === 0) {
+            leaderboardEl.innerHTML = `<div class="subvalue" style="text-align:center;">No scores yet</div>`;
+            return;
+        }
+        leaderboardEl.innerHTML = list.slice(0,5).map((x, i) => `
+            <div class="lb-row">
+            <div class="lb-left">
+                <div class="lb-rank">${i+1}</div>
+                <div class="lb-name">${(x.name ?? "Player")}</div>
+            </div>
+            <div class="lb-score">${Number(x.score ?? 0)}</div>
+            </div>
+        `).join("");
+        }
 
-    function createBoard(){
-      gridElement.innerHTML = '';
-      squares = [];
+        async function loadGlobalTop5() {
+        try {
+            const res = await fetch(SCRIPT_URL + "?t=" + Date.now());
+            const text = await res.text();
+            const data = JSON.parse(text);
+            renderTop5(data.top5 || []);
+        } catch (e) {
+            console.log("Top5 fetch failed:", e);
+            leaderboardEl.innerHTML = `<div class="subvalue" style="text-align:center;">Offline</div>`;
+        }
+        }
 
-      for(let i=0;i<width*width;i++){
-        const cell = document.createElement('div');
-        cell.classList.add('cell');
+        // let playerName = (prompt("Enter your name for the scoreboard:") || "Player").trim();
+        // if (!playerName) playerName = "Player";
+        // playerNameEl.textContent = playerName;
+        // loadGlobalTop5();
 
-        const candy = document.createElement('div');
-        candy.classList.add('candy');
-        candy.id = i;
+        let playerName = "Player";
+        let gameOver = false;
+        let gameLoop = null;
 
-        const randomColor = candyColors[Math.floor(Math.random()*candyColors.length)];
-        candy.classList.add(randomColor);
+        function startGame(){
+        gameOver = false;
+        playerNameEl.textContent = playerName;
+        loadGlobalTop5();
+        createBoard();
 
-        // ✅ better mobile input
-        candy.addEventListener('pointerdown', (e) => {
-          e.preventDefault();
-          handleCandyTap.call(candy);
+        if (gameLoop) clearInterval(gameLoop);
+        gameLoop = setInterval(() => {
+            if(gameOver || isBusy || moves <= 0) return;
+            const cleared = checkAllMatches(true, false);
+            if(cleared) setTimeout(refillBoard, 250);
+            else refillBoard();
+        }, 450);
+        }
+
+        // modern modal start
+        const nameModal = document.getElementById("nameModal");
+        const nameInput = document.getElementById("nameInput");
+        const nameBtn = document.getElementById("nameBtn");
+
+        function closeNameModal(){
+        nameModal.style.display = "none";
+        }
+
+        function submitName(){
+        const v = (nameInput.value || "").trim();
+        playerName = v ? v : "Player";
+        localStorage.setItem("candy_playerName", playerName);
+        closeNameModal();
+        startGame();
+        }
+
+        nameInput.value = localStorage.getItem("candy_playerName") || "";
+        setTimeout(() => nameInput.focus(), 50);
+
+        nameBtn.addEventListener("click", submitName);
+        nameInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") submitName();
         });
 
-        cell.appendChild(candy);
-        gridElement.appendChild(cell);
-        squares.push(candy);
-      }
 
-      setTimeout(() => checkAllMatches(true, false), 100);
-    }
+        function getColor(el){
+        if(!el) return null;
+        for(const c of candyColors) if(el.classList.contains(c)) return c;
+        return null;
+        }
 
-    function clearSelection(){
-      if(firstSelected) firstSelected.classList.remove('selected');
-      firstSelected = null;
-      secondSelected = null;
-    }
+        function setColor(el, colorOrNull){
+        for(const c of candyColors) el.classList.remove(c);
 
-    function swapCandies(c1, c2){
-      const color1 = getColor(c1);
-      const color2 = getColor(c2);
+        // remove variants + powerups
+        for (const c of candyColors) el.classList.remove("pu-" + c);
+        el.classList.remove('striped','bomb');
 
-      const p1Striped = isStriped(c1);
-      const p1Bomb = isBomb(c1);
-      const p2Striped = isStriped(c2);
-      const p2Bomb = isBomb(c2);
+        if(colorOrNull){
+            el.classList.add(colorOrNull);
+            // base candy => no pu class needed unless it is powerup
+        }
+        }
 
-      setColor(c1, color2);
-      setColor(c2, color1);
 
-      if(p2Striped) c1.classList.add('striped');
-      if(p2Bomb) c1.classList.add('bomb');
-      if(p1Striped) c2.classList.add('striped');
-      if(p1Bomb) c2.classList.add('bomb');
-    }
+        function isStriped(el){ return el.classList.contains('striped'); }
+        function isBomb(el){ return el.classList.contains('bomb'); }
 
-    function areAdjacent(id1, id2){
-      return [id1-1,id1+1,id1-width,id1+width].includes(id2);
-    }
+        function showFloatingText(element, text) {
+        const rect = element.getBoundingClientRect();
+        const boardRect = gridElement.getBoundingClientRect();
+        const x = rect.left - boardRect.left;
+        const y = rect.top - boardRect.top;
 
-    function consumeMove(){
-      moves--;
-      movesElement.textContent = moves;
-      if(moves <= 0){
-        endGame("Out of moves!");
-        return false;
-      }
-      return true;
-    }
+        const el = document.createElement('div');
+        el.classList.add('floating-text');
+        el.innerText = text;
+        el.style.left = x + 'px';
+        el.style.top = y + 'px';
+        gridElement.appendChild(el);
+        setTimeout(() => el.remove(), 1000);
+        }
 
-    function handleCandyTap(){
-      if(moves <= 0 || isBusy) return;
+        function screenShake(){
+        gameLayout.classList.remove('shake');
+        void gameLayout.offsetWidth;
+        gameLayout.classList.add('shake');
+        }
 
-      if(!firstSelected){
-        firstSelected = this;
-        this.classList.add('selected');
-        return;
-      }
+        function createBoard(){
+        gridElement.innerHTML = '';
+        squares = [];
 
-      secondSelected = this;
-      if(firstSelected === secondSelected){
-        clearSelection();
-        return;
-      }
+        for(let i=0;i<width*width;i++){
+            const cell = document.createElement('div');
+            cell.classList.add('cell');
 
-      if(!consumeMove()) return;
+            const candy = document.createElement('div');
+            candy.classList.add('candy');
+            candy.id = i;
 
-      const id1 = parseInt(firstSelected.id, 10);
-      const id2 = parseInt(secondSelected.id, 10);
+            const randomColor = candyColors[Math.floor(Math.random()*candyColors.length)];
+            candy.classList.add(randomColor);
 
-      if(!areAdjacent(id1, id2)){
-        clearSelection();
-        firstSelected = this;
-        firstSelected.classList.add('selected');
-        return;
-      }
+            // ✅ better mobile input
+            candy.addEventListener('pointerdown', (e) => {
+            e.preventDefault();
+            handleCandyTap.call(candy);
+            });
 
-      isBusy = true;
-      swapCandies(firstSelected, secondSelected);
+            cell.appendChild(candy);
+            gridElement.appendChild(cell);
+            squares.push(candy);
+        }
 
-      setTimeout(() => {
+        setTimeout(() => checkAllMatches(true, false), 100);
+        }
+
+        function clearSelection(){
+        if(firstSelected) firstSelected.classList.remove('selected');
+        firstSelected = null;
+        secondSelected = null;
+        }
+
+        function swapCandies(c1, c2){
+        const color1 = getColor(c1);
+        const color2 = getColor(c2);
+
+        const p1Striped = isStriped(c1);
+        const p1Bomb = isBomb(c1);
+        const p2Striped = isStriped(c2);
+        const p2Bomb = isBomb(c2);
+
+        const v1 = getVariantClassFromCandy(c1); // pu-red etc (based on base color)
+        const v2 = getVariantClassFromCandy(c2);
+
+        setColor(c1, color2);
+        setColor(c2, color1);
+
+        // restore powerups
+        if(p2Striped) c1.classList.add('striped');
+        if(p2Bomb) c1.classList.add('bomb');
+        if(p1Striped) c2.classList.add('striped');
+        if(p1Bomb) c2.classList.add('bomb');
+
+        // restore variants for powerups only
+        if(p2Striped || p2Bomb) setVariantClass(c1, color2);
+        if(p1Striped || p1Bomb) setVariantClass(c2, color1);
+        }
+
+
+        function getVariantClassFromCandy(el){
+        const base = getColor(el);
+        return base ? ("pu-" + base) : null;
+        }
+
+        function setVariantClass(el, baseColor){
+        // remove any old pu-* class
+        for (const c of candyColors) el.classList.remove("pu-" + c);
+        if (baseColor) el.classList.add("pu-" + baseColor);
+        }
+
+
+        function areAdjacent(id1, id2){
+        return [id1-1,id1+1,id1-width,id1+width].includes(id2);
+        }
+
+        function consumeMove(){
+        moves--;
+        movesElement.textContent = moves;
+        return true; // ✅ don't end game here
+        }
+
+        function maybeEndGame(){
+        if(gameOver) return;
+        if(moves <= 0){
+            gameOver = true;
+            endGame("Out of moves!");
+        }
+        }
+
+
+        function handleCandyTap(){
+        if(moves <= 0 || isBusy) return;
+
+        if(!firstSelected){
+            firstSelected = this;
+            this.classList.add('selected');
+            return;
+        }
+
+        secondSelected = this;
+        if(firstSelected === secondSelected){
+            clearSelection();
+            return;
+        }
+
+        if(!consumeMove()) return;
+
+        const id1 = parseInt(firstSelected.id, 10);
+        const id2 = parseInt(secondSelected.id, 10);
+
+        if(!areAdjacent(id1, id2)){
+            clearSelection();
+            firstSelected = this;
+            firstSelected.classList.add('selected');
+            return;
+        }
+
+        isBusy = true;
+        swapCandies(firstSelected, secondSelected);
+
+        setTimeout(() => {
         const matched = checkAllMatches(true, true);
         if(!matched){
-          swapCandies(firstSelected, secondSelected);
+            swapCandies(firstSelected, secondSelected);
         }
         clearSelection();
         isBusy = false;
-      }, 250);
-    }
 
-    function checkAllMatches(doClear, isPlayerMove){
-      let matchedIndices = new Set();
-      let powerUpCreation = [];
+        // ✅ NOW end game only AFTER scoring has applied
+        maybeEndGame();
+        }, 250);
 
-      // horizontal
-      for(let r=0;r<width;r++){
-        for(let c=0;c<width-2;c++){
-          let i = r*width + c;
-          let color = getColor(squares[i]);
-          if(!color) continue;
-
-          let match = [i];
-          let k = c+1;
-          while(k < width){
-            let next = r*width + k;
-            if(getColor(squares[next]) === color){ match.push(next); k++; }
-            else break;
-          }
-
-          if(match.length >= 3){
-            match.forEach(idx => matchedIndices.add(idx));
-            if(match.length === 4) powerUpCreation.push({idx: match[1], type:'striped'});
-            if(match.length >= 5) powerUpCreation.push({idx: match[2], type:'bomb'});
-            c = k - 1;
-          }
         }
-      }
 
-      // vertical
-      for(let c=0;c<width;c++){
-        for(let r=0;r<width-2;r++){
-          let i = r*width + c;
-          let color = getColor(squares[i]);
-          if(!color) continue;
+        function checkAllMatches(doClear, isPlayerMove){
+            let triggeredPowerups = 0;
+        let matchedIndices = new Set();
+        let powerUpCreation = [];
 
-          let match = [i];
-          let k = r+1;
-          while(k < width){
-            let next = k*width + c;
-            if(getColor(squares[next]) === color){ match.push(next); k++; }
-            else break;
-          }
+        // horizontal
+        for(let r=0;r<width;r++){
+            for(let c=0;c<width-2;c++){
+            let i = r*width + c;
+            let color = getColor(squares[i]);
+            if(!color) continue;
 
-          if(match.length >= 3){
-            match.forEach(idx => matchedIndices.add(idx));
-            if(match.length === 4) powerUpCreation.push({idx: match[1], type:'striped'});
-            if(match.length >= 5) powerUpCreation.push({idx: match[2], type:'bomb'});
-            r = k - 1;
-          }
+            let match = [i];
+            let k = c+1;
+            while(k < width){
+                let next = r*width + k;
+                if(getColor(squares[next]) === color){ match.push(next); k++; }
+                else break;
+            }
+
+            if(match.length >= 3){
+                match.forEach(idx => matchedIndices.add(idx));
+                if(match.length === 4) powerUpCreation.push({idx: match[1], type:'striped'});
+                if(match.length >= 5) powerUpCreation.push({idx: match[2], type:'bomb'});
+                c = k - 1;
+            }
+            }
         }
-      }
 
-      if(matchedIndices.size === 0) return false;
-      if(!doClear) return true;
+        // vertical
+        for(let c=0;c<width;c++){
+            for(let r=0;r<width-2;r++){
+            let i = r*width + c;
+            let color = getColor(squares[i]);
+            if(!color) continue;
 
-      // trigger powerups inside matches
-      let processing = Array.from(matchedIndices);
-      let processed = new Set();
+            let match = [i];
+            let k = r+1;
+            while(k < width){
+                let next = k*width + c;
+                if(getColor(squares[next]) === color){ match.push(next); k++; }
+                else break;
+            }
 
-      while(processing.length){
-        let currentIdx = processing.pop();
-        if(processed.has(currentIdx)) continue;
-        processed.add(currentIdx);
+            if(match.length >= 3){
+                match.forEach(idx => matchedIndices.add(idx));
+                if(match.length === 4) powerUpCreation.push({idx: match[1], type:'striped'});
+                if(match.length >= 5) powerUpCreation.push({idx: match[2], type:'bomb'});
+                r = k - 1;
+            }
+            }
+        }
 
-        let el = squares[currentIdx];
+        if(matchedIndices.size === 0) return false;
+        if(!doClear) return true;
+
+        // trigger powerups inside matches
+        let processing = Array.from(matchedIndices);
+        let processed = new Set();
+
+        while(processing.length){
+            let currentIdx = processing.pop();
+            if(processed.has(currentIdx)) continue;
+            processed.add(currentIdx);
+
+            let el = squares[currentIdx];
 
         if(isStriped(el)){
-          let rowStart = Math.floor(currentIdx / width) * width;
-          for(let k=0;k<width;k++){
+        // ✅ count a trigger only once (when this powerup is processed)
+        if(isPlayerMove) triggeredPowerups++;
+
+        let rowStart = Math.floor(currentIdx / width) * width;
+        for(let k=0;k<width;k++){
             let t = rowStart + k;
             if(!matchedIndices.has(t)) processing.push(t);
             matchedIndices.add(t);
-          }
+        }
         }
 
         if(isBomb(el)){
-          let cx = currentIdx % width;
-          let cy = Math.floor(currentIdx / width);
-          for(let y=cy-1;y<=cy+1;y++){
+        // ✅ count a trigger only once (when this powerup is processed)
+        if(isPlayerMove) triggeredPowerups++;
+
+        let cx = currentIdx % width;
+        let cy = Math.floor(currentIdx / width);
+        for(let y=cy-1;y<=cy+1;y++){
             for(let x=cx-1;x<=cx+1;x++){
-              if(x>=0 && x<width && y>=0 && y<width){
+            if(x>=0 && x<width && y>=0 && y<width){
                 let t = y*width + x;
                 if(!matchedIndices.has(t)) processing.push(t);
                 matchedIndices.add(t);
-              }
             }
-          }
+            }
         }
-      }
+        }
 
-      let points = matchedIndices.size * 20;
-      if(matchedIndices.size > 5) points += 100;
-      if(matchedIndices.size > 10) points += 500;
+        }
 
-      score += points;
-      scoreElement.textContent = score;
+        let points = matchedIndices.size * 20;
+        if(matchedIndices.size > 5) points += 100;
+        if(matchedIndices.size > 10) points += 500;
 
-      if(matchedIndices.size > 4) screenShake();
+        score += points;
+        scoreElement.textContent = score;
 
-      let centerIdx = Array.from(matchedIndices)[Math.floor(matchedIndices.size/2)];
-      if(isPlayerMove && centerIdx !== undefined){
-        showFloatingText(squares[centerIdx], `+${points}`);
-      }
+        // ✅ reward +1 move per triggered powerup (player move only)
+        if(isPlayerMove && triggeredPowerups > 0){
+        moves += triggeredPowerups;
+        movesElement.textContent = moves;
+        }
 
-      matchedIndices.forEach(idx => {
-        const el = squares[idx];
-        el.classList.add('matching');
-        setTimeout(() => {
-          el.classList.remove('matching','striped','bomb');
-          setColor(el, null);
-        }, 220);
-      });
 
-      setTimeout(() => {
-        powerUpCreation.forEach(p => {
-          const el = squares[p.idx];
-          let c = candyColors[Math.floor(Math.random()*candyColors.length)];
-          setColor(el, c);
-          if(p.type === 'striped') el.classList.add('striped');
-          if(p.type === 'bomb') el.classList.add('bomb');
+        if(matchedIndices.size > 4) screenShake();
+
+        let centerIdx = Array.from(matchedIndices)[Math.floor(matchedIndices.size/2)];
+        if(isPlayerMove && centerIdx !== undefined){
+            showFloatingText(squares[centerIdx], `+${points}`);
+        }
+
+        matchedIndices.forEach(idx => {
+            const el = squares[idx];
+            el.classList.add('matching');
+            setTimeout(() => {
+            el.classList.remove('matching','striped','bomb');
+            setColor(el, null);
+            }, 220);
         });
-      }, 230);
 
-      return true;
-    }
-
-    function refillBoard(){
-      for(let c=0;c<width;c++){
-        for(let r=width-1;r>=0;r--){
-          let idx = r*width + c;
-          if(!getColor(squares[idx])){
-            for(let k=r-1;k>=0;k--){
-              let above = k*width + c;
-              let col = getColor(squares[above]);
-              if(col){
-                setColor(squares[idx], col);
-                if(isStriped(squares[above])) squares[idx].classList.add('striped');
-                if(isBomb(squares[above])) squares[idx].classList.add('bomb');
-                setColor(squares[above], null);
-                break;
-              }
+        setTimeout(() => {
+            powerUpCreation.forEach(p => {
+            const el = squares[p.idx];
+            let c = candyColors[Math.floor(Math.random()*candyColors.length)];
+            setColor(el, c);
+            if(p.type === 'striped'){
+            el.classList.add('striped');
+            setVariantClass(el, getColor(el));
             }
-          }
+            if(p.type === 'bomb'){
+            el.classList.add('bomb');
+            setVariantClass(el, getColor(el));
+            }
+
+            });
+        }, 230);
+
+        return true;
         }
-      }
 
-      for(let i=0;i<width;i++){
-        if(!getColor(squares[i])){
-          setColor(squares[i], candyColors[Math.floor(Math.random()*candyColors.length)]);
+        function refillBoard(){
+        for(let c=0;c<width;c++){
+            for(let r=width-1;r>=0;r--){
+            let idx = r*width + c;
+            if(!getColor(squares[idx])){
+                for(let k=r-1;k>=0;k--){
+                let above = k*width + c;
+                let col = getColor(squares[above]);
+                if(col){
+                    setColor(squares[idx], col);
+
+                    if(isStriped(squares[above])) {
+                    squares[idx].classList.add('striped');
+                    setVariantClass(squares[idx], col);   // ✅ keep correct variant
+                    }
+
+                    if(isBomb(squares[above])) {
+                    squares[idx].classList.add('bomb');
+                    setVariantClass(squares[idx], col);   // ✅ keep correct variant
+                    }
+
+                    setColor(squares[above], null);
+
+                    break;
+                }
+                }
+            }
+            }
         }
-      }
-    }
 
-    function endGame(reasonText){
-      document.getElementById('game-over-modal').style.display = 'flex';
-      document.getElementById('final-score').textContent = score;
-      document.getElementById('gameOverReason').textContent = reasonText || "You scored:";
+        for(let i=0;i<width;i++){
+            if(!getColor(squares[i])){
+            setColor(squares[i], candyColors[Math.floor(Math.random()*candyColors.length)]);
+            }
+        }
+        }
 
-      submitScoreToSheet(playerName, score);
-      setTimeout(loadGlobalTop5, 900);
-      moves = 0;
-    }
+        function endGame(reasonText){
+        document.getElementById('game-over-modal').style.display = 'flex';
+        document.getElementById('final-score').textContent = score;
+        document.getElementById('gameOverReason').textContent = reasonText || "You scored:";
 
-    createBoard();
+        submitScoreToSheet(playerName, score);
+        setTimeout(loadGlobalTop5, 900);
+        moves = 0;
+        }
 
-    setInterval(() => {
-      if(isBusy || moves <= 0) return;
-      const cleared = checkAllMatches(true, false);
-      if(cleared) setTimeout(refillBoard, 250);
-      else refillBoard();
-    }, 450);
-  </script>
-</body>
-</html>
+        createBoard();
 
+        setInterval(() => {
+        if(isBusy || moves <= 0) return;
+        const cleared = checkAllMatches(true, false);
+        if(cleared) setTimeout(refillBoard, 250);
+        else refillBoard();
+        }, 450);
+    </script>
+
+    </body>
+    </html>
