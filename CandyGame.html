@@ -38,7 +38,7 @@
 
         .game-layout{
         display:flex;
-        gap:30px;
+        gap:12px;
         align-items:flex-start;
         max-width:1100px;
         width:100%;
@@ -351,71 +351,144 @@
         .leaderboard-scroll{ max-height: 200px; }
         }
         .name-modal{
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.55);
-  backdrop-filter: blur(8px);
-  display: grid;
-  place-items: center;
-  z-index: 2000;
-}
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.55);
+        backdrop-filter: blur(8px);
+        display: grid;
+        place-items: center;
+        z-index: 2000;
+        }
 
-.name-card{
-  width: min(420px, 92vw);
-  background: rgba(255,255,255,0.95);
-  border-radius: 26px;
-  padding: 18px 18px 16px;
-  box-shadow: 0 25px 70px rgba(0,0,0,0.35);
-  text-align: left;
-}
+        .name-card{
+        width: min(420px, 92vw);
+        background: rgba(255,255,255,0.95);
+        border-radius: 26px;
+        padding: 18px 18px 16px;
+        box-shadow: 0 25px 70px rgba(0,0,0,0.35);
+        text-align: left;
+        }
 
-.name-card h2{
-  margin: 0 0 6px;
-  font-size: 24px;
-  color: #222;
-  font-weight: 900;
-}
+        .name-card h2{
+        margin: 0 0 6px;
+        font-size: 24px;
+        color: #222;
+        font-weight: 900;
+        }
 
-.name-card p{
-  margin: 0 0 14px;
-  color: #666;
-  font-weight: 700;
-  font-size: 13px;
-}
+        .name-card p{
+        margin: 0 0 14px;
+        color: #666;
+        font-weight: 700;
+        font-size: 13px;
+        }
 
-.name-card input{
-  width: 100%;
-  padding: 14px 14px;
-  border-radius: 16px;
-  border: 1px solid #e6e6e6;
-  outline: none;
-  font-size: 16px;
-  font-weight: 800;
-}
+        .name-card input{
+        width: 100%;
+        padding: 14px 14px;
+        border-radius: 16px;
+        border: 1px solid #e6e6e6;
+        outline: none;
+        font-size: 16px;
+        font-weight: 800;
+        }
 
-.name-card input:focus{
-  border-color: rgba(255,107,157,0.6);
-  box-shadow: 0 0 0 4px rgba(255,107,157,0.15);
-}
+        .name-card input:focus{
+        border-color: rgba(255,107,157,0.6);
+        box-shadow: 0 0 0 4px rgba(255,107,157,0.15);
+        }
 
-.name-btn{
-  margin-top: 12px;
-  width: 100%;
-  max-width: none;
-  background: var(--accent-pink);
-}
+        .name-btn{
+        margin-top: 12px;
+        width: 100%;
+        max-width: none;
+        background: var(--accent-pink);
+        }
 
-.name-hint{
-  margin-top: 10px;
-  font-size: 12px;
-  color: #888;
-  font-weight: 700;
-}
+        .name-hint{
+        margin-top: 10px;
+        font-size: 12px;
+        color: #888;
+        font-weight: 700;
+        }
+
+        .gameover-ads{
+        margin-top: 12px;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        }
+
+        /* hide both by default */
+        #go-ad-320, #go-ad-300{ display:none; }
+
+        /* phones */
+        @media (max-width: 560px){
+        #go-ad-320{ display:block; }
+        }
+
+        /* tablet + laptop */
+        @media (min-width: 561px){
+        #go-ad-300{ display:block; }
+        }
+        /* Only on big screens: push game slightly right */
+        @media (min-width: 1101px){
+        .game-layout{
+            margin-left: 50px;   /* adjust 60/90/120 */
+        }
+        .ui-panel{
+            max-width: 344px;
+        }
+        }
+
+        /* make modal scroll if ad + content is tall (small screens) */
+        .modal-content{
+        max-height: calc(100dvh - 40px);
+        overflow:auto;
+        }
+
+        /* Side ads: only show on wide desktop so it won't overlap the game */
+        .side-ad{
+        position: fixed;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 174px;
+        z-index: 900;
+        pointer-events: auto;
+        }
+
+        .side-ad.left{ left: 6px; }
+        .side-ad.right{ right: 6px; }
+
+        /* Basic ad frame */
+        .ad-slab{
+        background:#fff;
+        border:1px solid #e5e7eb;
+        border-radius:14px;
+        padding:6px;
+        }
+
+        /* Hide on tablet/mobile */
+        @media (max-width: 1100px){
+        .side-ad{ display:none !important; }
+        }
+
+
+
 
     </style>
     </head>
 
     <body>
+        <!-- ✅ Side Ads (Desktop only) -->
+    <div id="sideAdLeftWrap" class="side-ad left" style="display:none;">
+    <div id="sideAdLeft" class="ad-slab">Loading ad…</div>
+    </div>
+
+    <div id="sideAdRightWrap" class="side-ad right" style="display:none;">
+    <div id="sideAdRight" class="ad-slab">Loading ad…</div>
+    </div>
+
     <div class="game-layout" id="gameLayout">
         <div class="board-container">
         <div class="grid" id="grid"></div>
@@ -459,10 +532,22 @@
 
     <div id="game-over-modal">
         <div class="modal-content">
+             <!-- ✅ Game Over Ads -->
+        <div class="gameover-ads">
+        <!-- Mobile banner -->
+        <div id="go-ad-320" class="ad-inline ad-slab">Loading ad…</div>
+
+        <!-- Tablet/Laptop rectangle -->
+        <div id="go-ad-300" class="ad-inline ad-slab">Loading ad…</div>
+        </div>
         <h1 style="font-size: 2.2em; color: var(--accent-pink); margin: 0;">Game Over!</h1>
         <p id="gameOverReason">You scored:</p>
         <div class="value" id="final-score">0</div>
+
+       
+
         <button onclick="location.reload()">Try Again</button>
+
         </div>
     </div>
 
@@ -490,7 +575,7 @@
 
         let squares = [];
         let score = 0;
-        let moves = 25;
+        let moves = 2;
 
         let firstSelected = null;
         let secondSelected = null;
@@ -955,12 +1040,23 @@
         }
 
         function endGame(reasonText){
-        document.getElementById('game-over-modal').style.display = 'flex';
+        // show modal
+        const modal = document.getElementById('game-over-modal');
+        modal.style.display = 'flex';
+
+        // update text
         document.getElementById('final-score').textContent = score;
         document.getElementById('gameOverReason').textContent = reasonText || "You scored:";
 
+        // mount ads AFTER modal becomes visible
+        setTimeout(() => {
+            mountGameOverAds();
+        }, 150);
+
+        // submit score etc.
         submitScoreToSheet(playerName, score);
         setTimeout(loadGlobalTop5, 900);
+
         moves = 0;
         }
 
@@ -972,8 +1068,131 @@
         if(cleared) setTimeout(refillBoard, 250);
         else refillBoard();
         }, 450);
+
+        // ✅ Adsterra sequential loader (prevents atOptions collisions)
+        function loadAdsterraSequential(container, key, w, h) {
+        return new Promise((resolve) => {
+            if (!container) return resolve(false);
+
+            container.innerHTML = ""; // clear placeholder
+
+            const def = document.createElement("script");
+            def.type = "text/javascript";
+            def.text = `
+            window.atOptions = {
+                key: '${key}',
+                format: 'iframe',
+                height: ${h},
+                width: ${w},
+                params: {}
+            };
+            `;
+
+            const inv = document.createElement("script");
+            inv.type = "text/javascript";
+            inv.src  = "https://www.highperformanceformat.com/" + key + "/invoke.js";
+            inv.onload = () => resolve(true);
+            inv.onerror = () => resolve(false);
+
+            container.appendChild(def);
+            container.appendChild(inv);
+        });
+        }
+
+        let adQueue = Promise.resolve();
+
+        function queueAd(container, key, w, h){
+        adQueue = adQueue.then(() => loadAdsterraSequential(container, key, w, h));
+        return adQueue;
+        }
+
+
+        // ✅ Side Ad keys (your provided units)
+        const KEY_LEFT_160x600  = "001d2d159d6e43ef2e7fbbbcd1832bc4"; // 160x600
+        const KEY_RIGHT_160x300 = "f9a2403e20a69cbd4e016e13ae4e06e1"; // 160x300
+
+        let _sideRotator = null;
+        let _side = "left";
+
+        function sideAdsAllowed(){
+        return window.matchMedia("(min-width: 1101px)").matches;
+        }
+
+        async function mountOneSideAd(){
+        const leftWrap  = document.getElementById("sideAdLeftWrap");
+        const rightWrap = document.getElementById("sideAdRightWrap");
+        const leftBox   = document.getElementById("sideAdLeft");
+        const rightBox  = document.getElementById("sideAdRight");
+
+        // If not desktop wide, hide both
+        if (!sideAdsAllowed()){
+            leftWrap.style.display = "none";
+            rightWrap.style.display = "none";
+            return;
+        }
+
+        // show ONLY one side at a time (prevents atOptions collision + clutter)
+        if (_side === "left"){
+            rightWrap.style.display = "none";
+            leftWrap.style.display = "block";
+            await queueAd(leftBox,  KEY_LEFT_160x600, 160, 600);
+        } else {
+            leftWrap.style.display = "none";
+            rightWrap.style.display = "block";
+            await queueAd(rightBox, KEY_RIGHT_160x300, 160, 300);
+
+        }
+        }
+
+        function startSideAdRotation(){
+        if (_sideRotator) clearInterval(_sideRotator);
+
+        // load first immediately
+        mountOneSideAd();
+
+        // rotate every 45 seconds (change if you want)
+        _sideRotator = setInterval(() => {
+            _side = (_side === "left") ? "right" : "left";
+            mountOneSideAd();
+        }, 25000);
+        }
+
+        // start on load + on resize
+        window.addEventListener("load", startSideAdRotation);
+
+        let _rzT;
+        window.addEventListener("resize", () => {
+        clearTimeout(_rzT);
+        _rzT = setTimeout(startSideAdRotation, 400);
+        });
+
+
+        // ✅ your existing keys (same as your index.html)
+        const KEY_RECT_1     = "f7c53ea38f793fd4f60f274c989e86a3"; // 300x250
+        const KEY_BANNER_320 = "4404d2d96e9fdd2085c017e2ecbf8d84"; // 320x50
+
+        let _goAdsLoaded = false;
+
+        async function mountGameOverAds(){
+        if (_goAdsLoaded) return;
+
+        const ad320 = document.getElementById("go-ad-320");
+        const ad300 = document.getElementById("go-ad-300");
+
+        const isMobile = window.matchMedia("(max-width: 560px)").matches;
+
+        if (isMobile){
+            if (ad320) await queueAd(ad320, KEY_BANNER_320, 320, 50);
+
+        } else {
+            if (ad300) await queueAd(ad300, KEY_RECT_1, 300, 250);
+
+        }
+
+        _goAdsLoaded = true;
+        }
+
     </script>
 
     </body>
     </html>
-
