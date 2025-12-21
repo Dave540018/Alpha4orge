@@ -192,6 +192,55 @@
   border:1px solid #e5e7eb; background:#fff; padding:9px 12px; border-radius:10px;
   font-weight:700; color:#0b5cab; cursor:pointer;
 }
+.nav-dropdown{
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.nav-dropbtn{
+  background: transparent;
+  border: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  padding: 0;
+}
+
+.nav-dropmenu{
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 160px;
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px;
+  background: rgba(0,0,0,0.85);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  z-index: 999;
+}
+
+.nav-dropmenu a{
+  padding: 8px 10px;
+  border-radius: 10px;
+  text-decoration: none;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.nav-dropmenu a:hover{
+  background: rgba(255,255,255,0.10);
+}
+
+/* Desktop hover */
+@media (hover: hover){
+  .nav-dropdown:hover .nav-dropmenu{
+    display: flex;
+  }
+}
 
 </style>
 </head>
@@ -219,17 +268,31 @@
 
     <!-- Right side: Navbar -->
     <!-- Right side: Navbar -->
+    <!-- Right side: Navbar -->
     <button class="menu-btn" id="menuBtn" aria-label="Toggle menu">Menu</button>
+    
     <nav class="nav" id="nav" style="display:flex;gap:14px;">
       <a href="index.html">Home</a>
       <a href="#/figma" data-route>Figma Files</a>
       <a href="#/printables" data-route>Printables</a>
       <a href="comics.html" class="active">Comics</a>
       <a href="blog.html">Blog</a>
-      <a href="CandyGame.html" class="active">Candy Game</a>
+    
+      <!-- ✅ Games Dropdown -->
+      <div class="nav-dropdown" id="gamesDropdown">
+        <button class="nav-dropbtn" type="button" aria-haspopup="true" aria-expanded="false">
+          Games ▾
+        </button>
+        <div class="nav-dropmenu" role="menu">
+          <a href="CandyGame.html" role="menuitem">Candy Game</a>
+          <a href="TetrisGame.html" role="menuitem">Tetris</a>
+        </div>
+      </div>
+    
       <a href="about.html">About</a>
       <a href="contact.html">Contact</a>
     </nav>
+
 
   </div>
 </header>
@@ -321,6 +384,42 @@
   function openDetail(route, code){
   location.hash = `#/${route}/${code}`;
 }
+</script>
+<script>
+  (function () {
+    const dd = document.getElementById("gamesDropdown");
+    if (!dd) return;
+
+    const btn = dd.querySelector(".nav-dropbtn");
+    const menu = dd.querySelector(".nav-dropmenu");
+
+    function openMenu() {
+      menu.style.display = "flex";
+      btn.setAttribute("aria-expanded", "true");
+    }
+    function closeMenu() {
+      menu.style.display = "none";
+      btn.setAttribute("aria-expanded", "false");
+    }
+    function toggleMenu(e) {
+      e.preventDefault();
+      const isOpen = menu.style.display === "flex";
+      isOpen ? closeMenu() : openMenu();
+    }
+
+    // Tap/click to toggle
+    btn.addEventListener("click", toggleMenu);
+
+    // Close when clicking outside
+    document.addEventListener("click", (e) => {
+      if (!dd.contains(e.target)) closeMenu();
+    });
+
+    // Close on Escape
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeMenu();
+    });
+  })();
 </script>
 
 
@@ -797,6 +896,7 @@ window.addEventListener('resize', () => {
 
 </body>
 </html>
+
 
 
 
