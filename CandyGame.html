@@ -186,6 +186,41 @@
         100%{ transform: translate(var(--tx), var(--ty)) scale(0); opacity:0;}
         }
 
+        /* NEW ANIMATION STYLES */
+        .aura-text {
+            position: absolute;
+            color: #fff;
+            font-weight: 900;
+            font-size: 38px;
+            text-transform: uppercase;
+            text-shadow: 0 0 15px rgba(255, 107, 157, 0.8), 3px 3px 0px #000;
+            pointer-events: none;
+            z-index: 1000;
+            white-space: nowrap;
+            animation: auraPop 0.8s ease-out forwards;
+        }
+
+        @keyframes auraPop {
+            0% { transform: scale(0.5) translateY(0); opacity: 0; }
+            30% { transform: scale(1.3) translateY(-20px); opacity: 1; }
+            100% { transform: scale(1) translateY(-80px); opacity: 0; }
+        }
+
+        .floating-text{
+            position:absolute;
+            color:white;
+            font-weight:900;
+            font-size:24px;
+            text-shadow: 2px 2px 0 rgba(0,0,0,0.5);
+            pointer-events:none;
+            z-index:100;
+            animation: floatUp 1s forwards;
+        }
+        @keyframes floatUp{
+            0%{ transform: translateY(0) scale(1); opacity:1;}
+            100%{ transform: translateY(-50px) scale(1.2); opacity:0;}
+        }
+
         .ui-panel{
         flex:1;
         background: var(--panel-bg);
@@ -584,6 +619,27 @@
         // ✅ your Apps Script URL
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwFzTnRSSv5t4-z5Iu1U_z5cTcX7I7WlmQkyuNkF6T7THrjO6lDs59lGS1tG2OkzPmU5A/exec";
 
+        // --- NEW FEEDBACK FUNCTION ---
+        function triggerAuraFeedback(element, type = "normal") {
+            const words = ["WOW!", "AWESOME!", "COOL!", "AURA!", "CRUNCHY!", "NICE!"];
+            const word = words[Math.floor(Math.random() * words.length)];
+            
+            const rect = element.getBoundingClientRect();
+            const gridRect = gridElement.getBoundingClientRect();
+            
+            const aura = document.createElement('div');
+            aura.className = 'aura-text';
+            aura.innerText = word;
+            
+            // Center the text on the candy
+            aura.style.left = (rect.left - gridRect.left + rect.width / 2) + 'px';
+            aura.style.top = (rect.top - gridRect.top + rect.height / 2) + 'px';
+            aura.style.transform = "translate(-50%, -50%)";
+
+            gridElement.appendChild(aura);
+            setTimeout(() => aura.remove(), 800);
+        }
+
         async function submitScoreToSheet(name, score) {
         try {
             await fetch(SCRIPT_URL, {
@@ -854,154 +910,148 @@
 
         }
 
-        function checkAllMatches(doClear, isPlayerMove){
+        function checkAllMatches(doClear, isPlayerMove) {
             let triggeredPowerups = 0;
-        let matchedIndices = new Set();
-        let powerUpCreation = [];
+            let matchedIndices = new Set();
+            let powerUpCreation = [];
 
-        // horizontal
-        for(let r=0;r<width;r++){
-            for(let c=0;c<width-2;c++){
-            let i = r*width + c;
-            let color = getColor(squares[i]);
-            if(!color) continue;
-
-            let match = [i];
-            let k = c+1;
-            while(k < width){
-                let next = r*width + k;
-                if(getColor(squares[next]) === color){ match.push(next); k++; }
-                else break;
+            // --- [Horizontal & Vertical Logic remains the same] ---
+            for (let r = 0; r < width; r++) {
+                for (let c = 0; c < width - 2; c++) {
+                    let i = r * width + c;
+                    let color = getColor(squares[i]);
+                    if (!color) continue;
+                    let match = [i];
+                    let k = c + 1;
+                    while (k < width) {
+                        let next = r * width + k;
+                        if (getColor(squares[next]) === color) { match.push(next); k++; }
+                        else break;
+                    }
+                    if (match.length >= 3) {
+                        match.forEach(idx => matchedIndices.add(idx));
+                        if (match.length === 4) powerUpCreation.push({ idx: match[1], type: 'striped' });
+                        if (match.length >= 5) powerUpCreation.push({ idx: match[2], type: 'bomb' });
+                        c = k - 1;
+                    }
+                }
+            }
+            for (let c = 0; c < width; c++) {
+                for (let r = 0; r < width - 2; r++) {
+                    let i = r * width + c;
+                    let color = getColor(squares[i]);
+                    if (!color) continue;
+                    let match = [i];
+                    let k = r + 1;
+                    while (k < width) {
+                        let next = k * width + c;
+                        if (getColor(squares[next]) === color) { match.push(next); k++; }
+                        else break;
+                    }
+                    if (match.length >= 3) {
+                        match.forEach(idx => matchedIndices.add(idx));
+                        if (match.length === 4) powerUpCreation.push({ idx: match[1], type: 'striped' });
+                        if (match.length >= 5) powerUpCreation.push({ idx: match[2], type: 'bomb' });
+                        r = k - 1;
+                    }
+                }
             }
 
-            if(match.length >= 3){
-                match.forEach(idx => matchedIndices.add(idx));
-                if(match.length === 4) powerUpCreation.push({idx: match[1], type:'striped'});
-                if(match.length >= 5) powerUpCreation.push({idx: match[2], type:'bomb'});
-                c = k - 1;
-            }
-            }
-        }
+            if (matchedIndices.size === 0) return false;
+            if (!doClear) return true;
 
-        // vertical
-        for(let c=0;c<width;c++){
-            for(let r=0;r<width-2;r++){
-            let i = r*width + c;
-            let color = getColor(squares[i]);
-            if(!color) continue;
+            // --- [Powerup Chain Reaction Logic] ---
+            let processing = Array.from(matchedIndices);
+            let processed = new Set();
+            while (processing.length) {
+                let currentIdx = processing.pop();
+                if (processed.has(currentIdx)) continue;
+                processed.add(currentIdx);
+                let el = squares[currentIdx];
 
-            let match = [i];
-            let k = r+1;
-            while(k < width){
-                let next = k*width + c;
-                if(getColor(squares[next]) === color){ match.push(next); k++; }
-                else break;
-            }
-
-            if(match.length >= 3){
-                match.forEach(idx => matchedIndices.add(idx));
-                if(match.length === 4) powerUpCreation.push({idx: match[1], type:'striped'});
-                if(match.length >= 5) powerUpCreation.push({idx: match[2], type:'bomb'});
-                r = k - 1;
-            }
-            }
-        }
-
-        if(matchedIndices.size === 0) return false;
-        if(!doClear) return true;
-
-        // trigger powerups inside matches
-        let processing = Array.from(matchedIndices);
-        let processed = new Set();
-
-        while(processing.length){
-            let currentIdx = processing.pop();
-            if(processed.has(currentIdx)) continue;
-            processed.add(currentIdx);
-
-            let el = squares[currentIdx];
-
-        if(isStriped(el)){
-        // ✅ count a trigger only once (when this powerup is processed)
-        if(isPlayerMove) triggeredPowerups++;
-
-        let rowStart = Math.floor(currentIdx / width) * width;
-        for(let k=0;k<width;k++){
-            let t = rowStart + k;
-            if(!matchedIndices.has(t)) processing.push(t);
-            matchedIndices.add(t);
-        }
-        }
-
-        if(isBomb(el)){
-        // ✅ count a trigger only once (when this powerup is processed)
-        if(isPlayerMove) triggeredPowerups++;
-
-        let cx = currentIdx % width;
-        let cy = Math.floor(currentIdx / width);
-        for(let y=cy-1;y<=cy+1;y++){
-            for(let x=cx-1;x<=cx+1;x++){
-            if(x>=0 && x<width && y>=0 && y<width){
-                let t = y*width + x;
-                if(!matchedIndices.has(t)) processing.push(t);
-                matchedIndices.add(t);
-            }
-            }
-        }
-        }
-
-        }
-
-        let points = matchedIndices.size * 20;
-        if(matchedIndices.size > 5) points += 100;
-        if(matchedIndices.size > 10) points += 500;
-
-        score += points;
-        scoreElement.textContent = score;
-
-        // ✅ reward +1 move per triggered powerup (player move only)
-        if(isPlayerMove && triggeredPowerups > 0){
-        moves += triggeredPowerups;
-        movesElement.textContent = moves;
-        }
-
-
-        if(matchedIndices.size > 4) screenShake();
-
-        let centerIdx = Array.from(matchedIndices)[Math.floor(matchedIndices.size/2)];
-        if(isPlayerMove && centerIdx !== undefined){
-            showFloatingText(squares[centerIdx], `+${points}`);
-        }
-
-        matchedIndices.forEach(idx => {
-            const el = squares[idx];
-            el.classList.add('matching');
-            setTimeout(() => {
-            el.classList.remove('matching','striped','bomb');
-            setColor(el, null);
-            }, 220);
-        });
-
-        setTimeout(() => {
-            powerUpCreation.forEach(p => {
-            const el = squares[p.idx];
-            let c = candyColors[Math.floor(Math.random()*candyColors.length)];
-            setColor(el, c);
-            if(p.type === 'striped'){
-            el.classList.add('striped');
-            setVariantClass(el, getColor(el));
-            }
-            if(p.type === 'bomb'){
-            el.classList.add('bomb');
-            setVariantClass(el, getColor(el));
+                if (isStriped(el)) {
+                    if (isPlayerMove) triggeredPowerups++;
+                    let rowStart = Math.floor(currentIdx / width) * width;
+                    for (let k = 0; k < width; k++) {
+                        let t = rowStart + k;
+                        if (!matchedIndices.has(t)) processing.push(t);
+                        matchedIndices.add(t);
+                    }
+                }
+                if (isBomb(el)) {
+                    if (isPlayerMove) triggeredPowerups++;
+                    let cx = currentIdx % width;
+                    let cy = Math.floor(currentIdx / width);
+                    for (let y = cy - 1; y <= cy + 1; y++) {
+                        for (let x = cx - 1; x <= cx + 1; x++) {
+                            if (x >= 0 && x < width && y >= 0 && y < width) {
+                                let t = y * width + x;
+                                if (!matchedIndices.has(t)) processing.push(t);
+                                matchedIndices.add(t);
+                            }
+                        }
+                    }
+                }
             }
 
+            // --- [Score Calculation] ---
+            let points = matchedIndices.size * 20;
+            if (matchedIndices.size > 5) points += 100;
+            if (matchedIndices.size > 10) points += 500;
+            score += points;
+            scoreElement.textContent = score;
+
+            if (isPlayerMove && triggeredPowerups > 0) {
+                moves += triggeredPowerups;
+                movesElement.textContent = moves;
+            }
+
+            // --- MODIFIED FEEDBACK TRIGGER ---
+            if (isPlayerMove) {
+                let centerIdx = Array.from(matchedIndices)[Math.floor(matchedIndices.size / 2)];
+                
+                // 1. Show the standard floating score
+                if (centerIdx !== undefined) {
+                    showFloatingText(squares[centerIdx], `+${points}`);
+                }
+
+                // 2. Trigger the AURA words if a powerup blew or a big match happened
+                if (triggeredPowerups > 0 || matchedIndices.size >= 5) {
+                    triggerAuraFeedback(squares[centerIdx]); // This calls your animation
+                    screenShake(); 
+                } else if (matchedIndices.size > 4) {
+                    screenShake();
+                }
+            }
+
+            // --- [Cleanup and Powerup Creation] ---
+            matchedIndices.forEach(idx => {
+                const el = squares[idx];
+                el.classList.add('matching');
+                setTimeout(() => {
+                    el.classList.remove('matching', 'striped', 'bomb');
+                    setColor(el, null);
+                }, 220);
             });
-        }, 230);
 
-        return true;
+            setTimeout(() => {
+                powerUpCreation.forEach(p => {
+                    const el = squares[p.idx];
+                    let c = candyColors[Math.floor(Math.random() * candyColors.length)];
+                    setColor(el, c);
+                    if (p.type === 'striped') {
+                        el.classList.add('striped');
+                        setVariantClass(el, getColor(el));
+                    }
+                    if (p.type === 'bomb') {
+                        el.classList.add('bomb');
+                        setVariantClass(el, getColor(el));
+                    }
+                });
+            }, 230);
+
+            return true;
         }
-
         function refillBoard(){
         for(let c=0;c<width;c++){
             for(let r=width-1;r>=0;r--){
@@ -1196,5 +1246,4 @@
 
     </body>
     </html>
-
 
