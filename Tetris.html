@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cyber Tetris: Pro Mobile</title>
+    <title>Noob Tetris</title>
     <style>
         :root {
             --bg: #05050a;
@@ -83,12 +83,12 @@
         .val { font-size: 18px; font-weight: bold; font-family: monospace; color: #fff; text-shadow: 0 0 5px var(--neon-blue); }
 
         /* --- MOBILE CONTROLS --- */
-        .controls {
-            display: none; 
-            grid-template-areas: 
-                ". up ."
-                "left down right"
-                "space space space";
+        .controls{
+            display: none;
+            grid-template-areas:
+                "left rotate right"
+                ". down ."
+                "drop drop drop";
             gap: 8px;
             margin-top: 8px;
             width: 100%;
@@ -111,31 +111,208 @@
             box-shadow: 0 3px 0 rgba(0, 242, 255, 0.2);
         }
 
-        .btn:active { transform: translateY(2px); box-shadow: none; background: var(--neon-blue); color: black; }
-        .btn-rotate { grid-area: up; border-color: var(--neon-pink); color: var(--neon-pink); }
-        .btn-drop { grid-area: space; height: 40px; background: rgba(255,0,123,0.1); border-color: var(--neon-pink); font-size: 12px; font-weight: bold; }
+        .btn-left   { grid-area: left; }
+        .btn-right  { grid-area: right; }
+        .btn-down   { grid-area: down; }
+        .btn-rotate { grid-area: rotate; }  /* (was 'up') */
+        .btn-drop   { grid-area: drop; }    /* (was 'space') */
 
+        .btn:active { transform: translateY(2px); box-shadow: none; background: var(--neon-blue); color: black; }
+        .btn-rotate { grid-area: rotate; border-color: var(--neon-pink); color: var(--neon-pink); }
+        .btn-drop { grid-area: drop; height: 40px; background: rgba(255,0,123,0.1); border-color: var(--neon-pink); font-size: 12px; font-weight: bold; }
+
+
+        /* existing game-over overlay */
         #overlay {
             position: absolute; inset: 0; background: rgba(0,0,0,0.95);
             display: none; flex-direction: column; align-items: center;
             justify-content: center; z-index: 100; border-radius: 20px; text-align: center;
+            padding: 14px 10px;
+            max-height: calc(100dvh - 40px);
+            overflow: auto; /* allow scroll if ads make it taller */
         }
 
-        .highscore-list { width: 80%; padding: 0; margin: 10px 0; font-size: 12px; list-style: none; }
-        .highscore-list li { display: flex; justify-content: space-between; border-bottom: 1px solid #333; padding: 4px 0; color: var(--neon-blue); }
+        /* pause overlay (same visual style, separate div) */
+        #pauseOverlay {
+            position: absolute; inset: 0; background: rgba(0,0,0,0.90);
+            display: none; flex-direction: column; align-items: center;
+            justify-content: center; z-index: 90; border-radius: 20px; text-align: center;
+            padding: 14px 10px;
+        }
+
+        .highscore-list { width: 86%; padding: 0; margin: 10px 0; font-size: 12px; list-style: none; }
+        .highscore-list li { display: flex; justify-content: space-between; border-bottom: 1px solid #333; padding: 4px 0; color: var(--neon-blue); gap: 10px; }
+        .highscore-list li span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 70%; }
 
         .slam { animation: slam 0.15s ease-out; }
         @keyframes slam { 0% { transform: scale(1); } 50% { transform: scale(0.97); } 100% { transform: scale(1); } }
+
+        /* small pause button (minimal UI change) */
+        .pause-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 110;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            border: 1px solid var(--neon-pink);
+            background: rgba(255, 0, 123, 0.12);
+            color: var(--neon-pink);
+            font-size: 18px;
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+        }
+        .pause-btn:active { transform: translateY(2px); }
+
+        /* Name modal (like Candy) */
+        .name-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.75);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 16px;
+        }
+        .name-card {
+            width: min(360px, 92vw);
+            background: rgba(0,0,0,0.85);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 18px;
+            padding: 18px;
+            text-align: center;
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.15);
+        }
+        .name-card h2 { margin: 0 0 6px; color: var(--neon-blue); font-size: 20px; }
+        .name-card p { margin: 0 0 12px; color: #bbb; font-size: 12px; }
+        .name-card input {
+            width: 100%;
+            padding: 12px 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.06);
+            color: #fff;
+            outline: none;
+        }
+        .name-btn {
+            margin-top: 12px;
+            width: 100%;
+            padding: 12px 12px;
+            border-radius: 12px;
+            border: none;
+            background: var(--neon-blue);
+            font-weight: 900;
+            cursor: pointer;
+            color: #000;
+        }
+        .name-hint { margin-top: 8px; font-size: 11px; color: #888; }
+
+        /* Side ads (desktop only) - optional, doesn't change your layout */
+        .side-ad{
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 174px;
+            z-index: 900;
+            pointer-events: auto;
+        }
+        .side-ad.left{ left: 6px; }
+        .side-ad.right{ right: 6px; }
+        .ad-slab{
+            background:#fff;
+            border:1px solid #e5e7eb;
+            border-radius:14px;
+            padding:6px;
+            color:#333;
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+            font-size: 12px;
+            text-align: center;
+        }
+        @media (max-width: 1100px){
+            .side-ad{ display:none !important; }
+        }
+
+
+        .share-row{
+            width: 86%;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 12px;
+            }
+            .share-pill{
+            padding: 10px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.18);
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 12px;
+            }
+            .share-pill:active{ transform: translateY(2px); }
+            .copy-toast{
+            margin-top: 8px;
+            font-size: 11px;
+            color: #9efcff;
+            display: none;
+        }
     </style>
 </head>
 <body>
 
+    <!-- ✅ Side Ads (Desktop only) -->
+    <div id="sideAdLeftWrap" class="side-ad left" style="display:none;">
+        <div id="sideAdLeft" class="ad-slab">Loading ad…</div>
+    </div>
+
+    <div id="sideAdRightWrap" class="side-ad right" style="display:none;">
+        <div id="sideAdRight" class="ad-slab">Loading ad…</div>
+    </div>
+
     <div class="game-wrapper" id="game-body">
+        <button class="pause-btn" id="pauseBtn" title="Pause / Resume">⏸</button>
+
+        <!-- Pause overlay -->
+        <div id="pauseOverlay">
+            <h2 style="color: var(--neon-blue); margin: 0 0 6px;">PAUSED</h2>
+            <div class="label" style="margin-bottom: 10px;">Press <b>P</b> or tap ⏸ to resume</div>
+            <button id="resumeBtn" style="padding:10px 25px; background:var(--neon-pink); border:none; border-radius:8px; font-weight:bold; cursor:pointer;">RESUME</button>
+        </div>
+
+        <!-- Game over overlay -->
         <div id="overlay">
             <h2 style="color: var(--neon-pink); margin-bottom: 5px;">SYSTEM CRASH</h2>
-            <div class="label">Top Records</div>
+
+            <div class="label" id="playerLine" style="margin-bottom: 6px;">Player: -</div>
+
+            <div class="label">Top Records (Global)</div>
             <ul id="highscores" class="highscore-list"></ul>
-            <button onclick="resetGame()" style="padding:10px 25px; background:var(--neon-blue); border:none; border-radius:5px; font-weight:bold; cursor:pointer;">REBOOT</button>
+
+            <!-- ✅ Game Over Ads (same idea as Candy) -->
+            <div style="width: 86%; margin-top: 10px;">
+                <div class="label" style="margin-bottom: 6px;">Sponsored</div>
+                <div id="go-ad-320" class="ad-slab" style="display:none;">Loading ad…</div>
+                <div id="go-ad-300" class="ad-slab" style="display:none;">Loading ad…</div>
+            </div>
+            <div class="share-row">
+            <button id="shareBtn" class="share-pill" style="border-color: var(--neon-pink); color: var(--neon-pink);">
+                SHARE SCORE
+            </button>
+
+            <button id="shareWA" class="share-pill">WhatsApp</button>
+            <button id="shareX" class="share-pill">X</button>
+            <button id="shareFB" class="share-pill">Facebook</button>
+            <button id="shareTG" class="share-pill">Telegram</button>
+            <button id="copyScore" class="share-pill">Copy</button>
+
+            <div id="copyToast" class="copy-toast">Copied!</div>
+            </div>
+            <button onclick="resetGame()" style="margin-top:12px; padding:10px 25px; background:var(--neon-blue); border:none; border-radius:8px; font-weight:bold; cursor:pointer;">REBOOT</button>
         </div>
 
         <canvas id="tetris" width="240" height="480"></canvas>
@@ -168,6 +345,17 @@
         <div class="btn btn-drop" id="ctrl-drop">HARD DROP</div>
     </div>
 
+    <!-- ✅ Name Modal -->
+    <div id="nameModal" class="name-modal">
+        <div class="name-card">
+            <h2>Start Playing</h2>
+            <p>Enter your name for the leaderboard</p>
+            <input id="nameInput" type="text" maxlength="18" placeholder="Your name" />
+            <button id="nameBtn" class="name-btn">Play</button>
+            <div class="name-hint">Tip: Press Enter</div>
+        </div>
+    </div>
+
 <script>
     const canvas = document.getElementById('tetris');
     const context = canvas.getContext('2d');
@@ -182,9 +370,282 @@
         4: ['#FFDD00', '#FFFF55'], 5: ['#FF5500', '#FF9955'], 6: ['#AA00FF', '#DD55FF'], 7: ['#0099FF', '#55CCFF']
     };
 
+    /* =========================
+       ✅ GLOBAL LEADERBOARD (SAME AS CANDY)
+       ========================= */
+    // Your Apps Script URL (reused)
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxLLXBiZ9ONmouhFwAEqDanj87Y9o5rvLUQBZrS0jSYi1NgD8tC1qpl3xBXLpgVh-eq/exec";
+
+    let playerName = "Player";
+
+
+    async function submitScoreToSheet(name, score) {
+        try {
+            await fetch(SCRIPT_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ name, score })
+            });
+        } catch (e) {
+            console.log("Score submit failed:", e);
+        }
+    }
+
+    
+    function debugWhereAmI() {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    Logger.log("Spreadsheet URL: " + ss.getUrl());
+    Logger.log("Sheets: " + ss.getSheets().map(s => s.getName()).join(", "));
+    }
+
+    function renderTop5(top5) {
+        const list = Array.isArray(top5) ? top5.slice(0, 5) : [];
+        const ul = document.getElementById('highscores');
+
+        if (!list.length) {
+            ul.innerHTML = `<li><span>—</span><span>—</span></li>`;
+            return;
+        }
+
+        ul.innerHTML = list.map((x, i) => {
+            const nm = (x && x.name) ? String(x.name) : "Player";
+            const sc = (x && x.score != null) ? Number(x.score) : 0;
+            return `<li><span>#${i+1} ${escapeHtml(nm)}</span><span>${sc}</span></li>`;
+        }).join("");
+    }
+
+    async function loadGlobalTop5() {
+        try {
+            const res = await fetch(SCRIPT_URL + "?t=" + Date.now());
+            const text = await res.text();
+            const data = JSON.parse(text);
+            renderTop5(data.top5 || []);
+        } catch (e) {
+            console.log("Top5 fetch failed:", e);
+            // fallback: local top 5 (name+score)
+            renderLocalTop5();
+        }
+    }
+
+    function escapeHtml(s){
+        return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+    }
+
+    function renderLocalTop5(){
+        const rows = JSON.parse(localStorage.getItem('tetris_localTop5') || '[]');
+        renderTop5(rows.slice(0, 5));
+    }
+
+    function pushLocalScore(name, score){
+        const rows = JSON.parse(localStorage.getItem('tetris_localTop5') || '[]');
+        rows.push({ name, score: Number(score) || 0 });
+        rows.sort((a,b) => (b.score||0) - (a.score||0));
+        localStorage.setItem('tetris_localTop5', JSON.stringify(rows.slice(0, 5)));
+    }
+
+    function getGameUrl(){
+    // use the page URL without hash
+    return (location.href || "").split("#")[0];
+    }
+
+    function getShareText(){
+    const url = getGameUrl();
+    const sc = player?.score ?? 0;
+    const nm = playerName || "Player";
+    return `🔥 ${nm} scored ${sc} in Cyber Tetris!\nCan you beat this?\nPlay here: ${url}`;
+    }
+
+    function openShareLink(type){
+    const text = encodeURIComponent(getShareText());
+    const url = encodeURIComponent(getGameUrl());
+
+    let link = "";
+    if (type === "wa") link = `https://wa.me/?text=${text}`;
+    if (type === "x")  link = `https://twitter.com/intent/tweet?text=${text}`;
+    if (type === "fb") link = `https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${text}`;
+    if (type === "tg") link = `https://t.me/share/url?url=${url}&text=${text}`;
+
+    if (link) window.open(link, "_blank", "noopener,noreferrer");
+    }
+
+    async function copyShareText(){
+    const t = getShareText();
+    try{
+        await navigator.clipboard.writeText(t);
+        const toast = document.getElementById("copyToast");
+        if (toast){
+        toast.style.display = "block";
+        setTimeout(() => toast.style.display = "none", 1200);
+        }
+    }catch(e){
+        // fallback
+        prompt("Copy this score text:", t);
+    }
+    }
+
+    async function shareScoreNative(){
+    const url = getGameUrl();
+    const text = getShareText();
+    if (navigator.share){
+        try{
+        await navigator.share({ title: "Cyber Tetris Score", text, url });
+        return true;
+        }catch(e){
+        // user canceled -> ignore
+        return false;
+        }
+    }
+    return false;
+    }
+
+    // Wire up buttons once (on load)
+    window.addEventListener("load", () => {
+    const shareBtn = document.getElementById("shareBtn");
+    const wa = document.getElementById("shareWA");
+    const x  = document.getElementById("shareX");
+    const fb = document.getElementById("shareFB");
+    const tg = document.getElementById("shareTG");
+    const cp = document.getElementById("copyScore");
+
+    if (shareBtn) shareBtn.addEventListener("click", async () => {
+        // Mobile: native share sheet; Desktop: copy + open WhatsApp
+        const ok = await shareScoreNative();
+        if (!ok){
+        await copyShareText();
+        openShareLink("wa");
+        }
+    });
+
+    if (wa) wa.addEventListener("click", () => openShareLink("wa"));
+    if (x)  x.addEventListener("click",  () => openShareLink("x"));
+    if (fb) fb.addEventListener("click", () => openShareLink("fb"));
+    if (tg) tg.addEventListener("click", () => openShareLink("tg"));
+    if (cp) cp.addEventListener("click", copyShareText);
+    });
+
+
+    /* =========================
+       ✅ ADSTERRA (SAME AS CANDY - SEQUENTIAL LOADER)
+       ========================= */
+    function loadAdsterraSequential(container, key, w, h) {
+        return new Promise((resolve) => {
+            if (!container) return resolve(false);
+
+            container.innerHTML = "";
+            const def = document.createElement("script");
+            def.type = "text/javascript";
+            def.text = `
+                window.atOptions = {
+                    key: '${key}',
+                    format: 'iframe',
+                    height: ${h},
+                    width: ${w},
+                    params: {}
+                };
+            `;
+
+            const inv = document.createElement("script");
+            inv.type = "text/javascript";
+            inv.src  = "https://www.highperformanceformat.com/" + key + "/invoke.js";
+            inv.onload = () => resolve(true);
+            inv.onerror = () => resolve(false);
+
+            container.appendChild(def);
+            container.appendChild(inv);
+        });
+    }
+
+    let adQueue = Promise.resolve();
+    function queueAd(container, key, w, h){
+        adQueue = adQueue.then(() => loadAdsterraSequential(container, key, w, h));
+        return adQueue;
+    }
+
+    // ✅ Keys reused from Candy Crunch
+    const KEY_LEFT_160x600  = "001d2d159d6e43ef2e7fbbbcd1832bc4"; // 160x600
+    const KEY_RIGHT_160x300 = "f9a2403e20a69cbd4e016e13ae4e06e1"; // 160x300
+    const KEY_RECT_1        = "f7c53ea38f793fd4f60f274c989e86a3"; // 300x250
+    const KEY_BANNER_320    = "4404d2d96e9fdd2085c017e2ecbf8d84"; // 320x50
+
+    let _goAdsLoaded = false;
+    async function mountGameOverAds(){
+        if (_goAdsLoaded) return;
+
+        const ad320 = document.getElementById("go-ad-320");
+        const ad300 = document.getElementById("go-ad-300");
+
+        const isMobile = window.matchMedia("(max-width: 560px)").matches;
+
+        if (isMobile){
+            if (ad300) ad300.style.display = "none";
+            if (ad320) {
+                ad320.style.display = "block";
+                await queueAd(ad320, KEY_BANNER_320, 320, 50);
+            }
+        } else {
+            if (ad320) ad320.style.display = "none";
+            if (ad300) {
+                ad300.style.display = "block";
+                await queueAd(ad300, KEY_RECT_1, 300, 250);
+            }
+        }
+
+        _goAdsLoaded = true;
+    }
+
+    // Side ads rotation (desktop only)
+    let _sideRotator = null;
+    let _side = "left";
+    function sideAdsAllowed(){ return window.matchMedia("(min-width: 1101px)").matches; }
+
+    async function mountOneSideAd(){
+        const leftWrap  = document.getElementById("sideAdLeftWrap");
+        const rightWrap = document.getElementById("sideAdRightWrap");
+        const leftBox   = document.getElementById("sideAdLeft");
+        const rightBox  = document.getElementById("sideAdRight");
+
+        if (!sideAdsAllowed()){
+            leftWrap.style.display = "none";
+            rightWrap.style.display = "none";
+            return;
+        }
+
+        // show only one at a time
+        if (_side === "left"){
+            rightWrap.style.display = "none";
+            leftWrap.style.display = "block";
+            await queueAd(leftBox, KEY_LEFT_160x600, 160, 600);
+        } else {
+            leftWrap.style.display = "none";
+            rightWrap.style.display = "block";
+            await queueAd(rightBox, KEY_RIGHT_160x300, 160, 300);
+        }
+    }
+
+    function startSideAdRotation(){
+        if (_sideRotator) clearInterval(_sideRotator);
+        mountOneSideAd();
+        _sideRotator = setInterval(() => {
+            _side = (_side === "left") ? "right" : "left";
+            mountOneSideAd();
+        }, 25000);
+    }
+
+    window.addEventListener("load", startSideAdRotation);
+    let _rzT;
+    window.addEventListener("resize", () => {
+        clearTimeout(_rzT);
+        _rzT = setTimeout(startSideAdRotation, 400);
+    });
+
+    /* =========================
+       ✅ GAME LOGIC (YOUR EXISTING, with Pause + Better Loop)
+       ========================= */
     let animatingRows = [];
     let isAnimating = false;
-    let paused = false;
+
+    let isPaused = false;
+    let isGameOver = false;
 
     function createPiece(type) {
         if (type === 'I') return [[0,7,0,0],[0,7,0,0],[0,7,0,0],[0,7,0,0]];
@@ -230,39 +691,58 @@
     }
 
     function arenaSweep() {
-        let rowCount = 0;
-        animatingRows = [];
-        for (let y = arena.length - 1; y > 0; --y) {
-            if (arena[y].every(value => value !== 0)) {
-                animatingRows.push(y);
-                rowCount++;
-            }
+        // collect all full rows
+        const fullRows = [];
+        for (let y = arena.length - 1; y >= 0; --y) {
+            if (arena[y].every(v => v !== 0)) fullRows.push(y);
         }
 
-        if (rowCount > 0) {
-            isAnimating = true;
-            player.score += [0, 100, 300, 500, 800][rowCount] * player.level;
-            player.lines += rowCount;
-            player.level = Math.floor(player.lines / 10) + 1;
-            updateScore();
+        const rowCount = fullRows.length;
+        if (rowCount === 0) return;
 
-            setTimeout(() => {
-                animatingRows.forEach(y => {
-                    arena.splice(y, 1);
-                    arena.unshift(new Array(10).fill(0));
-                });
-                animatingRows = [];
-                isAnimating = false;
-            }, 300);
-        }
+        // animate those rows
+        animatingRows = fullRows.slice();
+        isAnimating = true;
+
+        // scoring (same table you already use)
+        player.score += [0, 100, 300, 500, 800][rowCount] * player.level;
+        player.lines += rowCount;
+        player.level = Math.floor(player.lines / 10) + 1;
+        updateScore();
+
+        setTimeout(() => {
+            // IMPORTANT: remove rows first (highest index to lowest), THEN unshift new rows
+            const sorted = fullRows.slice().sort((a, b) => b - a);
+            for (const y of sorted) arena.splice(y, 1);
+
+            for (let i = 0; i < rowCount; i++) arena.unshift(new Array(10).fill(0));
+
+            animatingRows = [];
+            isAnimating = false;
+        }, 300);
     }
 
-    function moveLeft() { if(!isAnimating && !paused) { player.pos.x--; if(collide(arena, player)) player.pos.x++; } }
-    function moveRight() { if(!isAnimating && !paused) { player.pos.x++; if(collide(arena, player)) player.pos.x--; } }
-    function moveDown() { if(!isAnimating && !paused) { player.pos.y++; if(collide(arena, player)) { player.pos.y--; merge(arena, player); playerReset(); arenaSweep(); } dropCounter = 0; } }
-    function rotatePlayer() { if(!isAnimating && !paused) { rotate(player.matrix, 1); if(collide(arena, player)) rotate(player.matrix, -1); } }
+    function canPlay(){
+        return !isPaused && !isGameOver && !isAnimating;
+    }
+
+    function moveLeft()  { if(canPlay()) { player.pos.x--; if(collide(arena, player)) player.pos.x++; } }
+    function moveRight() { if(canPlay()) { player.pos.x++; if(collide(arena, player)) player.pos.x--; } }
+    function moveDown() {
+        if(!isPaused && !isGameOver && !isAnimating) {
+            player.pos.y++;
+            if(collide(arena, player)) {
+                player.pos.y--;
+                merge(arena, player);
+                playerReset();
+                arenaSweep();
+            }
+            dropCounter = 0;
+        }
+    }
+    function rotatePlayer() { if(canPlay()) { rotate(player.matrix, 1); if(collide(arena, player)) rotate(player.matrix, -1); } }
     function hardDrop() {
-        if(isAnimating || paused) return;
+        if(!canPlay()) return;
         document.getElementById('game-body').classList.add('slam');
         setTimeout(() => document.getElementById('game-body').classList.remove('slam'), 150);
         while(!collide(arena, player)) { player.pos.y++; }
@@ -310,12 +790,15 @@
     function draw() {
         context.fillStyle = '#000';
         context.fillRect(0, 0, canvas.width, canvas.height);
+
         drawMatrix(arena, {x: 0, y: 0});
-        if (!isAnimating) {
-            drawGhost();
-            drawMatrix(player.matrix, player.pos);
+
+        if (!isGameOver) {
+            if (!isAnimating) drawGhost();
+            drawMatrix(player.matrix, player.pos); // keep piece visible even during line flash
         }
     }
+
 
     function drawMatrix(matrix, offset) {
         matrix.forEach((row, y) => {
@@ -353,40 +836,117 @@
         document.getElementById('lines').innerText = player.lines;
     }
 
+    /* =========================
+       ✅ PAUSE / RESUME
+       ========================= */
+    const pauseOverlay = document.getElementById('pauseOverlay');
+    const overlay = document.getElementById('overlay');
+
+    function pauseGame(){
+        if (isGameOver) return;
+        isPaused = true;
+        pauseOverlay.style.display = 'flex';
+    }
+
+    function resumeGame(){
+        if (isGameOver) return;
+        isPaused = false;
+        pauseOverlay.style.display = 'none';
+        // prevent jump in deltaTime after pause
+        lastTime = performance.now();
+        dropCounter = 0;
+    }
+
+    function togglePause(){
+        if (isPaused) resumeGame();
+        else pauseGame();
+    }
+
+    document.getElementById('pauseBtn').addEventListener('click', togglePause);
+    document.getElementById('resumeBtn').addEventListener('click', resumeGame);
+
+    /* =========================
+       ✅ GAME OVER (GLOBAL TOP 5 + ADS)
+       ========================= */
     function gameOver() {
-        paused = true;
-        let scores = JSON.parse(localStorage.getItem('tetrisScores') || '[]');
-        scores.push(player.score);
-        scores.sort((a,b) => b-a);
-        localStorage.setItem('tetrisScores', JSON.stringify(scores.slice(0, 5)));
-        document.getElementById('highscores').innerHTML = scores.slice(0, 5).map((s,i) => `<li>#${i+1} <span>${s}</span></li>`).join('');
-        document.getElementById('overlay').style.display = 'flex';
+        isGameOver = true;
+        isPaused = true;
+        pauseOverlay.style.display = 'none';
+
+        document.getElementById('playerLine').textContent = "Player: " + playerName;
+
+        // Local fallback store
+        pushLocalScore(playerName, player.score);
+
+        // Show overlay immediately
+        overlay.style.display = 'flex';
+
+        // mount ads after visible
+        setTimeout(() => { mountGameOverAds(); }, 150);
+
+        // submit score + refresh global top5
+        submitScoreToSheet(playerName, player.score);
+        setTimeout(loadGlobalTop5, 900);
     }
 
     function resetGame() {
         arena.forEach(row => row.fill(0));
         player.score = 0; player.lines = 0; player.level = 1;
-        paused = false; document.getElementById('overlay').style.display = 'none';
-        playerReset(); updateScore(); update();
+        isGameOver = false;
+        isPaused = false;
+        overlay.style.display = 'none';
+        pauseOverlay.style.display = 'none';
+
+        // allow ads to reload next gameover (optional)
+        _goAdsLoaded = false;
+        const ad320 = document.getElementById("go-ad-320");
+        const ad300 = document.getElementById("go-ad-300");
+        if (ad320) { ad320.style.display = "none"; ad320.innerHTML = "Loading ad…"; }
+        if (ad300) { ad300.style.display = "none"; ad300.innerHTML = "Loading ad…"; }
+
+        playerReset();
+        updateScore();
+        lastTime = performance.now();
+        dropCounter = 0;
     }
 
+    /* =========================
+       ✅ FIXED GAME LOOP (requestAnimationFrame ALWAYS RUNS)
+       ========================= */
     let dropCounter = 0;
     let lastTime = 0;
 
     function update(time = 0) {
-        if (paused) return;
+        // always keep the loop running (so pause can resume)
+        requestAnimationFrame(update);
+
+        // always draw current frame
+        draw();
+
+        if (isPaused || isGameOver) return;
+
         const deltaTime = time - lastTime;
         lastTime = time;
+
         if (!isAnimating) {
             dropCounter += deltaTime;
             const speed = Math.max(100, 1000 - (player.level - 1) * 100);
-            if (dropCounter > speed) { moveDown(); }
+            if (dropCounter > speed) moveDown();
         }
-        draw();
-        requestAnimationFrame(update);
     }
 
+    /* =========================
+       ✅ INPUTS
+       ========================= */
     document.addEventListener('keydown', e => {
+        // Pause toggle (P)
+        if (e.key === 'p' || e.key === 'P') {
+            togglePause();
+            return;
+        }
+
+        if (isPaused || isGameOver) return;
+
         if (e.keyCode === 37) moveLeft();
         if (e.keyCode === 39) moveRight();
         if (e.keyCode === 40) moveDown();
@@ -405,10 +965,46 @@
     addTouch('ctrl-rotate', rotatePlayer);
     addTouch('ctrl-drop', hardDrop);
 
+    /* =========================
+       ✅ NAME MODAL (LIKE CANDY)
+       ========================= */
+    const nameModal = document.getElementById("nameModal");
+    const nameInput = document.getElementById("nameInput");
+    const nameBtn = document.getElementById("nameBtn");
+
+    function openNameModal(){
+        nameModal.style.display = "flex";
+        setTimeout(() => nameInput.focus(), 50);
+    }
+    function closeNameModal(){
+        nameModal.style.display = "none";
+    }
+    function submitName(){
+        const v = (nameInput.value || "").trim();
+        playerName = v ? v : "Player";
+        localStorage.setItem("tetris_playerName", playerName);
+        closeNameModal();
+        loadGlobalTop5(); // show global top5 when starting
+        document.getElementById('playerLine').textContent = "Player: " + playerName;
+    }
+
+    nameBtn.addEventListener("click", submitName);
+    nameInput.addEventListener("keydown", (e) => { if (e.key === "Enter") submitName(); });
+
+    // init name
+    nameInput.value = localStorage.getItem("tetris_playerName") || "";
+    openNameModal();
+
+    /* =========================
+       ✅ START
+       ========================= */
     const arena = Array.from({length: 20}, () => new Array(10).fill(0));
     const player = { pos: {x: 0, y: 0}, matrix: null, next: null, score: 0, lines: 0, level: 1 };
 
-    playerReset(); update(); updateScore();
+    playerReset();
+    updateScore();
+    loadGlobalTop5();
+    requestAnimationFrame(update);
 </script>
 </body>
 </html>
