@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Neon Worms: Eternal Predator</title>
+    <style>
+        :root {
+            --bg: #050507;
+            --player: #00f2ff;
+            --king: #ff0044;
+            --dash: #ffcc00;
+            --ui-glass: rgba(255, 255, 255, 0.05);
+        }
+
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            overflow: hidden; background: var(--bg);
+            font-family: 'Segoe UI', sans-serif; color: white;
+            user-select: none; touch-action: none;
+        }
+
+        canvas { display: block; }
+
+        /* Mobile Landscape Optimization */
+        @media screen and (orientation: portrait) {
+            #portrait-warning { display: flex; }
+        }
+
+        #portrait-warning {
+            position: fixed; inset: 0; background: var(--bg);
+            z-index: 9999; display: none; flex-direction: column;
+            align-items: center; justify-content: center; text-align: center;
+        }
+
+        /* HUD & UI */
+        #ui-layer {
+            position: absolute; inset: 0; pointer-events: none;
+            padding: 20px; box-sizing: border-box;
+        }
+
+        .hud-top { display: flex; justify-content: space-between; align-items: flex-start; }
+
+        .stats-box {
+            background: var(--ui-glass); backdrop-filter: blur(5px);
+            padding: 10px 20px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .score-value { font-size: 32px; font-weight: 900; color: var(--player); text-shadow: 0 0 10px var(--player); }
+        
+        /* Dash Bar */
+        .dash-container { width: 180px; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; margin-top: 8px; overflow: hidden; }
+        #dash-bar { width: 100%; height: 100%; background: var(--dash); transition: width 0.1s; }
+        .dash-label { font-size: 10px; color: var(--dash); text-transform: uppercase; font-weight: bold; margin-top: 4px; }
+
+        /* Minimap */
+        #minimap {
+            position: absolute; bottom: 20px; right: 20px;
+            width: 150px; height: 150px;
+            background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 50%; pointer-events: none;
+        }
+
+        /* Mobile Controls */
+        .mobile-btn {
+            position: absolute; bottom: 40px; right: 180px;
+            width: 70px; height: 70px; background: rgba(255,255,255,0.1);
+            border: 2px solid var(--dash); border-radius: 50%;
+            display: none; align-items: center; justify-content: center;
+            pointer-events: all; font-weight: bold; color: var(--dash);
+        }
+
+        #joystick-base {
+            position: absolute; bottom: 40px; left: 40px;
+            width: 120px; height: 120px; background: rgba(255,255,255,0.05);
+            border-radius: 50%; display: none; pointer-events: all; border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        #joystick-stick {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 45px; height: 45px; background: var(--player);
+            border-radius: 50%; box-shadow: 0 0 15px var(--player);
+        }
+
+        @media (pointer: coarse) { .mobile-btn, #joystick-base { display: block; } }
+
+        /* Game Over */
+        #game-over {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: rgba(5, 5, 10, 0.95); padding: 40px; border-radius: 30px;
+            text-align: center; border: 2px solid var(--king);
+            display: none; pointer-events: all; width: 80%; max-width: 350px;
+            backdrop-filter: blur(10px);
+        }
+
+        .share-btn { background: #1da1f2; margin-top: 10px; width: 100%; }
+        button {
+            padding: 12px 25px; border: none; border-radius: 50px;
+            font-weight: bold; cursor: pointer; color: white; background: var(--player);
+            margin: 5px; transition: transform 0.2s;
+        }
+        button:active { transform: scale(0.95); }
+
+        /* =========================
+   ✅ ADS (Desktop side + Game Over slot)
+   ========================= */
+        .side-ad{
+        position: fixed;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 174px;
+        z-index: 900;
+        pointer-events: auto;
+        }
+        .side-ad.left{ left: 6px; }
+        .side-ad.right{ right: 6px; }
+
+        .ad-slab{
+        background:#fff;
+        border:1px solid #e5e7eb;
+        border-radius:14px;
+        padding:6px;
+        color:#333;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        font-size: 12px;
+        text-align: center;
+        }
+
+        @media (max-width: 1100px){
+        .side-ad{ display:none !important; }
+        }
+
+        .go-ad-wrap{
+        width: 92%;
+        margin: 12px auto 0;
+        text-align: center;
+        }
+        .go-ad-label{
+        font-size: 11px;
+        opacity: .7;
+        margin-bottom: 6px;
+        }
+        #bottomAdWrap{
+        position: fixed;
+        left: 50%;
+        bottom: 6px;
+        transform: translateX(-50%);
+        z-index: 950;
+        }
+
+        /* show only on touch devices + landscape */
+        @media (pointer: coarse) and (orientation: landscape){
+        #bottomAdWrap{ display:block; }
+        /* lift controls above the banner */
+        #joystick-base{ bottom: 110px; left: 24px; }
+        .mobile-btn{ bottom: 110px; right: 24px; }
+        #minimap{ bottom: 110px; right: 20px; }
+        }
+
+        /* never show banner on portrait */
+        @media (orientation: portrait){
+        #bottomAdWrap{ display:none !important; }
+        }
+
+    </style>
+</head>
+<body>
+    <!-- ✅ Side Ads (Desktop only) -->
+<div id="sideAdLeftWrap" class="side-ad left" style="display:none;">
+  <div id="sideAdLeft" class="ad-slab">Loading ad…</div>
+</div>
+
+<div id="sideAdRightWrap" class="side-ad right" style="display:none;">
+  <div id="sideAdRight" class="ad-slab">Loading ad…</div>
+</div>
+
+    <div id="portrait-warning">
+        <h2>ROTATE DEVICE</h2>
+        <p>Landscape mode required for the arena.</p>
+    </div>
+
+    <div id="ui-layer">
+        <div class="hud-top">
+            <div class="stats-box">
+                <div style="font-size: 12px; opacity: 0.7;">ITEMS EATEN</div>
+                <div id="score-val" class="score-value">0</div>
+                <div class="dash-label">Dash Ready</div>
+                <div class="dash-container"><div id="dash-bar"></div></div>
+            </div>
+        </div>
+
+        <canvas id="minimap"></canvas>
+
+        <div id="joystick-base"><div id="joystick-stick"></div></div>
+        <div class="mobile-btn" id="dash-btn">DASH</div>
+
+        <div id="game-over">
+            <h1 style="color: var(--king); margin: 0;">ELIMINATED</h1>
+                
+
+            <p id="death-msg">The predator was stronger.</p>
+            <h2 id="final-score">Score: 0</h2>
+            <div class="go-ad-wrap">
+                <div class="go-ad-label">Advertisement</div>
+                <div id="go-ad-300" class="ad-slab" style="display:none;">Loading ad…</div>
+                <div id="go-ad-320" class="ad-slab" style="display:none;">Loading ad…</div>
+                </div>
+            <button onclick="location.reload()">RESPAWN</button>
+            <button class="share-btn" onclick="shareScore()">SHARE SCORE</button>
+        </div>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const mCanvas = document.getElementById('minimap');
+        const mCtx = mCanvas.getContext('2d');
+        const scoreVal = document.getElementById('score-val');
+        const dashBar = document.getElementById('dash-bar');
+
+        const WORLD_SIZE = 4000;
+        const BOT_COUNT = 25;
+        const FOOD_COUNT = 400;
+        
+        let snakes = [];
+        let foods = [];
+        let camera = { x: 0, y: 0 };
+        let player;
+        let gameActive = true;
+        let itemsEaten = 0;
+
+        let lastFrame = performance.now();
+        requestAnimationFrame(loop);
+
+
+        // Input Handling
+        let keys = {};
+        let mouse = { x: 0, y: 0 };
+        let touchData = { active: false, x: 0, y: 0 };
+        let inputMode = "mouse";        // "mouse" | "keyboard" | "touch"
+        let lastKeyboardTime = 0;
+        const KEYBOARD_LOCK_MS = 1200;  // keep mouse disabled for 1.2s after last key press
+
+
+        class Snake {
+            constructor(id, x, y, isPlayer = false, isKing = false) {
+                this.id = id;
+                this.isPlayer = isPlayer;
+                this.isKing = isKing;
+                this.segments = [];
+                
+                let startLen = isKing ? 100 : (isPlayer ? 15 : 12 + Math.random() * 20);
+                for(let i=0; i<startLen; i++) this.segments.push({x, y});
+                
+                this.angle = Math.random() * Math.PI * 2;
+                //this.baseSpeed = isKing ? 260 : (isPlayer ? 220 : 200); // consistent across 60/90/120Hz
+                this.baseSpeed = isKing ? 180 : (isPlayer ? 150 : 135);
+
+
+                this.radius = isKing ? 28 : (isPlayer ? 14 : 12);
+                this.color = isKing ? '#ff0044' : (isPlayer ? '#00f2ff' : `hsl(${Math.random()*360}, 70%, 60%)`);
+                
+                this.lastDash = 0;
+                this.dashCooldown = 1500; 
+                this.isDashing = false;
+                this.dashDuration = 350;
+
+                this.aiState = 'wander';
+                this.huntTimer = 0;
+                this.target = null;
+            }
+
+            dash() {
+                const now = Date.now();
+                if (now - this.lastDash > this.dashCooldown) {
+                    this.isDashing = true;
+                    if (navigator.vibrate) navigator.vibrate(20);
+
+                    this.lastDash = now;
+                    setTimeout(() => { this.isDashing = false; }, this.dashDuration);
+                }
+            }
+
+            update(dt) {
+                if (this.isPlayer) this.handlePlayerInput(dt);
+                else this.handleAI(dt);
+
+                const speed = this.isDashing ? this.baseSpeed * 2.5 : this.baseSpeed;
+                const head = this.segments[0];
+
+                const step = speed * dt; // ✅ time-based movement
+                const nextX = head.x + Math.cos(this.angle) * step;
+                const nextY = head.y + Math.sin(this.angle) * step;
+
+                this.segments.unshift({
+                    x: Math.max(0, Math.min(WORLD_SIZE, nextX)),
+                    y: Math.max(0, Math.min(WORLD_SIZE, nextY))
+                });
+
+                if (!this.growing) this.segments.pop();
+                this.growing = false;
+            }
+
+
+            handlePlayerInput(dt) {
+                // ✅ Turn speed consistent across devices
+                const TURN_SPEED = 6.0; // rad/sec  (≈0.1 per frame at 60fps)
+                if (keys['ArrowLeft'])  this.angle -= TURN_SPEED * dt;
+                if (keys['ArrowRight']) this.angle += TURN_SPEED * dt;
+
+                // Smooth factor (frame-rate independent)
+                const smoothK = 1 - Math.exp(-10 * dt);
+
+                // ✅ Joystick (deadzone + normalized)
+                if (touchData.active) {
+                    inputMode = "touch";
+
+                    const dx = touchData.x;
+                    const dy = touchData.y;
+
+                    const deadzone = 10; // px
+                    const mag = Math.hypot(dx, dy);
+
+                    if (mag > deadzone) {
+                        const targetAngle = Math.atan2(dy, dx);
+                        let diff = targetAngle - this.angle;
+                        while (diff < -Math.PI) diff += Math.PI * 2;
+                        while (diff >  Math.PI) diff -= Math.PI * 2;
+
+                        this.angle += diff * smoothK;
+                    }
+                    return;
+                }
+
+                // ✅ Mouse aim only if keyboard hasn't been used recently
+                if (inputMode === "mouse" && (Date.now() - lastKeyboardTime > KEYBOARD_LOCK_MS)) {
+                    const dx = mouse.x - canvas.width / 2;
+                    const dy = mouse.y - canvas.height / 2;
+
+                    const targetAngle = Math.atan2(dy, dx);
+                    let diff = targetAngle - this.angle;
+                    while (diff < -Math.PI) diff += Math.PI * 2;
+                    while (diff >  Math.PI) diff -= Math.PI * 2;
+
+                    this.angle += diff * smoothK;
+                }
+            }
+
+
+            handleAI() {
+                const head = this.segments[0];
+
+                if (this.isKing) {
+                    // King always stalks the player
+                    const dist = Math.hypot(player.segments[0].x - head.x, player.segments[0].y - head.y);
+                    if (dist < 1200) {
+                        const targetAngle = Math.atan2(player.segments[0].y - head.y, player.segments[0].x - head.x);
+                        this.angle += (targetAngle - this.angle) * 0.05;
+                    }
+                } else {
+                    // Standard bots Hunt/Wander logic
+                    if (this.aiState === 'wander') {
+                        if (Math.random() < 0.01) {
+                            const prey = snakes.find(s => s.id !== this.id && s.segments.length < this.segments.length);
+                            if (prey && Math.hypot(head.x - prey.segments[0].x, head.y - prey.segments[0].y) < 500) {
+                                this.aiState = 'hunt'; this.target = prey; this.huntTimer = Date.now();
+                            }
+                        }
+                        this.angle += (Math.random() - 0.5) * 0.1;
+                    } else {
+                        if (!this.target || Date.now() - this.huntTimer > 4000) this.aiState = 'wander';
+                        else {
+                            const targetAngle = Math.atan2(this.target.segments[0].y - head.y, this.target.segments[0].x - head.x);
+                            this.angle += (targetAngle - this.angle) * 0.1;
+                        }
+                    }
+                }
+
+                if (head.x < 150 || head.x > WORLD_SIZE-150 || head.y < 150 || head.y > WORLD_SIZE-150) this.angle += 0.2;
+            }
+
+            draw(ctx, camX, camY) {
+                ctx.save();
+                ctx.shadowBlur = this.isDashing ? 25 : 12;
+                ctx.shadowColor = this.isDashing ? 'white' : this.color;
+                ctx.strokeStyle = this.color;
+                ctx.lineWidth = this.radius * 2;
+                ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+
+                ctx.beginPath();
+                this.segments.forEach((s, i) => {
+                    if (i === 0) ctx.moveTo(s.x - camX, s.y - camY);
+                    else ctx.lineTo(s.x - camX, s.y - camY);
+                });
+                ctx.stroke();
+                ctx.restore();
+            }
+        }
+
+        function init() {
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            mCanvas.width = 150; mCanvas.height = 150;
+            
+            player = new Snake('p1', WORLD_SIZE/2, WORLD_SIZE/2, true);
+            snakes.push(player);
+
+            // The Eternal Predator
+            snakes.push(new Snake('king', 100, 100, false, true));
+
+            for(let i=0; i<BOT_COUNT; i++) spawnBot();
+            for(let i=0; i<FOOD_COUNT; i++) spawnFood();
+        }
+
+        function spawnBot() {
+            snakes.push(new Snake(Date.now() + Math.random(), Math.random()*WORLD_SIZE, Math.random()*WORLD_SIZE));
+        }
+
+        function spawnFood() {
+            foods.push({ x: Math.random()*WORLD_SIZE, y: Math.random()*WORLD_SIZE, color: `hsl(${Math.random()*360}, 100%, 80%)` });
+        }
+
+        function checkCollisions() {
+            snakes.forEach(s => {
+                const head = s.segments[0];
+
+                // Food collision
+                foods.forEach((f, i) => {
+                    if (Math.hypot(head.x - f.x, head.y - f.y) < s.radius + 15) {
+                        s.growing = true; foods.splice(i, 1); spawnFood();
+                        if (s.isPlayer) { itemsEaten++; scoreVal.innerText = itemsEaten; }
+                    }
+                });
+
+                // Snake body collisions
+                snakes.forEach(other => {
+                    if (s.id === other.id) return;
+                    other.segments.forEach((seg, idx) => {
+                        if (Math.hypot(head.x - seg.x, head.y - seg.y) < s.radius + other.radius) {
+                            if (s.segments.length > other.segments.length) {
+                                s.growing = true;
+                                other.segments.splice(idx, 1);
+                                if (s.isPlayer) { itemsEaten += 2; scoreVal.innerText = itemsEaten; }
+                                if (other.segments.length < 2) {
+                                    if (other.isPlayer) endGame();
+                                    else {
+                                        snakes = snakes.filter(sn => sn.id !== other.id);
+                                        spawnBot();
+                                    }
+                                }
+                            }
+                        }
+                    });
+                });
+            });
+
+            // King Auto-Scaling (Always bigger than player)
+            const king = snakes.find(s => s.isKing);
+            if (king && king.segments.length < player.segments.length + 30) {
+                king.growing = true;
+            }
+        }
+
+       function endGame() {
+        gameActive = false;
+        document.getElementById('final-score').innerText = "Score: " + itemsEaten;
+        document.getElementById('game-over').style.display = 'block';
+
+        // ✅ show ad in game over popup
+        mountGameOverAds();
+        }
+
+
+        function loop(t) {
+        if (!gameActive) return;
+        requestAnimationFrame(loop);
+
+        // --- delta time (seconds) ---
+        let dt = (t - lastFrame) / 1000;
+        lastFrame = t;
+
+        // safety clamps (prevents huge jumps after tab switch)
+        if (!isFinite(dt) || dt <= 0) dt = 1 / 60;
+        dt = Math.min(dt, 0.05);
+
+        camera.x = player.segments[0].x - canvas.width/2;
+        camera.y = player.segments[0].y - canvas.height/2;
+
+        ctx.fillStyle = '#050507';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Grid (your existing code)
+        ctx.strokeStyle = '#111'; ctx.lineWidth = 1;
+        for(let x = -camera.x % 100; x < canvas.width; x += 100) {
+            ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+        }
+        for(let y = -camera.y % 100; y < canvas.height; y += 100) {
+            ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+        }
+
+        // foods draw (your existing)
+        foods.forEach(f => {
+            ctx.fillStyle = f.color;
+            ctx.beginPath();
+            ctx.arc(f.x - camera.x, f.y - camera.y, 4, 0, Math.PI*2);
+            ctx.fill();
+        });
+
+        // ✅ IMPORTANT: pass dt here
+        snakes.forEach(s => { s.update(dt); s.draw(ctx, camera.x, camera.y); });
+
+        checkCollisions();
+
+        // Dash bar (your existing)
+        const cooldownProgress = Math.min(1, (Date.now() - player.lastDash) / player.dashCooldown);
+        dashBar.style.width = (cooldownProgress * 100) + "%";
+        dashBar.style.background = cooldownProgress < 1 ? "#555" : "var(--dash)";
+
+        // Minimap (your existing)
+        mCtx.clearRect(0, 0, 150, 150);
+        const r = 150 / WORLD_SIZE;
+        snakes.forEach(s => {
+            mCtx.fillStyle = s.color;
+            mCtx.beginPath();
+            mCtx.arc(s.segments[0].x * r, s.segments[0].y * r, s.isKing ? 3 : 1.5, 0, Math.PI*2);
+            mCtx.fill();
+        });
+        }
+
+        /* =========================
+   ✅ ADSTERRA (Same as Candy/Tetris - Sequential Loader)
+   ========================= */
+        function loadAdsterraSequential(container, key, w, h) {
+        return new Promise((resolve) => {
+            if (!container) return resolve(false);
+
+            container.innerHTML = "";
+            const def = document.createElement("script");
+            def.type = "text/javascript";
+            def.text = `
+            window.atOptions = {
+                key: '${key}',
+                format: 'iframe',
+                height: ${h},
+                width: ${w},
+                params: {}
+            };
+            `;
+
+            const inv = document.createElement("script");
+            inv.type = "text/javascript";
+            inv.src  = "https://www.highperformanceformat.com/" + key + "/invoke.js";
+            inv.onload = () => resolve(true);
+            inv.onerror = () => resolve(false);
+
+            container.appendChild(def);
+            container.appendChild(inv);
+        });
+        }
+
+        let adQueue = Promise.resolve();
+        function queueAd(container, key, w, h){
+        adQueue = adQueue.then(() => loadAdsterraSequential(container, key, w, h));
+        return adQueue;
+        }
+
+        // ✅ Reuse your Candy/Tetris Adsterra keys (replace if you generated new ones)
+        const KEY_LEFT_160x600  = "001d2d159d6e43ef2e7fbbbcd1832bc4"; // 160x600
+        const KEY_RIGHT_160x300 = "f9a2403e20a69cbd4e016e13ae4e06e1"; // 160x300
+        const KEY_RECT_300x250  = "f7c53ea38f793fd4f60f274c989e86a3"; // 300x250
+        const KEY_BANNER_320x50 = "4404d2d96e9fdd2085c017e2ecbf8d84"; // 320x50
+
+        let _goAdsLoaded = false;
+        async function mountGameOverAds(){
+        if (_goAdsLoaded) return;
+
+        const ad320 = document.getElementById("go-ad-320");
+        const ad300 = document.getElementById("go-ad-300");
+        const isMobile = window.matchMedia("(max-width: 560px)").matches;
+
+        if (isMobile){
+            if (ad300) ad300.style.display = "none";
+            if (ad320){
+            ad320.style.display = "block";
+            await queueAd(ad320, KEY_BANNER_320x50, 320, 50);
+            }
+        } else {
+            if (ad320) ad320.style.display = "none";
+            if (ad300){
+            ad300.style.display = "block";
+            await queueAd(ad300, KEY_RECT_300x250, 300, 250);
+            }
+        }
+
+        _goAdsLoaded = true;
+        }
+
+        // Side ads rotation (desktop only)
+        let _sideRotator = null;
+        let _side = "left";
+        function sideAdsAllowed(){ return window.matchMedia("(min-width: 1101px)").matches; }
+
+        async function mountOneSideAd(){
+        if (!sideAdsAllowed()) return;
+
+        const leftWrap = document.getElementById("sideAdLeftWrap");
+        const rightWrap = document.getElementById("sideAdRightWrap");
+        const left = document.getElementById("sideAdLeft");
+        const right = document.getElementById("sideAdRight");
+
+        if (!leftWrap || !rightWrap || !left || !right) return;
+
+        leftWrap.style.display = "block";
+        rightWrap.style.display = "block";
+
+        if (_side === "left"){
+            await queueAd(left, KEY_LEFT_160x600, 160, 600);
+            _side = "right";
+        } else {
+            await queueAd(right, KEY_RIGHT_160x300, 160, 300);
+            _side = "left";
+        }
+        }
+
+        function startSideAdsRotation(){
+        if (!sideAdsAllowed()) return;
+        mountOneSideAd(); // load first immediately
+        if (_sideRotator) clearInterval(_sideRotator);
+        _sideRotator = setInterval(mountOneSideAd, 45000); // rotate every 45s
+        }
+
+        window.addEventListener("resize", () => {
+        // if resized to desktop later, start side ads
+        if (sideAdsAllowed() && !_sideRotator) startSideAdsRotation();
+        });
+
+
+        // --- Controls ---
+        window.addEventListener('keydown', e => {
+            keys[e.code] = true;
+
+            // lock to keyboard mode on any arrow/WASD/space
+            inputMode = "keyboard";
+            lastKeyboardTime = Date.now();
+
+            if (e.code === 'Space') player.dash();
+        });
+
+        window.addEventListener('keyup', e => {
+            keys[e.code] = false;
+            // keep keyboard mode for a short time (prevents mouse instantly taking over)
+            lastKeyboardTime = Date.now();
+        });
+
+        window.addEventListener('mousemove', e => {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+
+            // only switch back to mouse if keyboard hasn't been used recently
+            if (Date.now() - lastKeyboardTime > KEYBOARD_LOCK_MS && !touchData.active) {
+                inputMode = "mouse";
+            }
+        });
+
+        window.addEventListener('mousedown', () => player.dash());
+
+        // Mobile Joystick
+        const stick = document.getElementById('joystick-stick');
+        const base = document.getElementById('joystick-base');
+        base.addEventListener('touchstart', () => { touchData.active = true; });
+        base.addEventListener('touchmove', e => {
+            e.preventDefault();
+            const rect = base.getBoundingClientRect();
+            const centerX = rect.left + 60, centerY = rect.top + 60;
+            touchData.x = e.touches[0].clientX - centerX;
+            touchData.y = e.touches[0].clientY - centerY;
+            const dist = Math.min(50, Math.hypot(touchData.x, touchData.y));
+            const angle = Math.atan2(touchData.y, touchData.x);
+            stick.style.transform = `translate(calc(-50% + ${Math.cos(angle)*dist}px), calc(-50% + ${Math.sin(angle)*dist}px))`;
+        }, { passive: false });
+        base.addEventListener('touchend', () => { 
+            touchData.active = false; stick.style.transform = 'translate(-50%, -50%)'; 
+        });
+        document.getElementById('dash-btn').addEventListener('touchstart', (e) => { e.preventDefault(); player.dash(); });
+
+        function shareScore() {
+            const msg = `I ate ${itemsEaten} items in Neon Worms! Watch out for the King Snake!`;
+            if (navigator.share) navigator.share({ title: 'Neon Worms', text: msg, url: window.location.href });
+            else alert("Copied score: " + itemsEaten);
+        }
+
+        window.oncontextmenu = (e) => e.preventDefault();
+        window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+
+        init();
+        startSideAdsRotation();
+
+        loop();
+
+        let _bottomAdLoaded = false;
+
+        async function mountBottomBannerAd(){
+        if (_bottomAdLoaded) return;
+        const el = document.getElementById("bottomAd");
+        if (!el) return;
+
+        // use your existing key
+        await queueAd(el, KEY_BANNER_320x50, 320, 50);
+        _bottomAdLoaded = true;
+        }
+
+        function refreshBottomAdVisibility(){
+        const wrap = document.getElementById("bottomAdWrap");
+        if (!wrap) return;
+
+        const show =
+            window.matchMedia("(pointer: coarse)").matches &&
+            window.matchMedia("(orientation: landscape)").matches;
+
+        wrap.style.display = show ? "block" : "none";
+        if (show) mountBottomBannerAd();
+        }
+
+        window.addEventListener("resize", refreshBottomAdVisibility);
+        window.addEventListener("orientationchange", refreshBottomAdVisibility);
+        window.addEventListener("load", refreshBottomAdVisibility);
+
+    </script>
+    <!-- ✅ Bottom Banner Ad (Landscape only on mobile/tablet) -->
+<div id="bottomAdWrap" style="display:none;">
+  <div id="bottomAd" class="ad-slab">Loading ad…</div>
+</div>
+
+</body>
+</html>
