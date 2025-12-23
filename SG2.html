@@ -39,11 +39,14 @@
             padding: 20px; box-sizing: border-box;
         }
 
-        .hud-top { display: flex; justify-content: space-between; align-items: flex-start; }
+        .hud-top { display: flex; justify-content:flex-start; align-items: flex-start; gap: 12px;}
 
         .stats-box {
             background: var(--ui-glass); backdrop-filter: blur(5px);
             padding: 10px 20px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1);
+            position: absolute;
+  top: 16px;
+  left: 16px;
         }
 
         .score-value { font-size: 32px; font-weight: 900; color: var(--player); text-shadow: 0 0 10px var(--player); }
@@ -62,27 +65,53 @@
         }
 
         /* Mobile Controls */
-        .mobile-btn {
-            position: absolute; bottom: 40px; right: 180px;
-            width: 70px; height: 70px; background: rgba(255,255,255,0.1);
-            border: 2px solid var(--dash); border-radius: 50%;
-            display: none; align-items: center; justify-content: center;
-            pointer-events: all; font-weight: bold; color: var(--dash);
+        /* Mobile Controls (Better placement + bigger touch targets) */
+        .mobile-btn{
+        position:absolute;
+        bottom: 22px;
+        right: 22px;
+        width: 84px;
+        height: 84px;
+        border-radius: 22px;           /* squircle feel */
+        background: rgba(255,255,255,0.10);
+        border: 2px solid var(--dash);
+        display:none;
+        align-items:center;
+        justify-content:center;
+        pointer-events: all;
+        font-weight: 900;
+        letter-spacing: .5px;
+        color: var(--dash);
+        user-select:none;
         }
 
-        #joystick-base {
-            position: absolute; bottom: 40px; left: 40px;
-            width: 120px; height: 120px; background: rgba(255,255,255,0.05);
-            border-radius: 50%; display: none; pointer-events: all; border: 1px solid rgba(255,255,255,0.1);
+        #joystick-base{
+        position:absolute;
+        bottom: 22px;
+        left: 22px;
+        width: 150px;
+        height: 150px;
+        background: rgba(255,255,255,0.06);
+        border-radius: 50%;
+        display:none;
+        pointer-events: all;
+        border: 1px solid rgba(255,255,255,0.14);
         }
 
-        #joystick-stick {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 45px; height: 45px; background: var(--player);
-            border-radius: 50%; box-shadow: 0 0 15px var(--player);
+        /* Make stick a bit bigger */
+        #joystick-stick{
+        width: 54px;
+        height: 54px;
         }
 
-        @media (pointer: coarse) { .mobile-btn, #joystick-base { display: block; } }
+
+        @media (pointer: coarse) and (orientation: landscape){
+        #bottomAdWrap{ display:block; }
+        #joystick-base{ bottom: 86px; left: 18px; }
+        .mobile-btn{ bottom: 86px; right: 18px; }
+        #minimap{ bottom: 86px; right: 18px; }
+        }
+
 
         /* Game Over */
         #game-over {
@@ -100,6 +129,40 @@
             margin: 5px; transition: transform 0.2s;
         }
         button:active { transform: scale(0.95); }
+
+        /* ✅ Game Over: horizontal layout in mobile landscape */
+        @media (pointer: coarse) and (orientation: landscape){
+        #game-over{
+            width: 92%;
+            max-width: 720px;
+            padding: 18px;
+            border-radius: 18px;
+        }
+
+        #game-over .go-grid{
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr; /* left content, right actions/ads */
+            gap: 14px;
+            align-items: center;
+        }
+
+        #game-over h1{ font-size: 22px; }
+        #game-over h2{ margin: 8px 0; }
+
+        /* buttons side-by-side */
+        #game-over .go-actions{
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        #game-over button{
+            width: 100%;
+            margin: 0;
+            padding: 12px 14px;
+        }
+        }
 
         /* =========================
    ✅ ADS (Desktop side + Game Over slot)
@@ -195,19 +258,28 @@
         <div class="mobile-btn" id="dash-btn">DASH</div>
 
         <div id="game-over">
+        <div class="go-grid">
+            <div class="go-left">
             <h1 style="color: var(--king); margin: 0;">ELIMINATED</h1>
-                
-
             <p id="death-msg">The predator was stronger.</p>
             <h2 id="final-score">Score: 0</h2>
+            </div>
+
+            <div class="go-right">
             <div class="go-ad-wrap">
                 <div class="go-ad-label">Advertisement</div>
                 <div id="go-ad-300" class="ad-slab" style="display:none;">Loading ad…</div>
                 <div id="go-ad-320" class="ad-slab" style="display:none;">Loading ad…</div>
-                </div>
-            <button onclick="location.reload()">RESPAWN</button>
-            <button class="share-btn" onclick="shareScore()">SHARE SCORE</button>
+            </div>
+
+            <div class="go-actions">
+                <button onclick="location.reload()">RESPAWN</button>
+                <button class="share-btn" onclick="shareScore()">SHARE</button>
+            </div>
+            </div>
         </div>
+        </div>
+
     </div>
 
     <canvas id="gameCanvas"></canvas>
@@ -696,7 +768,8 @@
         init();
         startSideAdsRotation();
 
-        loop();
+        requestAnimationFrame(loop);
+
 
         let _bottomAdLoaded = false;
 
