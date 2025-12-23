@@ -35,9 +35,20 @@
 
         /* HUD & UI */
         #ui-layer {
-            position: absolute; inset: 0; pointer-events: none;
-            padding: 20px; box-sizing: border-box;
-        }
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  padding: 20px;
+  box-sizing: border-box;
+  z-index: 50;              /* ✅ NEW: UI above game canvas */
+}
+
+#gameCanvas{
+  position: fixed;
+  inset: 0;
+  z-index: 1;               /* ✅ canvas behind UI */
+}
+
 
         .hud-top { display: flex; justify-content:flex-start; align-items: flex-start; gap: 12px;}
 
@@ -100,9 +111,18 @@
 
         /* Make stick a bit bigger */
         #joystick-stick{
-        width: 54px;
-        height: 54px;
-        }
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.22);
+  border: 1px solid rgba(255,255,255,0.25);
+  box-shadow: 0 0 18px rgba(0,242,255,0.25);
+}
+
 
 
         @media (pointer: coarse) and (orientation: landscape){
@@ -534,14 +554,25 @@
             }
         }
 
-       function endGame() {
-        gameActive = false;
-        document.getElementById('final-score').innerText = "Score: " + itemsEaten;
-        document.getElementById('game-over').style.display = 'block';
+      function endGame() {
+  gameActive = false;
+  document.getElementById('final-score').innerText = "Score: " + itemsEaten;
+  document.getElementById('game-over').style.display = 'block';
 
-        // ✅ show ad in game over popup
-        mountGameOverAds();
-        }
+  // ✅ On mobile landscape, DO NOT show game-over ads (keep space clickable)
+  const isMobileLandscape =
+    window.matchMedia("(pointer: coarse)").matches &&
+    window.matchMedia("(orientation: landscape)").matches;
+
+  if (!isMobileLandscape) {
+    mountGameOverAds(); // desktop only
+  } else {
+    // ensure hidden
+    document.getElementById("go-ad-300")?.style && (document.getElementById("go-ad-300").style.display = "none");
+    document.getElementById("go-ad-320")?.style && (document.getElementById("go-ad-320").style.display = "none");
+  }
+}
+
 
 
         function loop(t) {
@@ -744,7 +775,9 @@
         base.addEventListener('touchmove', e => {
             e.preventDefault();
             const rect = base.getBoundingClientRect();
-            const centerX = rect.left + 60, centerY = rect.top + 60;
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
             touchData.x = e.touches[0].clientX - centerX;
             touchData.y = e.touches[0].clientY - centerY;
             const dist = Math.min(50, Math.hypot(touchData.x, touchData.y));
@@ -785,6 +818,8 @@
 
         function refreshBottomAdVisibility(){
         const wrap = document.getElementById("bottomAdWrap");
+        if (!gameActive) { wrap.style.display = "none"; return; }
+
         if (!wrap) return;
 
         const show =
