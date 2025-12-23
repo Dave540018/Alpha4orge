@@ -192,52 +192,59 @@
   border:1px solid #e5e7eb; background:#fff; padding:9px 12px; border-radius:10px;
   font-weight:700; color:#0b5cab; cursor:pointer;
 }
-.nav-dropdown{
+.nav-dropdown {
   position: relative;
   display: inline-flex;
   align-items: center;
 }
 
-.nav-dropbtn{
-  background: transparent;
-  border: none;
-  color: inherit;
-  font: inherit;
+.nav-dropbtn {
+  padding: 8px 12px;
+  border: 1px solid var(--ring);
+  border-radius: 999px;
+  background: var(--panel);
+  font-weight: 600;
+  font-size: 13px;
   cursor: pointer;
-  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px; /* small space between "Games" and ▾ */
+  color: inherit; /* matches other links */
 }
 
-.nav-dropmenu{
+.nav-dropmenu {
   position: absolute;
   top: calc(100% + 8px);
   left: 0;
   min-width: 160px;
   display: none;
   flex-direction: column;
-  gap: 6px;
-  padding: 10px;
-  background: rgba(0,0,0,0.85);
-  border: 1px solid rgba(255,255,255,0.12);
+  gap: 4px;
+  padding: 8px;
+  background: var(--panel);
+  border: 1px solid var(--ring);
   border-radius: 12px;
-  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
   z-index: 999;
 }
 
-.nav-dropmenu a{
-  padding: 8px 10px;
+.nav-dropmenu a {
+  padding: 8px 12px;
   border-radius: 10px;
   text-decoration: none;
-  color: #fff;
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 13px;
   white-space: nowrap;
 }
 
-.nav-dropmenu a:hover{
-  background: rgba(255,255,255,0.10);
+.nav-dropmenu a:hover {
+  background: var(--bg);
 }
 
-/* Desktop hover */
-@media (hover: hover){
-  .nav-dropdown:hover .nav-dropmenu{
+/* Desktop: open on hover */
+@media (hover: hover) {
+  .nav-dropdown:hover .nav-dropmenu {
     display: flex;
   }
 }
@@ -286,6 +293,7 @@
         <div class="nav-dropmenu" role="menu">
           <a href="CandyGame.html" role="menuitem">Candy Game</a>
           <a href="Tetris.html" role="menuitem">Tetris</a>
+          <a href="SG2.html" role="menuitem">AlphaSnake</a>
         </div>
       </div>
     
@@ -896,14 +904,3 @@ window.addEventListener('resize', () => {
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
