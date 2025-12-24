@@ -244,6 +244,90 @@
         @media (orientation: portrait){
         #bottomAdWrap{ display:none !important; }
         }
+        /* Leaderboard (Game Over) */
+        .lb-wrap{
+        margin: 12px auto 0;
+        width: 92%;
+        text-align: left;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.10);
+        border-radius: 16px;
+        padding: 10px 12px;
+        }
+        .lb-title{
+        font-size: 11px;
+        opacity: .75;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+        }
+        .lb-list{
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        max-height: 160px;
+        overflow: auto;
+        }
+        .lb-list li{
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        font-size: 13px;
+        padding: 6px 8px;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.10);
+        border-radius: 12px;
+        }
+        .lb-list li span:last-child{
+        color: var(--dash);
+        font-weight: 800;
+        }
+
+        /* ✅ Name Modal */
+#nameModal{
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background: rgba(0,0,0,0.7);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  pointer-events: all;
+  backdrop-filter: blur(8px);
+}
+#nameModal .name-card{
+  width: min(92vw, 360px);
+  background: rgba(5,5,10,0.95);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 18px;
+  padding: 18px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+#nameModal .name-title{
+  font-weight: 900;
+  margin-bottom: 12px;
+  letter-spacing: .5px;
+}
+#nameModal input{
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.06);
+  color: white;
+  outline: none;
+  box-sizing: border-box;
+  margin-bottom: 12px;
+}
+#nameModal button{
+  width: 100%;
+  margin: 0;
+}
+
 
     </style>
 </head>
@@ -256,6 +340,16 @@
 <div id="sideAdRightWrap" class="side-ad right" style="display:none;">
   <div id="sideAdRight" class="ad-slab">Loading ad…</div>
 </div>
+
+<!-- ✅ Name Modal (Ask player name at start) -->
+<div id="nameModal" style="display:none;">
+  <div class="name-card">
+    <div class="name-title">Enter your name</div>
+    <input id="nameInput" type="text" maxlength="18" placeholder="Player" />
+    <button id="nameBtn" type="button">START</button>
+  </div>
+</div>
+
 
     <div id="portrait-warning">
         <h2>ROTATE DEVICE</h2>
@@ -282,16 +376,14 @@
             <div class="go-left">
             <h1 style="color: var(--king); margin: 0;">ELIMINATED</h1>
             <p id="death-msg">The predator was stronger.</p>
-            <h2 id="final-score">Score: 0</h2>
+            <div class="lb-wrap">
+            <div class="lb-title">TOP 5 (GLOBAL)</div>
+            <ul id="highscores" class="lb-list">
+                <li><span>—</span><span>—</span></li>
+            </ul>
             </div>
 
-            <div class="go-right">
-            <div class="go-ad-wrap">
-                <div class="go-ad-label">Advertisement</div>
-                <div id="go-ad-300" class="ad-slab" style="display:none;">Loading ad…</div>
-                <div id="go-ad-320" class="ad-slab" style="display:none;">Loading ad…</div>
             </div>
-
             <div class="go-actions">
                 <button onclick="location.reload()">RESPAWN</button>
                 <button class="share-btn" onclick="shareScore()">SHARE</button>
@@ -324,7 +416,7 @@
         let itemsEaten = 0;
 
         let lastFrame = performance.now();
-        requestAnimationFrame(loop);
+     
 
 
         // Input Handling
@@ -553,31 +645,202 @@
                 king.growing = true;
             }
         }
+        // ==============================
+// ✅ GLOBAL TOP 5 (Google Sheets)
+// ==============================
 
-      function endGame() {
-  gameActive = false;
-  document.getElementById('final-score').innerText = "Score: " + itemsEaten;
-  document.getElementById('game-over').style.display = 'block';
+// Paste your deployed Apps Script WEB APP URL here:
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyMRT4HIt_PzQANm8LC8AUSeQS7jDai7q1Z8kzqI5BbrqYvMvSLczE1l6m4BJK_xyBAQQ/exec";
 
-  // ✅ On mobile landscape, DO NOT show game-over ads (keep space clickable)
-  const isMobileLandscape =
-    window.matchMedia("(pointer: coarse)").matches &&
-    window.matchMedia("(orientation: landscape)").matches;
+// Keep a simple player name without changing UI.
+// (Optional) You can set it once in console: localStorage.setItem("nw_playerName","Bino");
+let playerName = localStorage.getItem("nw_playerName") || "Player";
 
-  if (!isMobileLandscape) {
-    mountGameOverAds(); // desktop only
-  } else {
-    // ensure hidden
-    document.getElementById("go-ad-300")?.style && (document.getElementById("go-ad-300").style.display = "none");
-    document.getElementById("go-ad-320")?.style && (document.getElementById("go-ad-320").style.display = "none");
+/* =========================
+   ✅ NAME MODAL (START)
+   ========================= */
+const nameModal = document.getElementById("nameModal");
+const nameInput = document.getElementById("nameInput");
+const nameBtn   = document.getElementById("nameBtn");
+
+function openNameModal(){
+  nameModal.style.display = "flex";
+  nameInput.value = localStorage.getItem("nw_playerName") || "";
+  setTimeout(() => nameInput.focus(), 50);
+}
+
+function closeNameModal(){
+  nameModal.style.display = "none";
+}
+
+function submitName(){
+  const v = (nameInput.value || "").trim();
+  playerName = v ? v : "Player";
+  localStorage.setItem("nw_playerName", playerName);
+  closeNameModal();
+  startGame(); // ✅ start only after name is set
+}
+
+nameBtn.addEventListener("click", submitName);
+nameInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") submitName();
+});
+
+function startGame(){
+  // reset state (safe if restart later)
+  snakes = [];
+  foods = [];
+  itemsEaten = 0;
+  scoreVal.innerText = "0";
+  gameActive = true;
+
+  lastFrame = performance.now();
+
+  init();
+  startSideAdsRotation();
+
+  // start the animation loop
+  requestAnimationFrame(loop);
+
+  // show/hide bottom banner correctly
+  if (typeof refreshBottomAdVisibility === "function") refreshBottomAdVisibility();
+}
+
+// ✅ Ask name first, then startGame() runs
+openNameModal();
+
+
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, (c) => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  }[c]));
+}
+
+async function submitScoreToSheet(name, score) {
+  if (!SCRIPT_URL || SCRIPT_URL.includes("PASTE_")) return;
+  try {
+    await fetch(SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ name, score })
+    });
+  } catch (e) {
+    console.log("Score submit failed:", e);
   }
 }
+
+function renderTop5(top5){
+  const ul = document.getElementById("highscores");
+  const list = Array.isArray(top5) ? top5.slice(0,5) : [];
+  if (!ul) return;
+
+  if (!list.length){
+    ul.innerHTML = `<li><span>—</span><span>—</span></li>`;
+    return;
+  }
+
+  ul.innerHTML = list.map((x,i) => {
+    const nm = (x && x.name) ? String(x.name) : "Player";
+    const sc = (x && x.score != null) ? Number(x.score) : 0;
+    return `<li><span>#${i+1} ${escapeHtml(nm)}</span><span>${sc}</span></li>`;
+  }).join("");
+}
+
+// Local fallback (if fetch fails or Apps Script blocked)
+const LOCAL_KEY = "nw_local_top5";
+function upsertLocalScore(name, score){
+  const raw = localStorage.getItem(LOCAL_KEY);
+  const arr = raw ? JSON.parse(raw) : [];
+  const map = {};
+  for (const r of arr){
+    const n = (r.name || "Player").toString().trim();
+    const s = Number(r.score || 0);
+    if (!map[n] || s > map[n]) map[n] = s;
+  }
+  const nm = (name || "Player").toString().trim();
+  const sc = Number(score || 0);
+  if (!map[nm] || sc > map[nm]) map[nm] = sc;
+
+  const top5 = Object.entries(map)
+    .map(([n,s]) => ({name:n, score:s}))
+    .sort((a,b) => b.score - a.score)
+    .slice(0,5);
+
+  localStorage.setItem(LOCAL_KEY, JSON.stringify(top5));
+  return top5;
+}
+
+function renderLocalTop5(){
+  const raw = localStorage.getItem(LOCAL_KEY);
+  const arr = raw ? JSON.parse(raw) : [];
+  renderTop5(arr);
+}
+
+async function loadGlobalTop5(){
+  if (!SCRIPT_URL || SCRIPT_URL.includes("PASTE_")) {
+    renderLocalTop5();
+    return;
+  }
+  try {
+    const res = await fetch(SCRIPT_URL + "?t=" + Date.now());
+    const text = await res.text();
+    const data = JSON.parse(text);
+    renderTop5(data.top5 || []);
+  } catch (e) {
+    console.log("Top5 fetch failed:", e);
+    renderLocalTop5();
+  }
+}
+
+
+        function endGame() {
+        gameActive = false;
+
+        // Score + show panel
+        const finalScoreEl = document.getElementById('final-score');
+        if (finalScoreEl) finalScoreEl.innerText = "Score: " + itemsEaten;
+
+        const gameOverEl = document.getElementById('game-over');
+        if (gameOverEl) gameOverEl.style.display = 'block';
+
+        // ✅ Leaderboard (local first, then global)
+        try {
+            upsertLocalScore(playerName, itemsEaten);
+            renderLocalTop5();
+            // submit & then reload global
+            submitScoreToSheet(playerName, itemsEaten).finally(loadGlobalTop5);
+        } catch (e) {
+            console.log("Leaderboard error:", e);
+        }
+
+        // ✅ On mobile landscape, DO NOT show game-over ads (keep space clickable)
+        const isMobileLandscape =
+            window.matchMedia("(pointer: coarse)").matches &&
+            window.matchMedia("(orientation: landscape)").matches;
+
+        try {
+            if (!isMobileLandscape) {
+            if (typeof mountGameOverAds === "function") mountGameOverAds();
+            } else {
+            const ad300 = document.getElementById("go-ad-300");
+            const ad320 = document.getElementById("go-ad-320");
+            if (ad300) ad300.style.display = "none";
+            if (ad320) ad320.style.display = "none";
+            }
+        } catch (e) {
+            console.log("endGame() safe-catch:", e);
+        }
+        }
+
+
+
 
 
 
         function loop(t) {
         if (!gameActive) return;
-        requestAnimationFrame(loop);
+        requestAnimationFrame(loop); // ✅ ADD THIS LINE (critical)
 
         // --- delta time (seconds) ---
         let dt = (t - lastFrame) / 1000;
@@ -741,13 +1004,12 @@
 
         // --- Controls ---
         window.addEventListener('keydown', e => {
-            keys[e.code] = true;
+        keys[e.code] = true;
 
-            // lock to keyboard mode on any arrow/WASD/space
-            inputMode = "keyboard";
-            lastKeyboardTime = Date.now();
+        inputMode = "keyboard";
+        lastKeyboardTime = Date.now();
 
-            if (e.code === 'Space') player.dash();
+        if (e.code === 'Space' && player) player.dash();
         });
 
         window.addEventListener('keyup', e => {
@@ -766,7 +1028,14 @@
             }
         });
 
-        window.addEventListener('mousedown', () => player.dash());
+        window.addEventListener('mousedown', () => {
+        if (player) player.dash();
+        });
+
+        document.getElementById('dash-btn').addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        if (player) player.dash();
+        });
 
         // Mobile Joystick
         const stick = document.getElementById('joystick-stick');
@@ -790,10 +1059,31 @@
         document.getElementById('dash-btn').addEventListener('touchstart', (e) => { e.preventDefault(); player.dash(); });
 
         function shareScore() {
-            const msg = `I ate ${itemsEaten} items in Neon Worms! Watch out for the King Snake!`;
-            if (navigator.share) navigator.share({ title: 'Neon Worms', text: msg, url: window.location.href });
-            else alert("Copied score: " + itemsEaten);
+        const pageUrl = window.location.origin + window.location.pathname; // clean link (no #, no params)
+        const text = `I scored ${itemsEaten} in Neon Worms! Can you beat me?\n\nPlay here: ${pageUrl}`;
+
+        // ✅ Native share (mobile)
+        if (navigator.share) {
+            navigator.share({
+            title: "Neon Worms",
+            text,
+            url: pageUrl
+            }).catch(() => {});
+            return;
         }
+
+        // ✅ Desktop fallback: copy to clipboard
+        const copyText = text;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(copyText)
+            .then(() => alert("Share message copied! Paste it anywhere ✅"))
+            .catch(() => prompt("Copy this to share:", copyText));
+        } else {
+            // Old browser fallback
+            prompt("Copy this to share:", copyText);
+        }
+        }
+
 
         window.oncontextmenu = (e) => e.preventDefault();
         window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
