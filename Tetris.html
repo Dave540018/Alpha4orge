@@ -90,6 +90,20 @@
                 display: none;
             }
 
+            .controls{
+            display: none;
+            /* Row 1: ← rotate →  */
+            /* Row 2: ↓ on the left, HARD DROP taking the remaining width */
+            grid-template-areas:
+                "left rotate right"
+                "down drop drop";
+            gap: 8px;
+            margin-top: 8px;
+            width: 100%;
+            max-width: 300px;
+        }
+
+
             /* ✅ Bottom in-game ad area (mobile only) */
             .bottom-ad-mobile {
                 display: flex;
@@ -133,15 +147,17 @@
         /* --- MOBILE CONTROLS --- */
         .controls{
             display: none;
+            /* Row 1: ← rotate →  */
+            /* Row 2: ↓ on the left, HARD DROP taking the remaining width */
             grid-template-areas:
                 "left rotate right"
-                ". down ."
-                "drop drop drop";
+                "down drop drop";
             gap: 8px;
             margin-top: 8px;
             width: 100%;
             max-width: 300px;
         }
+
 
         @media (pointer: coarse), (max-width: 1024px) { .controls { display: grid; } }
 
