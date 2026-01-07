@@ -2,113 +2,150 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultimate Tic-Tac-Toe | Meta Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ultimate Tic-Tac-Toe | Live Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
-        .cell { width: 100%; aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; transition: all 0.2s; }
-        .mini-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; padding: 4px; background: #e2e8f0; border-radius: 4px; transition: all 0.3s; position: relative; }
-        .active-board { background: #fef08a !important; transform: scale(1.02); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); z-index: 10; }
-        
-        /* Win Overlays */
-        .won-x::after, .won-o::after, .won-tie::after { 
-            position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; 
-            font-size: 5rem; font-weight: 900; pointer-events: none; z-index: 20;
-        }
-        .won-x { background: #fee2e2 !important; }
-        .won-x::after { content: 'X'; color: rgba(239, 68, 68, 0.3); }
-        .won-o { background: #dbeafe !important; }
-        .won-o::after { content: 'O'; color: rgba(59, 130, 246, 0.3); }
-        .won-tie { background: #f1f5f9 !important; opacity: 0.8; }
-        .won-tie::after { content: '-'; color: rgba(100, 116, 139, 0.3); }
+        .cell { width: 100%; aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; transition: all 0.1s; font-size: 1.2rem; }
+        .mini-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; padding: 2px; background: #cbd5e1; border-radius: 4px; position: relative; }
+        .active-board { background: #fef08a !important; outline: 3px solid #facc15; z-index: 10; }
+        .won-x::after, .won-o::after, .won-tie::after { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 4rem; font-weight: 900; pointer-events: none; z-index: 20; }
+        .won-x { background: #fee2e2 !important; } .won-x::after { content: 'X'; color: rgba(239, 68, 68, 0.4); }
+        .won-o { background: #dbeafe !important; } .won-o::after { content: 'O'; color: rgba(59, 130, 246, 0.4); }
+        .won-tie { background: #f1f5f9 !important; opacity: 0.6; } .won-tie::after { content: '-'; color: rgba(100, 116, 139, 0.4); }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen font-sans text-slate-900">
+<body class="bg-slate-50 min-h-screen font-sans text-slate-900 flex flex-col items-center">
 
-    <div id="setup-screen" class="fixed inset-0 bg-white z-50 flex items-center justify-center p-6">
-        <div class="max-w-md w-full space-y-8 text-center">
-            <h1 class="text-5xl font-black text-slate-800 tracking-tighter">ULTIMATE<br><span class="text-indigo-600">TIC-TAC-TOE</span></h1>
-            <div class="space-y-4">
-                <input type="text" id="player-name" placeholder="Enter your name" class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-indigo-500 outline-none text-lg">
-                <div class="grid grid-cols-2 gap-4">
-                    <button onclick="startGame('cpu')" class="bg-slate-800 text-white py-4 rounded-xl font-bold hover:bg-slate-700 transition">Play vs CPU</button>
-                    <button onclick="showInvite()" class="bg-indigo-600 text-white py-4 rounded-xl font-bold hover:bg-indigo-500 transition">Play vs Friend</button>
+    <div id="setup-screen" class="fixed inset-0 bg-white z-50 flex items-center justify-center p-4 overflow-y-auto">
+        <div class="max-w-sm w-full space-y-6 text-center">
+            <h1 class="text-4xl font-black text-slate-800 tracking-tighter">ULTIMATE<br><span class="text-indigo-600">LIVE PRO</span></h1>
+            
+            <input type="text" id="player-name" placeholder="Your Name" class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-indigo-500 outline-none">
+            
+            <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">CPU Difficulty</p>
+                <div class="flex gap-2 justify-center mb-2">
+                    <button onclick="setDifficulty('easy')" id="btn-easy" class="diff-btn px-3 py-1 border rounded-lg text-sm bg-slate-100">Easy</button>
+                    <button onclick="setDifficulty('moderate')" id="btn-moderate" class="diff-btn px-3 py-1 border rounded-lg text-sm bg-indigo-600 text-white">Moderate</button>
+                    <button onclick="setDifficulty('hard')" id="btn-hard" class="diff-btn px-3 py-1 border rounded-lg text-sm bg-slate-100">Hard</button>
+                </div>
+                <button onclick="startSolo()" class="w-full bg-slate-800 text-white py-3 rounded-lg font-bold">Play vs CPU</button>
+            </div>
+
+            <div class="p-4 bg-indigo-50 rounded-xl border border-indigo-100 space-y-3">
+                <p class="text-xs font-bold text-indigo-400 uppercase">Multiplayer</p>
+                <button onclick="hostGame()" class="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold">Create Room</button>
+                <div class="flex gap-2">
+                    <input type="text" id="join-code" placeholder="Code" class="w-2/3 px-3 py-2 border rounded-lg uppercase">
+                    <button onclick="joinGame()" class="w-1/3 bg-white border border-indigo-600 text-indigo-600 py-2 rounded-lg font-bold text-sm">Join</button>
                 </div>
             </div>
+            <p id="network-status" class="text-xs text-slate-400"></p>
         </div>
     </div>
 
-    <div id="invite-screen" class="fixed inset-0 bg-white z-40 hidden flex items-center justify-center p-6">
-        <div class="max-w-md w-full text-center space-y-6">
-            <h2 class="text-2xl font-bold">Invite a Friend</h2>
-            <p class="text-slate-500">Share this link with your friend to start the match:</p>
+    <main id="game-screen" class="w-full max-w-[500px] p-2 sm:p-4 hidden flex flex-col h-screen">
+        <header class="flex justify-between items-center mb-4">
+            <div id="room-display" class="hidden absolute top-2 left-1/2 -translate-x-1/2 bg-white px-3 py-1 rounded-full shadow-sm border text-[10px] font-bold">
+                ROOM: <span id="display-code" class="text-indigo-600">----</span>
+            </div>
             <div class="flex gap-2">
-                <input type="text" id="invite-link" readonly class="flex-1 px-4 py-2 bg-slate-100 rounded-lg border text-sm">
-                <button onclick="copyInvite()" class="bg-emerald-500 text-white px-4 py-2 rounded-lg font-bold">Copy</button>
-            </div>
-            <button onclick="startGame('pvp')" class="text-indigo-600 font-semibold underline">Done, Start Playing</button>
-        </div>
-    </div>
-
-    <main id="game-screen" class="max-w-4xl mx-auto p-4 hidden">
-        <header class="flex justify-between items-center mb-8">
-            <div class="flex gap-4">
-                <div class="bg-white p-3 rounded-xl shadow-sm border-b-4 border-red-400">
-                    <p id="p1-label" class="text-xs font-bold text-slate-400 uppercase">Player X</p>
-                    <p id="score-x" class="text-2xl font-black">0</p>
+                <div class="bg-white p-2 rounded-lg shadow-sm border-b-2 border-red-400 min-w-[70px] text-center">
+                    <p id="p1-label" class="text-[10px] font-bold text-slate-400 truncate">Player X</p>
+                    <p id="score-x" class="text-xl font-black">0</p>
                 </div>
-                <div class="bg-white p-3 rounded-xl shadow-sm border-b-4 border-blue-400">
-                    <p id="p2-label" class="text-xs font-bold text-slate-400 uppercase">Opponent O</p>
-                    <p id="score-o" class="text-2xl font-black">0</p>
+                <div class="bg-white p-2 rounded-lg shadow-sm border-b-2 border-blue-400 min-w-[70px] text-center">
+                    <p id="p2-label" class="text-[10px] font-bold text-slate-400 truncate">Opponent</p>
+                    <p id="score-o" class="text-xl font-black">0</p>
                 </div>
             </div>
-            <div id="turn-indicator" class="text-lg font-bold bg-indigo-100 text-indigo-700 px-6 py-2 rounded-full">
-                X's Turn
-            </div>
-            <button onclick="shareScore()" class="bg-slate-200 p-3 rounded-full hover:bg-slate-300">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M176,144a40,40,0,0,0-31.2,14.92l-36.41-18.2a40.09,40.09,0,0,0,0-21.44l36.41-18.2a40,40,0,1,0-7.17-14.33L101.22,105a40,40,0,1,0,0,46.06l36.41,18.2A40,40,0,1,0,176,144Z"></path></svg>
-            </button>
+            <div id="turn-indicator" class="text-sm font-bold bg-indigo-100 text-indigo-700 px-4 py-2 rounded-full">X's Turn</div>
         </header>
 
-        <div id="mega-board" class="grid grid-cols-3 gap-4 bg-slate-300 p-4 rounded-2xl shadow-2xl aspect-square max-w-[600px] mx-auto">
-            </div>
+        <div id="mega-board" class="grid grid-cols-3 gap-2 bg-slate-300 p-2 rounded-xl shadow-xl aspect-square w-full"></div>
 
-        <p id="instructions" class="text-center mt-8 text-slate-500 italic">
-            Tip: Your move determines which grid the opponent plays in next!
-        </p>
+        <div class="mt-auto py-4 text-center">
+            <p id="hint" class="text-xs text-slate-400 italic">Target boards carefully!</p>
+            <button onclick="location.reload()" class="mt-2 text-indigo-600 text-[10px] font-bold uppercase">Exit Game</button>
+        </div>
     </main>
 
     <script>
+        let peer, conn;
+        let myRole = 'X';
         let userName = "Player";
-        let gameMode = "cpu";
+        let isMultiplayer = false;
+        let difficulty = "moderate";
+        
         let currentPlayer = "X";
-        let nextRequiredBoard = null; 
+        let nextRequiredBoard = null;
         let scores = { X: 0, O: 0 };
-        let bigBoardWinners = Array(9).fill(null); // Values: 'X', 'O', 'Tie', or null
+        let bigBoardWinners = Array(9).fill(null);
         let boardStates = Array(9).fill(null).map(() => Array(9).fill(null));
+        const WIN_PATTERNS = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
 
-        function showInvite() {
-            const name = document.getElementById('player-name').value || "Friend";
-            const link = `${window.location.origin}${window.location.pathname}?invite=${encodeURIComponent(name)}`;
-            document.getElementById('invite-link').value = link;
-            document.getElementById('setup-screen').classList.add('hidden');
-            document.getElementById('invite-screen').classList.remove('hidden');
+        function setDifficulty(level) {
+            difficulty = level;
+            document.querySelectorAll('.diff-btn').forEach(b => {
+                b.classList.replace('bg-indigo-600', 'bg-slate-100');
+                b.classList.remove('text-white');
+            });
+            const active = document.getElementById(`btn-${level}`);
+            active.classList.replace('bg-slate-100', 'bg-indigo-600');
+            active.classList.add('text-white');
         }
 
-        function copyInvite() {
-            const copyText = document.getElementById("invite-link");
-            copyText.select();
-            navigator.clipboard.writeText(copyText.value);
-            alert("Link copied! Send it to your friend.");
+        function initPeer(id = null) {
+            peer = new Peer(id, { debug: 1 });
+            peer.on('open', () => document.getElementById('network-status').innerText = "Network Ready");
+            peer.on('connection', (connection) => {
+                conn = connection;
+                myRole = 'X';
+                setupConnHandlers();
+                startGameUI('pvp');
+            });
         }
 
-        function startGame(mode) {
-            gameMode = mode;
+        function hostGame() {
+            const randomCode = Math.random().toString(36).substring(2, 6).toUpperCase();
+            initPeer(randomCode);
+            document.getElementById('display-code').innerText = randomCode;
+            document.getElementById('room-display').classList.remove('hidden');
+        }
+
+        function joinGame() {
+            const code = document.getElementById('join-code').value.toUpperCase();
+            if (!code) return;
+            myRole = 'O';
+            peer = new Peer();
+            peer.on('open', () => {
+                conn = peer.connect(code);
+                setupConnHandlers();
+                startGameUI('pvp');
+            });
+        }
+
+        function setupConnHandlers() {
+            conn.on('data', (data) => {
+                if (data.type === 'MOVE') executeMove(data.bIdx, data.cIdx, false);
+                if (data.type === 'NAME_SYNC') document.getElementById('p2-label').innerText = data.name;
+            });
+            conn.on('open', () => conn.send({ type: 'NAME_SYNC', name: userName }));
+        }
+
+        function startSolo() {
+            myRole = 'X';
+            startGameUI('cpu');
+        }
+
+        function startGameUI(mode) {
+            isMultiplayer = (mode === 'pvp');
             userName = document.getElementById('player-name').value || "Player X";
             document.getElementById('p1-label').innerText = userName;
-            document.getElementById('p2-label').innerText = mode === 'cpu' ? 'CPU (O)' : 'Player O';
+            document.getElementById('p2-label').innerText = isMultiplayer ? "Waiting..." : `CPU (${difficulty})`;
             document.getElementById('setup-screen').classList.add('hidden');
-            document.getElementById('invite-screen').classList.add('hidden');
             document.getElementById('game-screen').classList.remove('hidden');
             initBoard();
         }
@@ -122,7 +159,7 @@
                 miniGrid.className = 'mini-grid';
                 for (let j = 0; j < 9; j++) {
                     const cell = document.createElement('button');
-                    cell.className = 'cell bg-white text-xl rounded-sm hover:bg-indigo-50';
+                    cell.className = 'cell bg-white rounded-sm active:scale-90';
                     cell.onclick = () => handleMove(i, j);
                     miniGrid.appendChild(cell);
                 }
@@ -132,23 +169,20 @@
         }
 
         function handleMove(boardIdx, cellIdx) {
+            if (isMultiplayer && currentPlayer !== myRole) return;
             if (bigBoardWinners[boardIdx] || boardStates[boardIdx][cellIdx]) return;
             if (nextRequiredBoard !== null && nextRequiredBoard !== boardIdx) return;
-
-            executeMove(boardIdx, cellIdx);
-
-            if (gameMode === 'cpu' && currentPlayer === 'O') {
-                setTimeout(makeCPUMove, 600);
-            }
+            executeMove(boardIdx, cellIdx, true);
         }
 
-        function executeMove(boardIdx, cellIdx) {
+        function executeMove(boardIdx, cellIdx, isLocal) {
+            if (isLocal && isMultiplayer && conn) conn.send({ type: 'MOVE', bIdx: boardIdx, cIdx: cellIdx });
+
             boardStates[boardIdx][cellIdx] = currentPlayer;
             const cell = document.querySelector(`#mini-${boardIdx}`).children[cellIdx];
             cell.innerText = currentPlayer;
             cell.classList.add(currentPlayer === 'X' ? 'text-red-500' : 'text-blue-500');
 
-            // 1. Check Mini-Board Result
             if (checkWin(boardStates[boardIdx])) {
                 bigBoardWinners[boardIdx] = currentPlayer;
                 document.getElementById(`mini-${boardIdx}`).classList.add(`won-${currentPlayer.toLowerCase()}`);
@@ -157,58 +191,78 @@
                 document.getElementById(`mini-${boardIdx}`).classList.add(`won-tie`);
             }
 
-            // 2. Check Mega-Board Result
             if (checkWin(bigBoardWinners)) {
-                alert(`🎊 ${currentPlayer === 'X' ? userName : 'Opponent'} wins the entire game!`);
+                alert(`Winner: ${currentPlayer}`);
                 scores[currentPlayer]++;
-                resetGame();
-                return;
-            } else if (bigBoardWinners.every(b => b !== null)) {
-                alert("🤝 It's a Mega-Tie! No one won the large board.");
                 resetGame();
                 return;
             }
 
-            // 3. Routing Logic
-            const targetIsComplete = bigBoardWinners[cellIdx] !== null;
-            nextRequiredBoard = targetIsComplete ? null : cellIdx;
-
+            nextRequiredBoard = bigBoardWinners[cellIdx] ? null : cellIdx;
             currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
             updateVisuals();
+
+            if (!isMultiplayer && currentPlayer === 'O') setTimeout(makeCPUMove, 600);
         }
 
+        // --- CPU LOGIC RE-ADDED ---
         function makeCPUMove() {
             let bIdx = nextRequiredBoard;
             if (bIdx === null) {
                 const openBoards = bigBoardWinners.map((v, i) => v === null ? i : null).filter(v => v !== null);
                 bIdx = openBoards[Math.floor(Math.random() * openBoards.length)];
             }
-            
-            const openCells = boardStates[bIdx].map((v, i) => v === null ? i : null).filter(v => v !== null);
-            const cIdx = openCells[Math.floor(Math.random() * openCells.length)];
-            executeMove(bIdx, cIdx);
+            let move;
+            if (difficulty === 'easy') move = getRandomMove(bIdx);
+            else if (difficulty === 'moderate') move = getSmartMove(bIdx, false);
+            else move = getSmartMove(bIdx, true);
+            executeMove(bIdx, move, true);
+        }
+
+        function getRandomMove(bIdx) {
+            const available = boardStates[bIdx].map((v, i) => v === null ? i : null).filter(v => v !== null);
+            return available[Math.floor(Math.random() * available.length)];
+        }
+
+        function getSmartMove(bIdx, isHard) {
+            const available = boardStates[bIdx].map((v, i) => v === null ? i : null).filter(v => v !== null);
+            for (let m of available) {
+                let temp = [...boardStates[bIdx]]; temp[m] = 'O';
+                if (checkWin(temp)) return m;
+            }
+            for (let m of available) {
+                let temp = [...boardStates[bIdx]]; temp[m] = 'X';
+                if (checkWin(temp)) return m;
+            }
+            if (isHard) {
+                const safeMoves = available.filter(m => !bigBoardWinners[m] && !canPlayerWinBoard(m));
+                if (safeMoves.length > 0) return safeMoves[Math.floor(Math.random() * safeMoves.length)];
+                const centerCorners = [4, 0, 2, 6, 8].filter(c => available.includes(c));
+                if (centerCorners.length > 0) return centerCorners[0];
+            }
+            return getRandomMove(bIdx);
+        }
+
+        function canPlayerWinBoard(bIdx) {
+            const available = boardStates[bIdx].map((v, i) => v === null ? i : null).filter(v => v !== null);
+            for (let m of available) {
+                let temp = [...boardStates[bIdx]]; temp[m] = 'X';
+                if (checkWin(temp)) return true;
+            }
+            return false;
         }
 
         function checkWin(board) {
-            const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-            return wins.some(pattern => {
-                const [a, b, c] = pattern;
-                // Ensure the cell is not null AND is not a 'Tie' (only X or O can win)
-                return board[a] && board[a] !== 'Tie' && board[a] === board[b] && board[a] === board[c];
-            });
+            return WIN_PATTERNS.some(p => board[p[0]] && board[p[0]] !== 'Tie' && board[p[0]] === board[p[1]] && board[p[0]] === board[p[2]]);
         }
 
         function updateVisuals() {
-            document.getElementById('turn-indicator').innerText = `${currentPlayer === 'X' ? userName : 'Opponent'}'s Turn`;
+            document.getElementById('turn-indicator').innerText = (isMultiplayer && currentPlayer === myRole) ? "YOUR TURN" : `${currentPlayer}'s Turn`;
             document.getElementById('score-x').innerText = scores.X;
             document.getElementById('score-o').innerText = scores.O;
-
             for (let i = 0; i < 9; i++) {
                 const grid = document.getElementById(`mini-${i}`);
-                grid.classList.remove('active-board');
-                if (!bigBoardWinners[i] && (nextRequiredBoard === null || nextRequiredBoard === i)) {
-                    grid.classList.add('active-board');
-                }
+                grid.classList.toggle('active-board', !bigBoardWinners[i] && (nextRequiredBoard === null || nextRequiredBoard === i));
             }
         }
 
@@ -217,16 +271,7 @@
             boardStates = Array(9).fill(null).map(() => Array(9).fill(null));
             nextRequiredBoard = null;
             currentPlayer = "X";
-            setTimeout(initBoard, 500);
-        }
-
-        function shareScore() {
-            const text = `Ultimate Tic-Tac-Toe: ${userName} (${scores.X}) vs Opponent (${scores.O})`;
-            if (navigator.share) {
-                navigator.share({ title: 'Game Score', text: text });
-            } else {
-                alert("Score copied: " + text);
-            }
+            setTimeout(initBoard, 1000);
         }
     </script>
 </body>
