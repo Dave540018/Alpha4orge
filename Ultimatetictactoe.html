@@ -6,6 +6,23 @@
     <title>Ultimate Tic-Tac-Toe | Live Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <!---Try
+    <script src="p5.min.js"></script>
+    <script src="vanta.topology.min.js"></script>
+    <script>
+    VANTA.TOPOLOGY ( {
+    el: "#Bodybg",
+    mouseControls: true,
+    touchControls: true,
+    gyroControls: false,
+    minWidth: 200.00,
+    scale: 1.00,
+    scaleMobile: 1.00
+
+    })
+
+    </script>--->
+
     <style>
         .cell { width: 100%; aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; transition: all 0.1s; font-size: 1.2rem; }
         .mini-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; padding: 2px; background: #cbd5e1; border-radius: 4px; position: relative; }
@@ -14,9 +31,94 @@
         .won-x { background: #fee2e2 !important; } .won-x::after { content: 'X'; color: rgba(239, 68, 68, 0.4); }
         .won-o { background: #dbeafe !important; } .won-o::after { content: 'O'; color: rgba(59, 130, 246, 0.4); }
         .won-tie { background: #f1f5f9 !important; opacity: 0.6; } .won-tie::after { content: '-'; color: rgba(100, 116, 139, 0.4); }
+
+        .pulse-join {
+        animation: pulseJoin 1.1s infinite;
+        box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.35);
+        }
+        @keyframes pulseJoin {
+        0%   { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.35); }
+        70%  { box-shadow: 0 0 0 10px rgba(79, 70, 229, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0); }
+        }
+
+        /* =========================
+        ✅ ADS (Desktop side + Mobile bottom)
+        ========================= */
+        .side-ad{
+        position: fixed;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 174px;
+        z-index: 40;             /* below setup screen (z-50), above game */
+        pointer-events: auto;
+        }
+        .side-ad.left{ left: 8px; }
+        .side-ad.right{ right: 8px; }
+
+        .ad-slab{
+        background:#fff;
+        border:1px solid #e5e7eb;
+        border-radius:14px;
+        padding:6px;
+        color:#333;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        font-size: 12px;
+        text-align: center;
+        overflow: hidden;
+        }
+
+        /* Side ads only on big screens (so board never gets squeezed) */
+        @media (max-width: 1100px){
+        .side-ad{ display:none !important; }
+        }
+
+        /* Bottom banner wrapper (mobile) */
+        #bottomAdWrap{
+        position: fixed;
+        left: 50%;
+        bottom: 6px;
+        transform: translateX(-50%);
+        z-index: 45;
+        display: none;
+        }
+
+        /* Show bottom banner on small screens */
+        @media (max-width: 640px){
+        #bottomAdWrap{ display: block; }
+        }
+
+        /* Add padding so bottom ad doesn't overlap your UI */
+        .has-bottom-ad{
+        padding-bottom: 76px !important; /* room for 50px ad + margins */
+        }
+
+        /* Inline mobile ad: show only on small screens */
+        @media (max-width: 640px){
+        #mobileInlineAdWrap{ display: block; }
+        }
+        @media (min-width: 641px){
+        #mobileInlineAdWrap{ display: none !important; }
+        }
+
+        
+
+
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen font-sans text-slate-900 flex flex-col items-center">
+<body id="#Bodybg" class="bg-slate-50 min-h-screen font-sans text-slate-900 flex flex-col items-center">
+
+    <!-- ✅ Side Ads (Desktop only) -->
+    <div id="sideAdLeftWrap" class="side-ad left" style="display:none;">
+    <div id="sideAdLeft" class="ad-slab">Loading ad…</div>
+    </div>
+
+    <div id="sideAdRightWrap" class="side-ad right" style="display:none;">
+    <div id="sideAdRight" class="ad-slab">Loading ad…</div>
+    </div>
+
+
+
 
     <div id="setup-screen" class="fixed inset-0 bg-white z-50 flex items-center justify-center p-4 overflow-y-auto">
         <div class="max-w-sm w-full space-y-6 text-center">
@@ -37,10 +139,41 @@
             <div class="p-4 bg-indigo-50 rounded-xl border border-indigo-100 space-y-3">
                 <p class="text-xs font-bold text-indigo-400 uppercase">Multiplayer</p>
                 <button onclick="hostGame()" class="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold">Create Room</button>
-                <div class="flex gap-2">
-                    <input type="text" id="join-code" placeholder="Code" class="w-2/3 px-3 py-2 border rounded-lg uppercase">
-                    <button onclick="joinGame()" class="w-1/3 bg-white border border-indigo-600 text-indigo-600 py-2 rounded-lg font-bold text-sm">Join</button>
+                <div class="space-y-2">
+                <!-- Join row -->
+                <div class="flex items-stretch gap-2">
+                    <input type="text" id="join-code" placeholder="ROOM CODE"
+                    class="flex-1 px-3 py-2 border rounded-lg uppercase tracking-widest text-center font-extrabold
+                            focus:border-indigo-500 outline-none bg-white" />
+
+                    <button id="btnJoin" onclick="joinGame()"
+                    class="w-24 bg-white border border-indigo-600 text-indigo-600 rounded-lg font-bold text-sm transition
+                            active:scale-95">
+                    Join
+                    </button>
                 </div>
+
+                <!-- Share row -->
+                <div id="share-row" class="hidden">
+                    <p class="text-[10px] font-bold text-indigo-500 uppercase tracking-widest text-left mb-1">
+                    Invite link
+                    </p>
+
+                    <div class="flex items-stretch gap-2">
+                    <input id="inviteLink" type="text" readonly
+                        class="flex-1 px-3 py-2 border rounded-lg text-[11px] text-slate-600 bg-white
+                            truncate focus:outline-none" />
+
+                    <button id="btnCopyLink"
+                        class="w-28 bg-indigo-600 text-white py-2 rounded-lg font-bold text-xs active:scale-95">
+                        Copy
+                    </button>
+                    </div>
+
+                    <p id="share-status" class="text-[10px] text-slate-500 mt-1 text-left"></p>
+                </div>
+                </div>
+
             </div>
             <p id="network-status" class="text-xs text-slate-400"></p>
         </div>
@@ -65,6 +198,11 @@
         </header>
 
         <div id="mega-board" class="grid grid-cols-3 gap-2 bg-slate-300 p-2 rounded-xl shadow-xl aspect-square w-full"></div>
+
+         <!-- ✅ Bottom Banner Ad (Mobile) -->
+        <div id="mobileInlineAdWrap" class="hidden mt-3">
+        <div id="mobileInlineAd" class="ad-slab mx-auto" style="max-width: 340px;">Loading ad…</div>
+        </div>
 
         <div class="mt-auto py-4 text-center">
             <p id="hint" class="text-xs text-slate-400 italic">Target boards carefully!</p>
@@ -97,6 +235,23 @@
             active.classList.add('text-white');
         }
 
+
+        // Auto-fill join code from URL (?code=ABCD or #ABCD)
+        window.addEventListener("DOMContentLoaded", () => {
+        const params = new URLSearchParams(window.location.search);
+        const urlCode = params.get("code") || (window.location.hash ? window.location.hash.slice(1) : "");
+        if (urlCode) setJoinCode(urlCode);
+
+        // Always keep typing uppercase
+        const joinInput = document.getElementById("join-code");
+        if (joinInput) {
+            joinInput.addEventListener("input", (e) => {
+            e.target.value = e.target.value.toUpperCase();
+            });
+        }
+        });
+
+
         function initPeer(id = null) {
             peer = new Peer(id, { debug: 1 });
             peer.on('open', () => document.getElementById('network-status').innerText = "Network Ready");
@@ -108,12 +263,73 @@
             });
         }
 
-        function hostGame() {
-            const randomCode = Math.random().toString(36).substring(2, 6).toUpperCase();
-            initPeer(randomCode);
-            document.getElementById('display-code').innerText = randomCode;
-            document.getElementById('room-display').classList.remove('hidden');
+        function setJoinPulse(on, text = "Join") {
+        const btn = document.getElementById("btnJoin");
+        if (!btn) return;
+        btn.classList.toggle("pulse-join", !!on);
+        btn.textContent = text;
         }
+
+        function getInviteLink(code) {
+        const base = `${window.location.origin}${window.location.pathname}`;
+        return `${base}?code=${encodeURIComponent(code)}`;
+        }
+
+        function showShareRow(code) {
+        const row = document.getElementById("share-row");
+        const btn = document.getElementById("btnCopyLink");
+        const linkInput = document.getElementById("inviteLink");
+        const status = document.getElementById("share-status");
+        if (!row || !btn || !linkInput) return;
+
+        const link = getInviteLink(code);
+        row.classList.remove("hidden");
+        linkInput.value = link;
+        if (status) status.textContent = "Share this link with your friend. They just enter name and tap Join.";
+
+        btn.onclick = async () => {
+            try {
+            await navigator.clipboard.writeText(link);
+            btn.textContent = "Copied ✅";
+            if (status) status.textContent = "Copied! Paste it in WhatsApp / Telegram.";
+            setTimeout(() => (btn.textContent = "Copy"), 1200);
+            } catch (e) {
+            window.prompt("Copy this link:", link);
+            }
+        };
+        }
+
+        function setJoinCode(code) {
+        const joinInput = document.getElementById("join-code");
+        if (!joinInput) return;
+        const clean = (code || "").toUpperCase().trim();
+        joinInput.value = clean;
+
+        if (clean) {
+            setJoinPulse(true, "Join");
+            showShareRow(clean);
+        } else {
+            setJoinPulse(false, "Join");
+        }
+        }
+
+
+        function hostGame() {
+        const randomCode = Math.random().toString(36).substring(2, 6).toUpperCase();
+        initPeer(randomCode);
+
+        setJoinCode(randomCode); // <-- fills, pulses, shows share row
+
+        try {
+            const newUrl = `${window.location.pathname}?code=${randomCode}`;
+            window.history.replaceState({}, "", newUrl);
+        } catch (e) {}
+
+        document.getElementById('display-code').innerText = randomCode;
+        document.getElementById('room-display').classList.remove('hidden');
+        }
+
+
 
         function joinGame() {
             const code = document.getElementById('join-code').value.toUpperCase();
@@ -198,6 +414,14 @@
                 return;
             }
 
+            // if no winner but all 9 mini-boards are decided => overall draw
+            if (bigBoardWinners.every(v => v !== null)) {
+                alert("Draw! Restarting…");
+                resetGame();
+                return;
+            }
+
+
             nextRequiredBoard = bigBoardWinners[cellIdx] ? null : cellIdx;
             currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
             updateVisuals();
@@ -273,6 +497,122 @@
             currentPlayer = "X";
             setTimeout(initBoard, 1000);
         }
+
+        /* =========================
+        ✅ ADSTERRA (Sequential Loader)
+        ========================= */
+        function loadAdsterraSequential(container, key, w, h) {
+        return new Promise((resolve) => {
+            if (!container) return resolve(false);
+
+            container.innerHTML = "";
+            const def = document.createElement("script");
+            def.type = "text/javascript";
+            def.text = `
+            window.atOptions = {
+                key: '${key}',
+                format: 'iframe',
+                height: ${h},
+                width: ${w},
+                params: {}
+            };
+            `;
+
+            const inv = document.createElement("script");
+            inv.type = "text/javascript";
+            inv.src  = "https://www.highperformanceformat.com/" + key + "/invoke.js";
+            inv.onload = () => resolve(true);
+            inv.onerror = () => resolve(false);
+
+            container.appendChild(def);
+            container.appendChild(inv);
+        });
+        }
+
+        let adQueue = Promise.resolve();
+        function queueAd(container, key, w, h){
+        adQueue = adQueue.then(() => loadAdsterraSequential(container, key, w, h));
+        return adQueue;
+        }
+
+        /* ✅ Your Adsterra keys (replace these) */
+        const KEY_LEFT_160x600  = "001d2d159d6e43ef2e7fbbbcd1832bc4";
+        const KEY_RIGHT_160x300 = "f9a2403e20a69cbd4e016e13ae4e06e1";
+        const KEY_BANNER_320x50 = "4404d2d96e9fdd2085c017e2ecbf8d84";
+
+        /* ===== Side ads (desktop) ===== */
+        let _sideRotator = null;
+        let _side = "left";
+        function sideAdsAllowed(){ return window.matchMedia("(min-width: 1101px)").matches; }
+
+        async function mountOneSideAd(){
+        if (!sideAdsAllowed()) return;
+
+        const leftWrap = document.getElementById("sideAdLeftWrap");
+        const rightWrap = document.getElementById("sideAdRightWrap");
+        const left = document.getElementById("sideAdLeft");
+        const right = document.getElementById("sideAdRight");
+        if (!leftWrap || !rightWrap || !left || !right) return;
+
+        leftWrap.style.display = "block";
+        rightWrap.style.display = "block";
+
+        if (_side === "left"){
+            await queueAd(left, KEY_LEFT_160x600, 160, 600);
+            _side = "right";
+        } else {
+            await queueAd(right, KEY_RIGHT_160x300, 160, 300);
+            _side = "left";
+        }
+        }
+
+        function startSideAdsRotation(){
+        if (!sideAdsAllowed()) return;
+        mountOneSideAd();
+        if (_sideRotator) clearInterval(_sideRotator);
+        _sideRotator = setInterval(mountOneSideAd, 45000);
+        }
+
+        /* ===== Bottom banner (mobile) ===== */
+        let _mobileInlineLoaded = false;
+
+        async function mountMobileInlineAd(){
+        if (_mobileInlineLoaded) return;
+
+        const wrap = document.getElementById("mobileInlineAdWrap");
+        const el = document.getElementById("mobileInlineAd");
+        if (!wrap || !el) return;
+
+        wrap.classList.remove("hidden");
+        await queueAd(el, KEY_BANNER_320x50, 320, 50);
+        _mobileInlineLoaded = true;
+        }
+
+        function refreshAds(){
+        const isMobile = window.matchMedia("(max-width: 640px)").matches;
+
+        // ✅ Mobile inline ad
+        if (isMobile) {
+            mountMobileInlineAd();
+        }
+
+        // ✅ Side ads (desktop)
+        if (sideAdsAllowed()){
+            startSideAdsRotation();
+        } else {
+            const leftWrap = document.getElementById("sideAdLeftWrap");
+            const rightWrap = document.getElementById("sideAdRightWrap");
+            if (leftWrap) leftWrap.style.display = "none";
+            if (rightWrap) rightWrap.style.display = "none";
+            if (_sideRotator){ clearInterval(_sideRotator); _sideRotator = null; }
+        }
+        }
+
+        window.addEventListener("load", refreshAds);
+        window.addEventListener("resize", refreshAds);
+        window.addEventListener("orientationchange", refreshAds);
+
+
     </script>
 </body>
 </html>
