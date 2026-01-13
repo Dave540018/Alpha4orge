@@ -740,16 +740,7 @@ function renderList(kind){
   setTimeout(mountSocialBarOnce, 0);
 
 }
-  <script>
-  // Script to reveal the real download link after the ad link is clicked
-  document.getElementById('adLink').addEventListener('click', function() {
-    setTimeout(() => {
-      document.getElementById('fileSection').style.display = 'block';
-      document.getElementById('adLink').innerText = "Ad Opened - Check Below";
-      document.getElementById('adLink').style.opacity = "0.5";
-    }, 2000); // 2 second delay to ensure the ad page loads first
-  });
-</script>
+ 
 
 
 
@@ -935,11 +926,25 @@ window.addEventListener('resize', () => {
 
 
 </script>
+<script>
+  // Works for dynamically created #adLink (detail page)
+  document.addEventListener('click', (e) => {
+    const ad = e.target.closest('#adLink');
+    if (!ad) return;
+    setTimeout(() => {
+      const fs = document.getElementById('fileSection');
+      if (fs) fs.style.display = 'block';
+      ad.innerText = "Ad Opened - Check Below";
+      ad.style.opacity = "0.5";
+    }, 2000);
+  });
+</script>
 
 
 
 </body>
 </html>
+
 
 
 
