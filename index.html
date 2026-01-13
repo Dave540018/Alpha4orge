@@ -751,16 +751,7 @@ function renderList(kind){
   });
 </script>
 
-<script>
-  // Script to reveal the real download link after the ad link is clicked
-  document.getElementById('adLink').addEventListener('click', function() {
-    setTimeout(() => {
-      document.getElementById('fileSection').style.display = 'block';
-      document.getElementById('adLink').innerText = "Ad Opened - Check Below";
-      document.getElementById('adLink').style.opacity = "0.5";
-    }, 2000); // 2 second delay to ensure the ad page loads first
-  });
-</script>
+
 
 <script>
   function router(){
@@ -949,6 +940,7 @@ window.addEventListener('resize', () => {
 
 </body>
 </html>
+
 
 
 
