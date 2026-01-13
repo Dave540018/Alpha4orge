@@ -294,7 +294,6 @@
           <a href="CandyGame.html" role="menuitem">Candy Game</a>
           <a href="Tetris.html" role="menuitem">Tetris</a>
           <a href="SG2.html" role="menuitem">AlphaSnake</a>
-          <a href="Ultimatetictactoe.html" role="menuitem">Ulti Tic Tac Toe</a>
         </div>
       </div>
     
@@ -439,22 +438,6 @@ const routeOf = k => (k === 'printable' ? 'printables' : 'figma');
 
   
   const seedDesigns = [
-
-  {
-    kind: "figma", // Keeping it in figma category so it shows on the homepage
-    title: "Text Snipping Tool - Lightweight Python Desktop App",
-    tags: ["Free", "Software", "Python", "Tool"],
-    preview: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Text.Snipping.Tool.Ex1.png", // ADD YOUR SCREENSHOT HERE
-    images: [
-      "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Text.Snipping.Tool.Ex1.png",
-      "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Text.Snipping.Tool.GUI.png"
-    ],
-    /* THE TRICK: Put your Adsterra Smartlink in the downloadUrl */
-    downloadUrl: "https://www.effectivegatecpm.com/kxhp7p756?key=7e42848b0d850bc014d63178da587f42", 
-    /* The real file link (MediaFire) goes here */
-    realFile: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Text.Snipping.Tool.zip",
-    date: "Jan 13, 2026"
-  },
   {
     kind: "figma",
     title: "The Paper-Cut Effect Free Tier Design Template",
@@ -693,17 +676,8 @@ function renderList(kind){
       <div class="meta" style="margin-top:6px">${tagRow}</div>
 
       <div class="row" style="margin-bottom:6px">
-  <a class="btn" href="${d.downloadUrl}" target="_blank" id="adLink">
-        Download Now
-      </a>
-    </div>
-    
-    <div id="fileSection" style="display:none; margin-top:10px; padding:10px; background:#f0f9ff; border-radius:10px;">
-      <p class="tiny" style="color:#0ea5e9">Your download is ready below!</p>
-      <a href="${d.realFile || '#'}" class="btn" style="background:#0ea5e9; color:#fff;">
-        Click here to save file
-      </a>
-    </div>
+        <a class="btn" href="${d.downloadUrl}" download>Download</a>
+      </div>
 
       <!-- 320×50 ad under Download -->
       <div id="${adUnderDlId}" class="ad-inline ad-slab" style="margin:10px 0;text-align:center;">
@@ -740,11 +714,10 @@ function renderList(kind){
   setTimeout(mountSocialBarOnce, 0);
 
 }
- 
 
 
 
-<script>
+
   function router(){
     const hash = location.hash || "#/figma";
     const [, section, code] = hash.split("/");
@@ -926,28 +899,8 @@ window.addEventListener('resize', () => {
 
 
 </script>
-<script>
-  // Works for dynamically created #adLink (detail page)
-  document.addEventListener('click', (e) => {
-    const ad = e.target.closest('#adLink');
-    if (!ad) return;
-    setTimeout(() => {
-      const fs = document.getElementById('fileSection');
-      if (fs) fs.style.display = 'block';
-      ad.innerText = "Ad Opened - Check Below";
-      ad.style.opacity = "0.5";
-    }, 2000);
-  });
-</script>
 
 
 
 </body>
 </html>
-
-
-
-
-
-
-
