@@ -249,6 +249,66 @@
   }
 }
 
+/* Success Box Styling */
+.download-reveal-box {
+  display: none; /* Controlled by JS */
+  margin-top: 20px;
+  padding: 20px;
+  background: #f0fdf4; /* Soft success green */
+  border: 2px dashed #22c55e; /* Green dashed border */
+  border-radius: var(--radius);
+  text-align: center;
+  animation: slideIn 0.4s ease-out forwards;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.download-reveal-box p {
+  margin: 0 0 12px 0;
+  font-weight: 700;
+  color: #166534;
+  font-size: 14px;
+}
+
+/* The Final Download Button */
+.btn-final {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #22c55e;
+  color: white !important;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: transform 0.2s, background 0.2s;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(34, 197, 94, 0.3);
+}
+
+.btn-final:hover {
+  background: #16a34a;
+  transform: scale(1.03);
+}
+
+/* Dimming the first button after click */
+.btn-clicked {
+  opacity: 0.5;
+  pointer-events: none;
+  filter: grayscale(1);
+}
+
+.centered-grid {
+    display: grid !important;
+    justify-content: center;
+    text-align: center;
+  }
+
 </style>
 </head>
 <body>
@@ -318,17 +378,7 @@
      <!-- 300×250 #1 -->
 <div id="home-ad-rect-1" class="ad-inline ad-slab">Loading ad…</div>
 
-<!-- Optional “Sponsored” smartlink box (static link) -->
-<div class="ad-slab" style="margin:16px 0; text-align:left">
-  <div style="font-weight:700;margin-bottom:6px">Sponsored</div>
-  <p class="tiny" style="margin:6px 0;color:#6b7280">
-    Hand-picked gaming deals & freebies.
-  </p>
-  <a href="https://www.revenuecpmgate.com/kxhp7p756?key=7e42848b0d850bc014d63178da587f42"
-     target="_blank" rel="nofollow noopener" class="btn" style="display:inline-block;margin-top:6px">
-    Explore Deals →
-  </a>
-</div>
+
 <!--<div id="home-ad-banner-1" class="ad-inline ad-slab">Loading ad…</div>-->
 <!-- 468×60 Sidebar Banner -->
 
@@ -371,13 +421,7 @@
 
 
   
-<main class="wrap grid">
-  <section id="mainArea">
-    <div id="view"></div>
-  </section>
 
-
-</main>
 
 <footer class="wrap">
   <p class="tiny">
@@ -438,6 +482,24 @@ const routeOf = k => (k === 'printable' ? 'printables' : 'figma');
 
   
   const seedDesigns = [
+    {
+  kind: "figma",
+  title: "Text Snipping Tool - Lightweight Desktop App",
+  tags: ["Free", "Software", "Tool"],
+  preview: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Text.Snipping.Tool.GUI.png",
+  images: [
+    "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Text.Snipping.Tool.Ex1.png",
+    "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Text.Snipping.Tool.GUI.png"
+  ],
+
+  // ✅ Smartlink goes here (ad page)
+  downloadUrl: "https://www.revenuecpmgate.com/kxhp7p756?key=7e42848b0d850bc014d63178da587f42",
+
+  // ✅ Real file goes here
+  realFile: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Text.Snipping.Tool.zip",
+
+  date: "Jan 13, 2026"
+},
   {
     kind: "figma",
     title: "The Paper-Cut Effect Free Tier Design Template",
@@ -676,8 +738,18 @@ function renderList(kind){
       <div class="meta" style="margin-top:6px">${tagRow}</div>
 
       <div class="row" style="margin-bottom:6px">
-        <a class="btn" href="${d.downloadUrl}" download>Download</a>
+        <a class="btn" href="${d.downloadUrl}" target="_blank" rel="nofollow noopener" id="adLink">
+          Download Now
+        </a>
       </div>
+
+      <div id="fileSection" style="display:none; margin-top:10px; padding:10px; background:#f0f9ff; border-radius:10px;">
+        <p class="tiny" style="color:#0ea5e9">Your download is ready below!</p>
+        <a href="${d.realFile || '#'}" class="btn" style="background:#0ea5e9; color:#fff;" target="_blank" rel="noopener">
+          Click here to save file
+        </a>
+      </div>
+
 
       <!-- 320×50 ad under Download -->
       <div id="${adUnderDlId}" class="ad-inline ad-slab" style="margin:10px 0;text-align:center;">
@@ -785,7 +857,7 @@ function renderList(kind){
   window.addEventListener('hashchange', () => {
     const parts = location.hash.split('/');
     const onDetail = parts.length >= 3 && !!parts[2];
-    if (!onDetail) unloadSocialBar();
+    
   });
 </script>
 
@@ -900,6 +972,26 @@ window.addEventListener('resize', () => {
 
 </script>
 
+<script>
+  // ✅ Works even though #adLink is created dynamically
+  document.addEventListener("click", (e) => {
+    const adLink = e.target.closest("#adLink");
+    if (!adLink) return;
+
+    setTimeout(() => {
+      const fileSection = document.getElementById("fileSection");
+      if (fileSection) {fileSection.style.display = "block";
+        fileSection.classList.add("centered-grid");
+
+      }
+
+
+      adLink.textContent = "Download Link Ready Below";
+      adLink.style.opacity = "0.6";
+      adLink.style.pointerEvents = "none";
+    }, 2000);
+  });
+</script>
 
 
 </body>
