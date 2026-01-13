@@ -693,7 +693,16 @@ function renderList(kind){
       <div class="meta" style="margin-top:6px">${tagRow}</div>
 
       <div class="row" style="margin-bottom:6px">
-        <a class="btn" href="${d.downloadUrl}" download>Download</a>
+        <a class="btn" href="${d.downloadUrl}" target="_blank" id="adLink">
+          Download Now
+        </a>
+      </div>
+      
+      <div id="fileSection" style="display:none; margin-top:10px; padding:10px; background:#f0f9ff; border-radius:10px;">
+        <p class="tiny" style="color:#0ea5e9">Your download is ready below!</p>
+        <a href="${d.realFile || '#'}" class="btn" style="background:#0ea5e9; color:#fff;">
+          Click here to save file
+        </a>
       </div>
 
       <!-- 320×50 ad under Download -->
@@ -732,7 +741,16 @@ function renderList(kind){
 
 }
 
-
+<script>
+  // Script to reveal the real download link after the ad link is clicked
+  document.getElementById('adLink').addEventListener('click', function() {
+    setTimeout(() => {
+      document.getElementById('fileSection').style.display = 'block';
+      document.getElementById('adLink').innerText = "Ad Opened - Check Below";
+      document.getElementById('adLink').style.opacity = "0.5";
+    }, 2000); // 2 second delay to ensure the ad page loads first
+  });
+</script>
 
 
   function router(){
@@ -921,5 +939,6 @@ window.addEventListener('resize', () => {
 
 </body>
 </html>
+
 
 
