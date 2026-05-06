@@ -1,479 +1,93 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Alpha4orge – Blog</title>
-  <meta name="description" content="Alpha4orge Blog: tips, walkthroughs, and behind-the-scenes notes on our free Figma templates and printables."/>
-  
-  <!-- Favicons / PWA -->
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Alpha4orge – Blog</title>
+<meta name="description" content="Alpha4orge Blog: tutorials, creator workflows, gaming guides and design notes.">
+<link rel="canonical" href="https://alpha4orge.store/blog.html">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="icon" href="/Logonew.ico" sizes="any">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180">
 <link rel="manifest" href="/site.webmanifest">
-<meta name="theme-color" content="#0ea5e9">
-
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-
-  <style>
-
-    :root{
-  --link: #0ea5e9;         /* normal link color */
-  --link-hover: #0284c7;   /* hover color */
-  --amazon: #ff9900;       /* Amazon accent */
-}
-
-/* Default link look */
-.prose a, .content a {
-  color: var(--link);
-  text-decoration: none;
-  font-weight: 600;
-  position: relative;
-  transition: color .15s ease;
-}
-
-/* Animated underline */
-.prose a::after, .content a::after {
-  content: "";
-  position: absolute;
-  left: 0; bottom: -2px;
-  width: 100%; height: 2px;
-  background: linear-gradient(90deg, var(--link), #22c55e);
-  transform: scaleX(.25);
-  transform-origin: left;
-  opacity: .55;
-  transition: transform .2s ease, opacity .2s ease;
-}
-
-.prose a:hover, .content a:hover { color: var(--link-hover); }
-.prose a:hover::after, .content a:hover::after {
-  transform: scaleX(1);
-  opacity: 1;
-}
-
-/* Keyboard focus visibility */
-.prose a:focus-visible, .content a:focus-visible {
-  outline: 2px solid var(--link);
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-
-/* ===== Special styling for Amazon links ===== */
-/* catches amazon.in / amazon.com / amzn.to */
-.prose a[href*="amazon"], .prose a[href*="amzn.to"],
-.content a[href*="amazon"], .content a[href*="amzn.to"] {
-  color: var(--amazon);
-}
-
-.prose a[href*="amazon"]::after,
-.prose a[href*="amzn.to"]::after,
-.content a[href*="amazon"]::after,
-.content a[href*="amzn.to"]::after {
-  background: linear-gradient(90deg, var(--amazon), #ffb84d);
-}
-
-/* tiny cart emoji as a leading badge (no extra HTML needed) */
-.prose a[href*="amazon"]::before,
-.prose a[href*="amzn.to"]::before,
-.content a[href*="amazon"]::before,
-.content a[href*="amzn.to"]::before {
-  content: "🛒";
-  margin-right: 6px;
-  filter: drop-shadow(0 1px 0 rgba(0,0,0,.1));
-}
-
-/* Optional: make Amazon links look like pill buttons on hover */
-.prose a[href*="amazon"]:hover,
-.prose a[href*="amzn.to"]:hover,
-.content a[href*="amazon"]:hover,
-.content a[href*="amzn.to"]:hover {
-  text-decoration: none;
-  background: rgba(255,153,0,.08);
-  border-radius: 6px;
-  padding: 2px 4px;
-}
-    :root{
-      --bg:#fafbfc; --panel:#ffffff; --ink:#1f2937; --muted:#6b7280; --ring:#e5e7eb;
-      --accent:#0ea5e9; --radius:14px;
-    }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;color:var(--ink);background:var(--bg)}
-    a{color:inherit;text-decoration:none}
-
-    /* ===== Header (same as index) ===== */
-    header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.85);backdrop-filter:saturate(1.2) blur(8px);border-bottom:1px solid var(--ring)}
-    .wrap{max-width:1200px;margin:0 auto;padding:14px 16px}
-    .brand{display:flex;justify-content:space-between;align-items:center;gap:12px}
-    .logo{
-      width:36px;height:36px;border-radius:12px;
-      background:var(--panel);border:1px solid var(--ring);
-      display:grid;place-items:center;overflow:hidden;
-    }
-    .logo img{width:100%;height:100%;object-fit:contain;display:block}
-
-    h1{font-size:20px;margin:0}
-    .sub{color:var(--muted);font-size:12px}
-    .nav{display:flex;gap:10px;margin-top:10px}
-    .nav a{padding:8px 12px;border:1px solid var(--ring);border-radius:999px;background:var(--panel);font-weight:600;font-size:13px}
-    .nav a.active{border-color:#cbd5e1;color:#0f172a}
-
-    /* --- Mobile nav toggle --- */
-    .menu-btn{
-      display:none;border:1px solid var(--ring);background:var(--panel);
-      border-radius:10px;padding:8px 10px;font-weight:700;cursor:pointer;
-    }
-    @media (max-width: 680px){
-      header .brand{flex-wrap:wrap}
-      .menu-btn{display:block}
-      .nav{display:none;width:100%;margin-top:8px;gap:8px;flex-wrap:wrap}
-      .nav.open{display:flex}
-      .nav a{flex:1 1 auto;text-align:center}
-    }
-
-    /* ===== Layout & cards (match index) ===== */
-    .grid{display:grid;grid-template-columns:1fr;gap:18px}
-    @media(min-width:980px){ .grid{grid-template-columns:3fr 1fr} }
-
-    .ad{background:var(--panel);border:1px solid var(--ring);border-radius:var(--radius);padding:10px;text-align:center}
-    .sticky{position:sticky;top:96px}
-
-    .gallery{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
-    .card{grid-column:span 6;background:var(--panel);border:1px solid var(--ring);border-radius:16px;overflow:hidden;transition:transform .12s ease;cursor:pointer;position:relative}
-    .card:hover{transform:translateY(-2px)}
-    @media(max-width:900px){ .card{grid-column:span 12} }
-
-    .thumb{background:#f7fafc;border-bottom:1px solid var(--ring);aspect-ratio:16/9;display:block;overflow:hidden}
-    .thumb img{width:100%;height:100%;object-fit:cover}
-    .content{padding:14px}
-    .title{font-weight:800;margin:0 0 6px;font-size:18px;line-height:1.3}
-    .excerpt{color:var(--muted);font-size:14px;margin:8px 0}
-    .meta{font-size:12px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-    .tag{background:#f1f5f9;border:1px solid var(--ring);padding:4px 8px;border-radius:999px;font-size:11px}
-    .foot{display:flex;align-items:center;justify-content:space-between;margin-top:10px;font-size:12px;color:var(--muted)}
-
-    /* Detail page */
-    .detail{background:var(--panel);border:1px solid var(--ring);border-radius:16px;padding:18px}
-    .detail h2{margin:6px 0 6px;font-size:24px}
-    .detail .hero{border-radius:12px;overflow:hidden;border:1px solid var(--ring);background:#f7fafc;aspect-ratio:16/9;margin-bottom:12px}
-    .detail .hero img{width:100%;height:100%;object-fit:cover;display:block}
-    .prose{line-height:1.7;font-size:16px}
-    .prose h3{font-size:18px;margin-top:18px}
-    .prose p{margin:10px 0}
-    .back{margin-top:12px;font-size:12px;color:var(--muted)}
-
-    footer{border-top:1px solid var(--ring);margin-top:24px}
-    .tiny{font-size:12px;color:var(--muted)}
-
-    /* Ad styling */
-    .ad-inline{ display:flex; justify-content:center; margin:16px 0; }
-    .ad-slab  { background:var(--panel); border:1px solid var(--ring); border-radius:var(--radius); padding:6px; }
-    
-    /* Hide tall sidebar ad on small screens, show 300x250 fallback instead */
-    #ad-side-tall { display:block; }
-    #ad-side-rect { display:none; }
-    @media (max-width: 980px){
-      #ad-side-tall { display:none; }
-      #ad-side-rect { display:block; }
-    }
-
-    /* add this to your <style> */
-    .btn{
-      border:1px solid var(--ring);
-      background:var(--panel);
-      padding:9px 12px;
-      border-radius:10px;
-      font-weight:700;
-      color:#0b5cab;
-      cursor:pointer;
-    }
-
-    /* --- Component blocks (image + text) --- */
-.part{
-  display:grid;
-  grid-template-columns:96px 1fr;   /* image | text */
-  gap:12px;
-  align-items:start;
-  margin:14px 0;
-  padding:12px;
-  background:var(--panel);
-  border:1px solid var(--ring);
-  border-radius:12px;
-}
-.part-img{
-  width:100%;
-  aspect-ratio:1/1;                /* keeps it square */
-  border-radius:10px;
-  overflow:hidden;
-  background:#f7fafc;
-  border:1px solid var(--ring);
-}
-.part-img img{width:100%;height:100%;object-fit:cover;display:block}
-.part h4{margin:0 0 6px;font-size:16px}
-.part p{margin:8px 0}
-.part ul{margin:6px 0 0 18px}
-
-/* roomier on wider screens */
-@media (min-width: 900px){
-  .part{grid-template-columns:160px 1fr}
-}
-
-/* ---- Prompt highlight + CTA ---- */
-.prompt {
-  margin: 10px 0 14px;
-  padding: 12px 14px;
-  background:#0f172a;
-  color:#e5e7eb;
-  border:1px solid var(--ring);
-  border-radius:12px;
-  overflow:auto;
-  font: 13px/1.5 ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
-  white-space: pre-wrap;
-}
-.prompt .label{
-  display:inline-block;
-  font-weight:700;
-  font-size:12px;
-  color:#a5b4fc;
-  margin-bottom:6px;
-}
-
-/* two-up images around the trendy variant */
-.img-row{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-  margin: 10px 0 16px;
-}
-.img-row img{
-  width:100%; height:auto; display:block;
-  border:1px solid var(--ring); border-radius:12px; background:#f7fafc;
-}
-@media (max-width: 720px){
-  .img-row{ grid-template-columns:1fr; }
-}
-
-/* small inline CTA */
-.smart-cta{
-  display:inline-block; margin:10px 0; padding:8px 12px;
-  border:1px solid var(--ring); border-radius:999px;
-  background:var(--panel); font-weight:700;
-}
-
-/* Build tables */
-.build-table{
-  width:100%;
-  border-collapse: collapse;
-  margin: 10px 0 14px;
-  font-size: 14px;
-}
-.build-table th,
-.build-table td{
-  border:1px solid var(--ring);
-  padding:10px;
-  vertical-align: top;
-}
-.build-table thead th{
-  background:#f8fafc;
-  font-weight:700;
-}
-.build-table tbody tr:nth-child(even){
-  background:#fbfdff;
-}
-
-.build-table a{
-  display:inline-flex;          /* stable box */
-  align-items:center;
-  gap:6px;
-  padding:2px 4px;              /* same padding at rest and hover */
-  border-radius:6px;
-  white-space:nowrap;           /* no wrapping that stretches cells */
-}
-
-
-
-/* Callout blocks */
-.callout{
-  background: #f8fafc;
-  border:1px solid var(--ring);
-  border-radius: 12px;
-  padding: 12px;
-  margin: 10px 0 18px;
-}
-.callout p{ margin:8px 0; }
-
-/* Soft note at the end */
-.note{
-  color: var(--muted);
-  font-size: 14px;
-}
-
-/* Adsterra slots – fixed footprints to avoid layout shift */
-#adst-rect  { width:320px; max-width:100%; min-height:250px; margin-top:12px }
-#adst-banner{ width:320px; max-width:100%; min-height:50px;  margin-top:12px }
-
-/* Reuse your existing frame styles */
-.ad-inline { display:flex; justify-content:center; margin:12px 0; }
-.ad-slab   { background:var(--panel); border:1px solid var(--ring); border-radius:var(--radius); padding:6px; }
-
-/* === Blog: additional image helpers (safe to add) === */
-
-/* Two-up (or more) image grid used in Premium References section */
-.part-img2 {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-  margin: 16px auto 28px;
-  padding: 0 8px;
-  max-width: 980px;
-}
-.part-img2 img {
-  display: block;
-  width: 100%;
-  height: auto;
-  border-radius: 12px;
-  background: #f7fafc;
-  border: 1px solid var(--ring);
-  transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
-}
-@media (max-width: 640px) {
-  .part-img2 { grid-template-columns: 1fr; }
-}
-@media (hover:hover) and (pointer:fine) {
-  .part-img2 img:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 24px rgba(0,0,0,.12);
-    filter: saturate(1.04);
-  }
-}
-
-/* Optional: captions if you add <figcaption class="img-cap">…</figcaption> */
-.img-cap {
-  font-size: .9rem;
-  color: rgba(0,0,0,.6);
-  text-align: center;
-  margin-top: 8px;
-}
-@media (prefers-color-scheme: dark) {
-  .img-cap { color: rgba(255,255,255,.65); }
-}
-
-/* Optional: subtle border utility (opt-in per image) */
-.is-bordered { border: 1px solid var(--ring) !important; border-radius: 12px; }
-
-/* Optional: skeleton placeholder block while images lazy-load */
-.img-skeleton {
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(90deg, #eee 25%, #f6f6f6 37%, #eee 63%);
-  background-size: 400% 100%;
-  border-radius: 12px;
-  min-height: 180px;
-  animation: imgShimmer 1.2s infinite;
-  border: 1px solid var(--ring);
-}
-@keyframes imgShimmer {
-  0% { background-position: 100% 0; }
-  100% { background-position: 0 0; }
-}
-
-
-.part-stack{
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  /* look like your single image box */
-  background:#f7fafc;
-  border:1px solid var(--ring);
-  border-radius:10px;
-  padding: 0;             /* optional */
-}
-.part-stack img{
-  width: 100%;
-  height: auto;           /* <— allow natural height */
-  object-fit: cover;
-  display: block;
-  border-radius:10px;     /* keeps corners rounded */
-}
-
-
-
-
-  </style>
+<meta name="theme-color" content="#07111f">
+<link rel="stylesheet" href="assets/alpha4orge.css">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Q3LD2NGEZR"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-Q3LD2NGEZR');
+</script>
 </head>
 <body>
-
-<header>
-  <div class="wrap brand">
-    <!-- Left: logo + name -->
-    <div style="display:flex;align-items:center;gap:12px;">
-      <a class="logo" href="index.html" aria-label="Alpha4orge home">
-        <img src="https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Logonew.png" alt="Alpha4orge logo" width="36" height="36">
-      </a>
-      <div>
-        <h1 style="margin:0;font-size:20px;">Alpha4orge</h1>
-        <div class="sub" style="font-size:12px;color:#6b7280">Inspiring Creation, Creating Inspiration.</div>
+<a href="#mainArea" class="skip-link">Skip to content</a>
+<header class="site-header" id="siteHeader">
+  <div class="wrap header-inner">
+    <a class="brand" href="index.html" aria-label="Alpha4orge home">
+      <span class="brand-mark"><img src="https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Logonew.png" alt="Alpha4orge logo" width="40" height="40"></span>
+      <span>
+        <strong>Alpha4orge</strong>
+        <small>Inspiring Creation, Creating Inspiration.</small>
+      </span>
+    </a>
+    <button class="menu-btn" id="menuBtn" type="button" aria-label="Toggle navigation" aria-expanded="false">☰ Menu</button>
+    <nav class="site-nav" id="nav" aria-label="Primary navigation">
+      <a href="index.html" data-nav="home">Home</a>
+      <a href="index.html#/figma" data-nav="figma">Figma Files</a>
+      <a href="index.html#/printables" data-nav="printables">Printables</a>
+      <a href="comics.html" data-nav="comics">Comics</a>
+      <a href="blog.html" data-nav="blog">Blog</a>
+      <div class="nav-dropdown" id="gamesDropdown">
+        <button class="nav-dropbtn" type="button" aria-haspopup="true" aria-expanded="false">Games ▾</button>
+        <div class="nav-dropmenu" role="menu">
+          <a href="CandyGame.html" role="menuitem">Candy Game</a>
+          <a href="Tetris.html" role="menuitem">Tetris</a>
+          <a href="SG2.html" role="menuitem">AlphaSnake</a>
+        </div>
       </div>
-    </div>
-
-    <!-- Right: nav -->
-    <button class="menu-btn" id="menuBtn" aria-label="Toggle menu">Menu</button>
-    <nav class="nav" id="nav">
-      <a href="index.html">Home</a>
-      <a href="index.html#/figma">Figma Files</a>
-      <a href="index.html#/printables">Printables</a>
-      <a href="comics.html" class="active">Comics</a>
-      <a class="active" href="blog.html">Blog</a>
-      <a href="about.html">About</a>
-      <a href="contact.html">Contact</a>
+      <a href="about.html" data-nav="about">About</a>
+      <a href="contact.html" data-nav="contact">Contact</a>
     </nav>
   </div>
 </header>
-
-<main class="wrap grid">
-  <section>
-    <div id="view"></div>
-  </section>
-
- <aside class="sticky">
-  <!-- existing ad slots ... -->
-
-  <div class="ad" style="text-align:left">
-    <div style="font-weight:700;margin-bottom:6px">Sponsored</div>
-    <p class="tiny" style="margin:6px 0;color:#6b7280">
-      Hand-picked gaming deals & freebies.
-    </p>
-    <a href="https://www.revenuecpmgate.com/kxhp7p756?key=7e42848b0d850bc014d63178da587f42"
-       target="_blank" rel="nofollow noopener"
-       class="btn"
-       style="display:inline-block;margin-top:6px">
-      Explore Deals →
-    </a>
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div><span class="eyebrow">✦ Tutorials & guides</span><h1>Creator notes, gaming guides and AI design walkthroughs.</h1><p>Readable article pages with clean typography, better spacing and ad positions kept away from critical buttons.</p></div>
+    <div class="hero-card"><div class="orbit">Guides, reviews and creator tutorials for your next project</div></div>
   </div>
-
-
-<!-- Adsterra: 300×250 rectangle -->
-<div id="adst-rect" class="ad-inline ad-slab" aria-label="Advertisement">Loading…</div>
-
-<!-- Adsterra: 320×50 banner -->
-<div id="adst-banner" class="ad-inline ad-slab" aria-label="Advertisement">Loading…</div>
-</aside>
-
-
+</section>
+<main class="wrap section-shell layout" id="mainArea">
+  <section class="content-main"><div id="view"></div></section>
+  <aside class="sidebar">
+    <div class="sponsored-card"><strong>Sponsored</strong><p>Affiliate and ad links are labelled and separated from editorial content.</p><a class="btn" href="https://www.revenuecpmgate.com/kxhp7p756?key=7e42848b0d850bc014d63178da587f42" target="_blank" rel="nofollow noopener">Explore Deals →</a></div>
+    <div class="ad-slot ad-rect" data-ad-slot="rect" aria-label="Advertisement">
+      <span class="ad-label">Advertisement</span>
+      <div class="ad-box">Loading ad…</div>
+    </div>
+    <div class="ad-slot ad-mobile" data-ad-slot="small-banner" aria-label="Advertisement">
+      <span class="ad-label">Advertisement</span>
+      <div class="ad-box">Loading ad…</div>
+    </div>
+  </aside>
 </main>
-
-<footer class="wrap">
-  <p class="tiny">
-    © <span id="year"></span> Alpha4orge ·
-    <a href="privacy.html">Privacy Policy</a> ·
-    <a href="terms.html">Terms of Service</a>
-  </p>
+<footer class="site-footer">
+  <div class="wrap footer-grid">
+    <div>
+      <strong>Alpha4orge</strong>
+      <p>Free design files, printables, original comics and creator resources.</p>
+    </div>
+    <nav aria-label="Footer links">
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms of Service</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </div>
 </footer>
-
+<script src="assets/site.js"></script>
+<script src="assets/ads.js"></script>
 <script>
-  // ---- Blog data -----------------------------------------------------------
-  // Tip: store ISO dates (YYYY-MM-DD) for perfect sorting, but
-  // the sorter below will also parse "Sep 13, 2025" safely.
-  const posts = [
+const posts = [
     {
       id: "A4-B002",
       title: "How to Use Our Templates in Your Workflow",
@@ -1479,222 +1093,42 @@ content: `<h1>🌿 WishCare Hair Growth Serum Review — Does It Really Work? (H
 
 
   ];
-
-  // ---- Helpers -------------------------------------------------------------
-  const $view = document.getElementById('view');
-  const tagPills = arr => arr.map(t=>`<span class="tag">${t}</span>`).join(' ');
-
-  function postCard(p){
-    return `
-      <article class="card" onclick="go('#/blog/${p.id}')">
-        <div class="thumb">${p.cover ? `<img src="${p.cover}" alt="${p.title}" loading="lazy">` : ""}</div>
-        <div class="content">
-          <h3 class="title">${p.title}</h3>
-          <div class="excerpt">${p.excerpt}</div>
-          <div class="foot">
-            <span>${p.date}</span>
-            <span class="meta">${tagPills(p.tags)}</span>
-          </div>
-        </div>
-      </article>
-    `;
+const $view=document.getElementById('view');
+const tagPills=tags=>(tags||[]).map(t=>`<span class="tag">${t}</span>`).join(' ');
+function go(hash){ location.hash = hash; }
+function postCard(p){ return `<article class="card wide" onclick="go('#/blog/${p.id}')">
+  <div class="thumb">${p.cover ? `<img src="${p.cover}" alt="${p.title}" loading="lazy">` : ''}</div>
+  <div class="content"><h3 class="title">${p.title}</h3><p class="excerpt">${p.excerpt || ''}</p><div class="foot"><span>${p.date || ''}</span><span class="meta">${tagPills(p.tags)}</span></div></div>
+</article>`; }
+function renderList(){ const sorted=[...posts].sort((a,b)=>new Date(b.date)-new Date(a.date)); $view.innerHTML=`<div class="intro-panel panel"><h2>Latest Articles</h2><p>Guides, deals and behind-the-scenes notes from Alpha4orge.</p></div><div class="gallery">${sorted.map(postCard).join('')}</div>`; window.dispatchEvent(new CustomEvent('a4:routechange')); }
+function renderDetail(id){
+  const p=posts.find(x=>x.id===id);
+  if(!p){ $view.innerHTML=`<div class="detail"><h2>Not found</h2><p><a href="#/blog">← Back</a></p></div>`; return; }
+  $view.innerHTML=`<article class="detail">
+    ${p.cover ? `<div class="hero-img"><img src="${p.cover}" alt="${p.title}" loading="eager"></div>` : ''}
+    <h2>${p.title}</h2><div class="meta"><span>${p.date || ''}</span>${tagPills(p.tags)}</div>
+    <div class="prose" id="articleBody">${p.content}</div>
+    <div id="articleAdBottom"><div class="ad-slot ad-inline ad-mobile" data-ad-slot="small-banner" aria-label="Advertisement">
+      <span class="ad-label">Advertisement</span>
+      <div class="ad-box">Loading ad…</div>
+    </div></div>
+    <p class="tiny"><a href="#/blog">← Back to blog</a></p>
+  </article>`;
+  mountArticleAd();
+  window.dispatchEvent(new CustomEvent('a4:routechange'));
+}
+function mountArticleAd(){
+  const body=document.getElementById('articleBody'); if(!body) return;
+  const paras=body.querySelectorAll('p');
+  if(paras.length>2){
+    const ad=document.createElement('div'); ad.innerHTML=`<div class="ad-slot ad-inline ad-rect" data-ad-slot="rect" aria-label="Advertisement">
+      <span class="ad-label">Advertisement</span>
+      <div class="ad-box">Loading ad…</div>
+    </div>`;
+    paras[Math.min(2, paras.length-1)].after(ad.firstElementChild);
   }
-
-
-  function renderList(){
-    // ✅ newest first
-    const sorted = [...posts].sort((a,b) => new Date(b.date) - new Date(a.date));
-    $view.innerHTML = `<div class="gallery">${sorted.map(postCard).join('')}</div>`;
-    highlightNav();
-  }
-
-  function renderDetail(id){
-    const p = posts.find(x=>x.id===id);
-    if(!p){ $view.innerHTML = `<div class="detail"><h2>Not found</h2></div>`; return; }
-    $view.innerHTML = `
-      <article class="detail">
-        ${p.cover ? `<div class="hero"><img src="${p.cover}" alt="${p.title}" loading="lazy"></div>` : ""}
-        <h2>${p.title}</h2>
-        <div class="meta" style="margin-bottom:8px;">
-          <span>${p.date}</span> ${tagPills(p.tags)}
-        </div>
-        <div class="prose" id="articleBody">${p.content}</div>
-        <div class="back"><a href="#/blog">← Back to blog</a></div>
-      </article>
-    `;
-    highlightNav();
-  }
-
-
-  function go(hash){ location.hash = hash; }
-
-  // ---- Router --------------------------------------------------------------
-  function router(){
-    const hash = location.hash || "#/blog";
-    const parts = hash.split("/"); // ["", "blog", "A4-B001"]
-    if(parts[1] !== "blog"){ location.hash = "#/blog"; return; }
-    const id = parts[2];
-    if(id){ renderDetail(id); } else { renderList(); }
-  }
-  window.addEventListener("hashchange", router);
-  window.addEventListener("load", router);
-
-  // ---- Nav highlight & mobile toggle --------------------------------------
-  function highlightNav(){
-    document.querySelectorAll('#nav a').forEach(a=>{
-      a.classList.toggle('active', a.getAttribute('href') === 'blog.html');
-    });
-  }
-  document.getElementById('year').textContent = new Date().getFullYear();
-
-  document.addEventListener('DOMContentLoaded', () => {
-    const btn = document.getElementById('menuBtn');
-    const nav = document.getElementById('nav');
-    if(btn && nav){
-      btn.addEventListener('click', () => nav.classList.toggle('open'));
-    }
-  });
+}
+function router(){ const parts=(location.hash||'#/blog').split('/'); if(parts[1] !== 'blog'){location.hash='#/blog';return;} parts[2]?renderDetail(parts[2]):renderList(); }
+window.addEventListener('hashchange',router); window.addEventListener('load',router);
 </script>
-<script>
-  // ---- Adsterra helpers (unchanged) ----
-  function loadAdsterra(container, key, w, h){
-    if(!container) return;
-    container.innerHTML = ""; // clear placeholder
-    const s1 = document.createElement('script');
-    s1.type = 'text/javascript';
-    s1.text = `
-      atOptions = { key: '${key}', format: 'iframe', height: ${h}, width: ${w}, params: {} };
-    `;
-    const s2 = document.createElement('script');
-    s2.type = 'text/javascript';
-    s2.src  = '//www.highperformanceformat.com/' + key + '/invoke.js';
-    container.appendChild(s1);
-    container.appendChild(s2);
-  }
-
-  // ✅ Load ONLY the visible sidebar size to avoid atOptions collisions,
-  // and reload if the viewport crosses the breakpoint.
-  let _loadedVariant = "";  // "tall" | "rect" | ""
-
-  function mountSidebarAds(){
-    const tallEl = document.getElementById('ad-side-tall');
-    const rectEl = document.getElementById('ad-side-rect');
-    if(!tallEl || !rectEl) return;
-
-    const isDesktop = window.matchMedia('(min-width: 981px)').matches;
-
-    if(isDesktop && _loadedVariant !== "tall"){
-      rectEl.innerHTML = "";                 // clear hidden slot
-      loadAdsterra(tallEl, '001d2d159d6e43ef2e7fbbbcd1832bc4', 160, 600);
-      _loadedVariant = "tall";
-    } else if(!isDesktop && _loadedVariant !== "rect"){
-      tallEl.innerHTML = "";                 // clear hidden slot
-      loadAdsterra(rectEl, 'f7c53ea38f793fd4f60f274c989e86a3', 300, 250);
-      _loadedVariant = "rect";
-    }
-  }
-
-  // Debounced resize: if user rotates phone or resizes window, swap units
-  let _rzTimer;
-  window.addEventListener('resize', () => {
-    clearTimeout(_rzTimer);
-    _rzTimer = setTimeout(mountSidebarAds, 200);
-  });
-
-  // Mount once after DOM is ready
-  document.addEventListener('DOMContentLoaded', mountSidebarAds);
-
-  // In-article ads (unchanged)
-  function mountInArticleAds(){
-    const body = document.getElementById('articleBody');
-    if(!body) return;
-    const paras = body.querySelectorAll('p');
-    if(paras.length){
-      const ad1 = document.createElement('div');
-      ad1.className = 'ad-inline ad-slab';
-      ad1.id = 'ad-article-1';
-      paras[0].after(ad1);
-      loadAdsterra(ad1, 'f7c53ea38f793fd4f60f274c989e86a3', 300, 250);
-    }
-      // Add Smartlink CTA near the end of the article
-    if (paras.length) {
-      const smartlinkCTA = document.createElement('div');
-      smartlinkCTA.className = 'ad-inline ad-slab';
-      smartlinkCTA.innerHTML = `
-        <a href="https://www.revenuecpmgate.com/kxhp7p756?key=7e42848b0d850bc014d63178da587f42"
-           target="_blank" rel="nofollow noopener">
-           🎁 Today’s Gaming Offers (Click to reveal)
-        </a>`;
-      // place it after the last paragraph
-      paras[paras.length - 1].after(smartlinkCTA);
-    }
-
-  }
-
-  // Keep your existing hook:
-  const _renderDetail = renderDetail;
-  renderDetail = function(id){
-    _renderDetail(id);
-    setTimeout(mountInArticleAds, 0);
-  };
-</script>
-<script>
-  // Promise-based sequential loader to avoid atOptions collisions
-  function loadAdsterraInto(container, key, w, h) {
-    return new Promise((resolve) => {
-      if (!container) return resolve(false);
-      const style = getComputedStyle(container);
-      if (style.display === 'none' || style.visibility === 'hidden') return resolve(false);
-
-      container.innerHTML = ''; // clear placeholder
-
-      // Define atOptions for this unit
-      const def = document.createElement('script');
-      def.type = 'text/javascript';
-      def.text = `
-        window.atOptions = {
-          key: '${key}',
-          format: 'iframe',
-          height: ${h},
-          width: ${w},
-          params: {}
-        };
-      `;
-
-      // Invoke loader
-      const inv = document.createElement('script');
-      inv.type = 'text/javascript';
-      inv.src  = 'https://www.highperformanceformat.com/' + key + '/invoke.js';
-      inv.onload = () => resolve(true);
-      inv.onerror = () => resolve(false);
-
-      container.appendChild(def);
-      container.appendChild(inv);
-    });
-  }
-
-  async function mountBlogSidebarAds() {
-    // Keys you provided
-    const KEY_RECT_1   = 'f7c53ea38f793fd4f60f274c989e86a3'; // 300x250
-    const KEY_BANNER_1 = '4404d2d96e9fdd2085c017e2ecbf8d84'; // 320x50
-
-    const rect   = document.getElementById('adst-rect');
-    const banner = document.getElementById('adst-banner');
-
-    // Load sequentially to prevent atOptions collisions
-    await loadAdsterraInto(rect,   KEY_RECT_1,   300, 250);
-    await loadAdsterraInto(banner, KEY_BANNER_1, 320,  50);
-  }
-
-  // Only runs if the containers are present (safe to include site-wide)
-  document.addEventListener('DOMContentLoaded', mountBlogSidebarAds);
-</script>
-
-
-</body>
-</html>
-
-
-
-
-
+</body></html>
