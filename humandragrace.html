@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>100M Rush Sprint - Story Mode</title>
+  <link rel="stylesheet" href="humandragrace-css/styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="top-bar">
+      <div class="brand">
+        <h1>100M Rush Sprint</h1>
+        <p>From School PT trial to National Championship. Train, boost, and outrun every rival.</p>
+      </div>
+      <div class="wallet">
+        <div class="pill">🪙 <span id="coinsTop">0</span></div>
+        <div class="pill">⭐ Level <span id="levelTop">1</span></div>
+        <div class="pill">🏆 <span id="rankTop">Rookie</span></div>
+      </div>
+    </header>
+
+    <main class="layout">
+      <aside class="sidebar">
+        <div class="runner-card">
+          <div class="avatar"></div>
+          <h2 id="sideName">Runner X</h2>
+          <span id="sideCategory">Normal Runner</span>
+          <p class="muted">Story Mode build with 10 races, training, shop, inventory and awards.</p>
+        </div>
+
+        <nav class="nav">
+          <button class="active" data-screen="home">🏠 Main Menu</button>
+          <button data-screen="story">📖 Story Mode</button>
+          <button data-screen="profile">👤 Profile</button>
+          <button data-screen="randomRace">🎲 Random Race</button>
+          <button data-screen="race">🏁 Race Track</button>
+          <button data-screen="training">💪 Training</button>
+          <button data-screen="shop">🛒 Shop</button>
+          <button data-screen="inventory">🎒 Inventory</button>
+          <button data-screen="awards">🏅 Awards</button>
+        </nav>
+      </aside>
+
+      <section class="panel">
+        <section id="home" class="screen active">
+          <h2 class="section-title">Main Menu</h2>
+          <p class="muted">This modular version splits the project into separate HTML, CSS and JavaScript files. It includes the new story mode upgrades.</p>
+          <div class="grid">
+            <div class="card">
+              <h3>📖 Story Career</h3>
+              <p class="muted">Start from School PT and climb through 10 stages to the National Championship.</p>
+              <button class="primary-btn" data-goto="story">Open Story Mode</button>
+            </div>
+            <div class="card">
+              <h3>💪 Training</h3>
+              <p class="muted">Use free quick training or optional sponsor heavy training.</p>
+              <button class="secondary-btn" data-goto="training">Open Training</button>
+            </div>
+            <div class="card">
+              <h3>🏁 Practice Race</h3>
+              <p class="muted">Test your runner on the current race track with speed, boost and sound effects.</p>
+              <button class="secondary-btn" data-goto="race">Go To Track</button>
+            </div>
+          </div>
+        </section>
+
+        <section id="story" class="screen">
+          <h2 class="section-title">Story Mode</h2>
+          <p class="muted">Clear each race to unlock the next stage. Some stages have multiple opponents and longer distances.</p>
+          <div id="storyStageList" class="stage-grid"></div>
+        </section>
+
+        <section id="profile" class="screen">
+          <h2 class="section-title">Runner Profile</h2>
+          <p class="muted">Create your runner and grow from Normal to Legendary.</p>
+          <div class="form-row">
+            <input id="runnerNameInput" placeholder="Enter runner name" />
+            <div class="runner-type-box">
+              <span class="tag">RUNNER TYPE</span>
+              <strong id="autoRunnerType">Normal Runner</strong>
+            </div>
+            <button class="primary-btn" id="saveProfileBtn">Save Profile</button>
+            <button class="danger-btn" id="resetGameBtn">Reset Save</button>
+          </div>
+          <div class="card profile-card">
+            <h3>Stats</h3>
+            <div class="stat-list" id="statList"></div>
+          </div>
+        </section>
+
+        <section id="randomRace" class="screen">
+          <h2 class="section-title">Random Race</h2>
+          <p class="muted">
+            Race an unknown runner anytime. Opponent strength is random. Sometimes they are weaker, sometimes stronger.
+            Rarely, a legendary champion appears.
+          </p>
+
+          <div class="card story-card-main">
+            <div class="story-step-label">UNLIMITED CASH RACE</div>
+            <h3 id="randomRaceTitle">Unknown Runner Challenge</h3>
+            <p class="muted" id="randomRaceText">
+              A runner is waiting at the track. You do not know their speed until the race begins.
+            </p>
+
+            <div class="form-row">
+              <button class="primary-btn" id="startRandomRaceBtn">Start Random Race</button>
+              <button class="secondary-btn" data-goto="race">Go To Track</button>
+            </div>
+          </div>
+        </section>
+
+        <section id="race" class="screen">
+          <h2 class="section-title" id="raceTitle">Practice Race</h2>
+          <p class="muted" id="raceSubtitle">Select a story stage or start a practice race.</p>
+
+          <div class="form-row">
+            <button class="primary-btn" id="startRaceBtn">Start Race</button>
+            <button class="secondary-btn" id="resetTrackBtn">Reset Track</button>
+            <button class="secondary-btn" id="soundBtn">🔊 Sound: <span id="soundState">ON</span></button>
+          </div>
+
+          <div class="race-shell">
+            <div class="race-stage" id="raceStage">
+              <div class="stage-bg" id="stageBg">
+                <div class="bg-sky"></div>
+                <div class="bg-far" id="bgFar"></div>
+                <div class="bg-mid" id="bgMid"></div>
+                <div class="bg-overlay" id="bgOverlayText"></div>
+              </div>
+              <div class="motion-bg"></div>
+              <div class="rush-word" id="rushWord">FULL SPEED</div>
+              <div class="lead-indicator" id="leadIndicator">READY</div>
+              <div class="track-close">
+                <div class="lane-line one"></div>
+                <div class="lane-line two"></div>
+                <div class="lane-line three"></div>
+              </div>
+              <div class="start-line"></div>
+              <div class="finish-line"></div>
+              <div class="finish-label">FINISH</div>
+              <div class="speed-lines"></div>
+              <div class="air-cut"></div>
+              <div class="dust" id="dust"></div>
+
+              <div class="runner player" id="playerRunner" data-bib="77">
+                <div class="hair"></div><div class="head"></div><div class="face-strain"></div><div class="runner-body"></div><div class="bib">77</div>
+                <div class="arm front"></div><div class="arm back"></div>
+                <div class="leg front"><div class="shoe"></div></div><div class="leg back"><div class="shoe"></div></div>
+              </div>
+
+              <div id="opponentContainer"></div>
+
+              <div class="countdown" id="countdown"></div>
+              <div class="perfect-start" id="perfectStart">EXPLOSIVE START!</div>
+            </div>
+
+            <div class="race-controls">
+              <button class="boost-btn" id="boostBtn">⚡ RUSH BOOST</button>
+              <div class="hud-box">
+                <small>Boost Energy</small>
+                <strong><span id="boostHud">100</span>%</strong>
+                <div class="boost-meter"><span id="boostMeter"></span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="race-hud">
+            <div class="hud-box"><small>Distance</small><strong><span id="distanceHud">0</span>m</strong></div>
+            <div class="hud-box"><small>Speed</small><strong><span id="speedHud">0</span> m/s</strong></div>
+            <div class="hud-box"><small>Time</small><strong><span id="timeHud">0.00</span>s</strong></div>
+            <div class="hud-box"><small>Stamina</small><strong><span id="staminaHud">100</span>%</strong></div>
+            <div class="hud-box"><small>Race Feel</small><strong><span id="raceFeelHud">Idle</span></strong></div>
+          </div>
+
+          <div class="result-box" id="raceResult"></div>
+        </section>
+
+        <section id="training" class="screen">
+          <h2 class="section-title">Training Center</h2>
+          <p class="muted">Quick Training is free but now takes 15–20 seconds and creates training fatigue, which temporarily drains race stamina. Heavy Training stays optional, opens the sponsor smartlink, and has no timer.</p>
+
+          <div class="training-status card">
+            <div>
+              <span class="tag">TRAINING FATIGUE</span>
+              <h3 id="fatigueText">Fatigue: 0</h3>
+              <p class="muted">Higher fatigue reduces effective stamina/focus. Racing slowly recovers it.</p>
+            </div>
+          </div>
+
+          <div class="training-actions">
+            <div class="card training-card">
+              <span class="tag">FREE / TIMER</span>
+              <h3>Quick Training</h3>
+              <p class="muted">Free training with a short running drill. No cost, no ad, but it drains stamina through fatigue.</p>
+              <button class="primary-btn" data-quick-training="speed">Quick Sprint: 15s / +Speed +Acceleration</button>
+              <button class="primary-btn" data-quick-training="reaction">Quick Start: 16s / +Reaction +Strength</button>
+              <button class="primary-btn" data-quick-training="stamina">Quick Endurance: 20s / +Stamina +Focus</button>
+
+              <div class="mini-training-track" id="quickTrainingBox">
+                <div class="mini-training-bg"></div>
+                <div class="mini-runner" id="miniRunner">
+                  <div class="mini-head"></div>
+                  <div class="mini-body"></div>
+                  <div class="mini-arm a1"></div><div class="mini-arm a2"></div>
+                  <div class="mini-leg l1"></div><div class="mini-leg l2"></div>
+                </div>
+                <div class="training-overlay">
+                  <strong id="quickTrainingTitle">Ready for quick training</strong>
+                  <span id="quickTrainingTimer">Choose a drill</span>
+                  <div class="training-progress"><span id="quickTrainingProgress"></span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card training-card">
+              <span class="tag sponsor">OPTIONAL SPONSOR</span>
+              <h3>Heavy Training</h3>
+              <p class="muted">Bigger stat gain. Opens sponsor smartlink in a new tab. No waiting timer. Player can skip it anytime.</p>
+              <button class="secondary-btn" id="openHeavyTrainingBtn">Open Sponsor Training</button>
+              <button class="primary-btn" id="claimHeavyTrainingBtn">Claim Heavy Training Reward</button>
+              <p class="tiny-note">Note: In plain HTML/JS, ad completion cannot be securely verified. This uses an optional return-and-claim method.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="shop" class="screen">
+          <h2 class="section-title">Runner Shop</h2>
+          <p class="muted">Buy starter gear. Items are added to inventory and affect total stats when equipped.</p>
+          <div class="grid" id="shopGrid"></div>
+        </section>
+
+        <section id="inventory" class="screen">
+          <h2 class="section-title">Inventory</h2>
+          <p class="muted">Equip or remove items. One item per slot in this starter build.</p>
+          <div class="grid" id="inventoryGrid"></div>
+        </section>
+
+        <section id="awards" class="screen">
+          <h2 class="section-title">Awards</h2>
+          <p class="muted">Achievements unlock automatically while playing.</p>
+          <div class="grid" id="awardsGrid"></div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script type="module" src="humandragrace-js/main.js"></script>
+</body>
+</html>
