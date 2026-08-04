@@ -209,6 +209,14 @@ const previewDescription = document.getElementById("previewDescription");
 const previewFeatures = document.getElementById("previewFeatures");
 const previewLink = document.getElementById("previewLink");
 const previewLabel = document.getElementById("previewLabel");
+const commentsDrawer = document.getElementById("commentsDrawer");
+const commentsScrim = document.getElementById("commentsScrim");
+const closeCommentsButton = document.getElementById("closeComments");
+const commentsTitle = document.getElementById("commentsTitle");
+const commentsList = document.getElementById("commentsList");
+const commentForm = document.getElementById("commentForm");
+const commentName = document.getElementById("commentName");
+const commentText = document.getElementById("commentText");
 
 let activeIndex = 0;
 let dragStartX = 0;
@@ -217,10 +225,50 @@ let isDragging = false;
 let hidePreviewTimer = null;
 let activePreviewCard = null;
 let isMuted = true;
-let likesState = {};
+
+const SOCIAL_STORAGE_KEY = "alpha4orge-products-social-v1";
+const DEFAULT_LIKE_COUNT = 1240;
+
+function loadSocialState() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(SOCIAL_STORAGE_KEY) || "{}");
+    return {
+      likes: parsed.likes && typeof parsed.likes === "object" ? parsed.likes : {},
+      comments: parsed.comments && typeof parsed.comments === "object" ? parsed.comments : {}
+    };
+  } catch (_) {
+    return { likes: {}, comments: {} };
+  }
+}
+
+let socialState = loadSocialState();
+let activeCommentsCollectionId = null;
+
+function saveSocialState() {
+  try {
+    localStorage.setItem(SOCIAL_STORAGE_KEY, JSON.stringify(socialState));
+  } catch (_) {}
+}
+
+function getLikeRecord(collectionId) {
+  const saved = socialState.likes[collectionId];
+  return saved && typeof saved === "object"
+    ? { liked: Boolean(saved.liked), count: Number(saved.count) || DEFAULT_LIKE_COUNT }
+    : { liked: false, count: DEFAULT_LIKE_COUNT };
+}
+
+function getComments(collectionId) {
+  return Array.isArray(socialState.comments[collectionId])
+    ? socialState.comments[collectionId]
+    : [];
+}
 
 const AUTO_ROTATE_MS = 9000;
+const PRODUCT_AUTO_SCROLL_MS = 2600;
 let autoRotateTimer = null;
+let autoProgressTimer = null;
+let productRailTimers = new Map();
+let previewReturnFocus = null;
 
 function escapeHtml(value) {
   return String(value)
@@ -238,10 +286,9 @@ function productCardTemplate(product) {
       data-product-id="${escapeHtml(product.id)}"
       data-position="${escapeHtml(product.position)}"
       style="--product-tint:${escapeHtml(product.tint)}"
-      href="${escapeHtml(product.amazonUrl)}"
-      target="_blank"
-      rel="sponsored noopener noreferrer"
-      aria-label="${escapeHtml(product.title)} — open on Amazon"
+      href="#"
+      role="button"
+      aria-label="${escapeHtml(product.title)} — preview product"
     >
       <div class="product-image-wrap">
         <img src="${escapeHtml(product.image)}" alt="${escapeHtml(product.title)}" loading="lazy" />
@@ -262,9 +309,9 @@ function mobileProductPillTemplate(product) {
         <h4>${escapeHtml(product.title)}</h4>
         <p>${escapeHtml(product.shortLabel)}</p>
       </div>
-      <a class="pill-buy-btn" href="${escapeHtml(product.amazonUrl)}" target="_blank" rel="sponsored noopener noreferrer">
-        Buy ↗
-      </a>
+      <button class="pill-preview-btn" type="button" aria-label="Preview ${escapeHtml(product.title)}">
+        View
+      </button>
     </div>
   `;
 }
@@ -287,23 +334,28 @@ function collectionTemplate(collection, index) {
       <img class="hero-media" src="${escapeHtml(collection.image)}" alt="${escapeHtml(collection.title)}" loading="${index === 0 ? "eager" : "lazy"}" />
     `;
 
-  const likesCount = likesState[collection.id] ? 1241 : 1240;
+  const likeRecord = getLikeRecord(collection.id);
+  const likesCount = likeRecord.count;
 
   return `
     <article class="collection-slide" data-collection-id="${escapeHtml(collection.id)}" aria-label="${escapeHtml(collection.title)}">
-      <div class="collection-stage">
+      <div class="collection-stage" style="--mobile-poster:url('${escapeHtml(collection.poster || collection.image)}')">
         <div class="hero-frame">${media}</div>
         ${collection.products.map(productCardTemplate).join("")}
 
         <!-- Mobile YouTube Shorts / Reels Floating Action Bar -->
         <div class="mobile-actions-bar">
-          <button class="action-btn like-btn ${likesState[collection.id] ? "liked" : ""}" type="button" data-action="like" aria-label="Like post">
+          <button class="action-btn like-btn ${likeRecord.liked ? "liked" : ""}" type="button" data-action="like" aria-label="Like post">
             <span class="action-icon-circle">❤️</span>
             <span class="action-label">${likesCount}</span>
           </button>
           <button class="action-btn mute-btn" type="button" data-action="mute" aria-label="Toggle sound">
             <span class="action-icon-circle sound-icon">${isMuted ? "🔇" : "🔊"}</span>
             <span class="action-label">${isMuted ? "Muted" : "Sound"}</span>
+          </button>
+          <button class="action-btn comments-btn" type="button" data-action="comments" aria-label="Open comments">
+            <span class="action-icon-circle">💬</span>
+            <span class="action-label comment-count">${getComments(collection.id).length}</span>
           </button>
           <button class="action-btn share-btn" type="button" data-action="share" aria-label="Share post">
             <span class="action-icon-circle">↗️</span>
@@ -412,7 +464,12 @@ function updateCarousel({ animate = true, fromScroll = false } = {}) {
   applyTheme(collection);
   updateAmbientBackground(collection);
   syncActiveHeroVideo();
-  closePreview();
+
+  if (preview.classList.contains("is-open")) {
+    closePreview();
+  }
+
+  startProductRailForActiveSlide();
 }
 
 function normaliseCollectionIndex(index) {
@@ -433,8 +490,11 @@ function findProductById(productId) {
   return null;
 }
 
-function openPreview(product) {
+function openPreview(product, sourceElement = null) {
   clearTimeout(hidePreviewTimer);
+  pauseAutoRotation();
+  pauseAllProductRails();
+  previewReturnFocus = sourceElement || document.activeElement;
   previewImage.src = product.image;
   previewImage.alt = product.title;
   previewTitle.textContent = product.title;
@@ -446,6 +506,9 @@ function openPreview(product) {
   preview.classList.add("is-open");
   preview.setAttribute("aria-hidden", "false");
   previewScrim.classList.add("is-visible");
+  previewScrim.setAttribute("aria-hidden", "false");
+  document.body.classList.add("preview-open");
+  requestAnimationFrame(() => closePreviewButton.focus({ preventScroll: true }));
 }
 
 function closePreview() {
@@ -454,6 +517,15 @@ function closePreview() {
   preview.classList.remove("is-open");
   preview.setAttribute("aria-hidden", "true");
   previewScrim.classList.remove("is-visible");
+  previewScrim.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("preview-open");
+  resumeAutoRotation();
+  startProductRailForActiveSlide();
+
+  if (previewReturnFocus && typeof previewReturnFocus.focus === "function") {
+    previewReturnFocus.focus({ preventScroll: true });
+  }
+  previewReturnFocus = null;
 }
 
 function bindProductEvents() {
@@ -461,16 +533,23 @@ function bindProductEvents() {
     const product = findProductById(card.dataset.productId);
     if (!product) return;
 
-    card.addEventListener("click", (e) => {
-      if (e.target.closest("a.pill-buy-btn")) return; // direct amazon link click
-      if (isMobileFeed()) {
-        e.preventDefault();
-        openPreview(product);
+    card.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      openPreview(product, card);
+    });
+
+    card.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        openPreview(product, card);
       }
     });
 
     card.addEventListener("mouseenter", () => {
-      if (!isMobileFeed() && window.matchMedia("(hover: hover)").matches) openPreview(product);
+      if (!isMobileFeed() && window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+        openPreview(product, card);
+      }
     });
   });
 }
@@ -482,7 +561,7 @@ function bindMobileFeedActions() {
 
     // Double-tap video screen to like
     slide.addEventListener("click", (e) => {
-      if (!isMobileFeed() || e.target.closest(".mobile-actions-bar, .mobile-products-drawer")) return;
+      if (!isMobileFeed() || e.target.closest(".mobile-actions-bar, .mobile-products-drawer, button, a")) return;
       const currentTime = new Date().getTime();
       const tapLength = currentTime - lastTap;
 
@@ -507,16 +586,25 @@ function bindMobileFeedActions() {
           document.querySelectorAll("video").forEach(v => v.muted = isMuted);
           document.querySelectorAll(".sound-icon").forEach(icon => icon.textContent = isMuted ? "🔇" : "🔊");
           document.querySelectorAll(".mute-btn .action-label").forEach(lbl => lbl.textContent = isMuted ? "Muted" : "Sound");
+        } else if (action === "comments") {
+          openComments(collectionId);
         } else if (action === "share") {
+          const collection = COLLECTIONS.find(item => item.id === collectionId);
+          const shareUrl = `${window.location.origin}${window.location.pathname}#${encodeURIComponent(collectionId)}`;
+          const shareData = {
+            title: collection?.title || "Alpha4orge Finds",
+            text: `Check out ${collection?.title || "this curated Amazon collection"} on Alpha4orge.`,
+            url: shareUrl
+          };
+
           if (navigator.share) {
-            navigator.share({
-              title: "Alpha4orge Finds",
-              text: "Check out this cozy Amazon workspace setup!",
-              url: window.location.href,
-            }).catch(() => {});
+            navigator.share(shareData).catch(() => {});
+          } else if (navigator.clipboard?.writeText) {
+            navigator.clipboard.writeText(shareUrl)
+              .then(() => showToast("Post link copied"))
+              .catch(() => window.prompt("Copy this link:", shareUrl));
           } else {
-            navigator.clipboard.writeText(window.location.href);
-            alert("Link copied to clipboard!");
+            window.prompt("Copy this link:", shareUrl);
           }
         }
       });
@@ -525,11 +613,22 @@ function bindMobileFeedActions() {
 }
 
 function toggleLike(collectionId, slide) {
-  likesState[collectionId] = !likesState[collectionId];
-  const likeBtn = slide.querySelector(".like-btn");
-  const label = likeBtn.querySelector(".action-label");
-  likeBtn.classList.toggle("liked", likesState[collectionId]);
-  label.textContent = likesState[collectionId] ? 1241 : 1240;
+  const current = getLikeRecord(collectionId);
+  const nextLiked = !current.liked;
+  const nextCount = Math.max(0, current.count + (nextLiked ? 1 : -1));
+
+  socialState.likes[collectionId] = {
+    liked: nextLiked,
+    count: nextCount
+  };
+  saveSocialState();
+
+  document.querySelectorAll(`.collection-slide[data-collection-id="${CSS.escape(collectionId)}"] .like-btn`)
+    .forEach(likeBtn => {
+      likeBtn.classList.toggle("liked", nextLiked);
+      const label = likeBtn.querySelector(".action-label");
+      if (label) label.textContent = String(nextCount);
+    });
 }
 
 function triggerHeartAnimation(x, y, container) {
@@ -541,6 +640,224 @@ function triggerHeartAnimation(x, y, container) {
   container.appendChild(heart);
   setTimeout(() => heart.remove(), 800);
 }
+
+
+
+function formatCommentTime(timestamp) {
+  try {
+    return new Intl.DateTimeFormat(undefined, {
+      dateStyle: "medium",
+      timeStyle: "short"
+    }).format(new Date(timestamp));
+  } catch (_) {
+    return "";
+  }
+}
+
+function renderComments(collectionId) {
+  const comments = getComments(collectionId);
+
+  commentsList.innerHTML = comments.length
+    ? comments.map(comment => `
+        <article class="comment-item">
+          <div class="comment-avatar">${escapeHtml((comment.name || "A").slice(0, 1).toUpperCase())}</div>
+          <div class="comment-body">
+            <div class="comment-meta">
+              <strong>${escapeHtml(comment.name || "Anonymous")}</strong>
+              <time datetime="${escapeHtml(comment.createdAt)}">${escapeHtml(formatCommentTime(comment.createdAt))}</time>
+            </div>
+            <p>${escapeHtml(comment.text)}</p>
+          </div>
+        </article>
+      `).join("")
+    : `<div class="comments-empty">
+         <span>💬</span>
+         <strong>No comments yet</strong>
+         <p>Start the conversation about this collection.</p>
+       </div>`;
+}
+
+function updateCommentCounts(collectionId) {
+  const count = getComments(collectionId).length;
+  document.querySelectorAll(`.collection-slide[data-collection-id="${CSS.escape(collectionId)}"] .comment-count`)
+    .forEach(element => element.textContent = String(count));
+}
+
+function openComments(collectionId) {
+  activeCommentsCollectionId = collectionId;
+  pauseAutoRotation();
+  pauseAllProductRails();
+
+  const collection = COLLECTIONS.find(item => item.id === collectionId);
+  commentsTitle.textContent = collection?.title || "Comments";
+  renderComments(collectionId);
+
+  commentsDrawer.classList.add("is-open");
+  commentsDrawer.setAttribute("aria-hidden", "false");
+  commentsScrim.classList.add("is-visible");
+  commentsScrim.setAttribute("aria-hidden", "false");
+  document.body.classList.add("comments-open");
+
+  requestAnimationFrame(() => commentText.focus({ preventScroll: true }));
+}
+
+function closeComments() {
+  commentsDrawer.classList.remove("is-open");
+  commentsDrawer.setAttribute("aria-hidden", "true");
+  commentsScrim.classList.remove("is-visible");
+  commentsScrim.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("comments-open");
+  activeCommentsCollectionId = null;
+  resumeAutoRotation();
+  startProductRailForActiveSlide();
+}
+
+function showToast(message) {
+  const toast = document.createElement("div");
+  toast.className = "social-toast";
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  requestAnimationFrame(() => toast.classList.add("is-visible"));
+  setTimeout(() => {
+    toast.classList.remove("is-visible");
+    setTimeout(() => toast.remove(), 220);
+  }, 1800);
+}
+
+commentForm?.addEventListener("submit", event => {
+  event.preventDefault();
+  if (!activeCommentsCollectionId) return;
+
+  const text = commentText.value.trim();
+  const name = commentName.value.trim() || "Anonymous";
+  if (!text) return;
+
+  const comments = getComments(activeCommentsCollectionId);
+  comments.push({
+    id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    name: name.slice(0, 40),
+    text: text.slice(0, 280),
+    createdAt: new Date().toISOString()
+  });
+
+  socialState.comments[activeCommentsCollectionId] = comments;
+  saveSocialState();
+  renderComments(activeCommentsCollectionId);
+  updateCommentCounts(activeCommentsCollectionId);
+  commentText.value = "";
+  showToast("Comment posted");
+});
+
+closeCommentsButton?.addEventListener("click", closeComments);
+commentsScrim?.addEventListener("click", closeComments);
+
+
+/* Automatic post rotation and automatic sequential product rail */
+function restartProgressBar() {
+  const progress = document.getElementById("autoProgress");
+  if (!progress) return;
+
+  progress.style.animation = "none";
+  progress.offsetHeight;
+  progress.style.animation = `autoProgress ${AUTO_ROTATE_MS}ms linear forwards`;
+}
+
+function pauseAutoRotation() {
+  clearTimeout(autoRotateTimer);
+  autoRotateTimer = null;
+  const progress = document.getElementById("autoProgress");
+  if (progress) progress.classList.add("is-paused");
+}
+
+function resumeAutoRotation() {
+  const progress = document.getElementById("autoProgress");
+  if (progress) progress.classList.remove("is-paused");
+  scheduleAutoRotation();
+}
+
+function scheduleAutoRotation() {
+  clearTimeout(autoRotateTimer);
+  if (document.hidden || preview.classList.contains("is-open") || commentsDrawer?.classList.contains("is-open") || COLLECTIONS.length <= 1) return;
+
+  restartProgressBar();
+  autoRotateTimer = window.setTimeout(() => {
+    goToCollection(activeIndex + 1);
+    scheduleAutoRotation();
+  }, AUTO_ROTATE_MS);
+}
+
+function stopProductRail(slide) {
+  const existingTimer = productRailTimers.get(slide);
+  if (existingTimer) clearInterval(existingTimer);
+  productRailTimers.delete(slide);
+}
+
+function pauseAllProductRails() {
+  productRailTimers.forEach(timer => clearInterval(timer));
+  productRailTimers.clear();
+}
+
+function startProductRail(slide) {
+  if (!isMobileFeed() || !slide || preview.classList.contains("is-open") ||
+      commentsDrawer?.classList.contains("is-open")) return;
+
+  stopProductRail(slide);
+
+  const rail = slide.querySelector(".drawer-products-scroll");
+  const pills = [...slide.querySelectorAll(".mobile-product-pill")];
+  if (!rail || pills.length < 2) return;
+
+  let productIndex = 0;
+  let direction = 1;
+
+  const moveToIndex = index => {
+    const target = pills[index];
+    if (!target) return;
+
+    const maxScrollLeft = Math.max(0, rail.scrollWidth - rail.clientWidth);
+    const desiredLeft = target.offsetLeft - (rail.clientWidth - target.offsetWidth) / 2;
+    const clampedLeft = Math.max(0, Math.min(desiredLeft, maxScrollLeft));
+
+    rail.scrollTo({
+      left: clampedLeft,
+      behavior: "smooth"
+    });
+  };
+
+  const moveNext = () => {
+    if (document.hidden || preview.classList.contains("is-open") ||
+        commentsDrawer?.classList.contains("is-open")) return;
+
+    if (productIndex >= pills.length - 1) direction = -1;
+    else if (productIndex <= 0) direction = 1;
+
+    productIndex += direction;
+    moveToIndex(productIndex);
+  };
+
+  rail.scrollTo({ left: 0, behavior: "auto" });
+
+  const timer = window.setInterval(moveNext, PRODUCT_AUTO_SCROLL_MS);
+  productRailTimers.set(slide, timer);
+
+  const stopForInteraction = () => stopProductRail(slide);
+  const restartAfterInteraction = () => {
+    window.setTimeout(() => startProductRail(slide), 1800);
+  };
+
+  rail.addEventListener("pointerdown", stopForInteraction, { once: true });
+  rail.addEventListener("touchstart", stopForInteraction, { once: true, passive: true });
+  rail.addEventListener("pointerup", restartAfterInteraction, { once: true });
+  rail.addEventListener("touchend", restartAfterInteraction, { once: true, passive: true });
+}
+
+function startProductRailForActiveSlide() {
+  pauseAllProductRails();
+  if (!isMobileFeed()) return;
+  const activeSlide = document.querySelectorAll(".collection-slide")[activeIndex];
+  startProductRail(activeSlide);
+}
+
 
 /* Intersection Observer for Mobile Vertical Snap Feed */
 let mobileFeedObserver = null;
@@ -558,6 +875,7 @@ function setupMobileFeedObserver() {
         if (index !== -1 && index !== activeIndex) {
           activeIndex = index;
           updateCarousel({ animate: false, fromScroll: true });
+          scheduleAutoRotation();
         }
       }
     });
@@ -578,8 +896,62 @@ previewScrim.addEventListener("click", closePreview);
 window.addEventListener("resize", () => {
   updateCarousel({ animate: false });
   setupMobileFeedObserver();
+  startProductRailForActiveSlide();
+});
+
+document.addEventListener("keydown", event => {
+  if (event.key !== "Escape") return;
+
+  if (preview.classList.contains("is-open")) {
+    closePreview();
+  } else if (commentsDrawer?.classList.contains("is-open")) {
+    closeComments();
+  }
+});
+
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    pauseAutoRotation();
+    pauseAllProductRails();
+    document.querySelectorAll("video").forEach(video => video.pause());
+  } else {
+    syncActiveHeroVideo();
+    scheduleAutoRotation();
+    startProductRailForActiveSlide();
+  }
+});
+
+/* Alpha4orge mobile header and Games dropdown */
+const menuButton = document.getElementById("menuBtn");
+const mainNavigation = document.getElementById("nav");
+const gamesDropdown = document.getElementById("gamesDropdown");
+const gamesButton = gamesDropdown?.querySelector(".nav-dropbtn");
+
+menuButton?.addEventListener("click", () => {
+  const open = mainNavigation?.classList.toggle("open");
+  menuButton.setAttribute("aria-expanded", String(Boolean(open)));
+});
+
+gamesButton?.addEventListener("click", event => {
+  event.stopPropagation();
+  const open = gamesDropdown.classList.toggle("open");
+  gamesButton.setAttribute("aria-expanded", String(open));
+});
+
+document.addEventListener("click", event => {
+  if (gamesDropdown && !gamesDropdown.contains(event.target)) {
+    gamesDropdown.classList.remove("open");
+    gamesButton?.setAttribute("aria-expanded", "false");
+  }
 });
 
 renderCollections();
+
+const hashCollectionId = decodeURIComponent(window.location.hash.replace(/^#/, ""));
+const hashIndex = COLLECTIONS.findIndex(item => item.id === hashCollectionId);
+if (hashIndex >= 0) activeIndex = hashIndex;
+
 setupMobileFeedObserver();
 updateCarousel({ animate: false });
+scheduleAutoRotation();
+startProductRailForActiveSlide();
