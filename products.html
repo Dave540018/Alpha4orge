@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+  <title>Curated Amazon Finds | Alpha4orge</title>
+  <meta name="description" content="Explore visually curated Amazon product collections from Alpha4orge.">
+  <meta name="theme-color" content="#07111f">
+
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="/Logonew.ico" sizes="any">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180">
+
+  <link rel="stylesheet" href="products_styles.css">
+</head>
+
+<body>
+  <a href="#collections" class="skip-link">Skip to collections</a>
+
+  <!-- Alpha4orge header copied from the supplied index-page design. -->
+  <header class="site-header" id="siteHeader">
+    <div class="wrap header-inner">
+      <a class="brand" href="index.html" aria-label="Alpha4orge home">
+        <span class="brand-mark">
+          <img src="https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/Logonew.png"
+               alt="Alpha4orge logo" width="40" height="40">
+        </span>
+        <span>
+          <strong>Alpha4orge</strong>
+          <small>Inspiring Creation, Creating Inspiration.</small>
+        </span>
+      </a>
+
+      <button class="menu-btn" id="menuBtn" type="button"
+              aria-label="Toggle navigation" aria-expanded="false">☰ Menu</button>
+
+      <nav class="site-nav" id="nav" aria-label="Primary navigation">
+        <a href="index.html" data-nav="home">Home</a>
+        <a href="index.html#/figma" data-nav="figma">Figma Files</a>
+        <a href="index.html#/printables" data-nav="printables">Printables</a>
+        <a href="comics.html" data-nav="comics">Comics</a>
+	<a href="products.html" data-nav="Products">Products</a>
+        <a href="blog.html" data-nav="blog">Blog</a>
+
+        <div class="nav-dropdown" id="gamesDropdown">
+          <button class="nav-dropbtn" type="button" aria-haspopup="true"
+                  aria-expanded="false">Games ▾</button>
+          <div class="nav-dropmenu" role="menu">
+            <a href="humandragrace.html" role="menuitem">100-Metre Drag Race</a>
+            <a href="CandyGame.html" role="menuitem">Candy Game</a>
+            <a href="Tetris.html" role="menuitem">Tetris</a>
+            <a href="SG2.html" role="menuitem">AlphaSnake</a>
+          </div>
+        </div>
+
+        <a href="about.html" data-nav="about">About</a>
+        <a href="contact.html" data-nav="contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="collections" class="collections-page">
+    <div class="ambient-background" aria-hidden="true">
+      <img id="ambientImage" class="ambient-image" alt="">
+      <video id="ambientVideo" class="ambient-video"
+             muted loop playsinline autoplay preload="auto"></video>
+      <div class="ambient-overlay"></div>
+    </div>
+
+    <section class="collection-browser" aria-label="Curated product collections">
+      <div class="top-bar">
+        <div class="title-group">
+          <p class="eyebrow">✦ Curated Amazon Finds</p>
+          <h1 id="pageHeading">Cozy Study Essentials</h1>
+        </div>
+
+        <div class="collection-status">
+          <div class="collection-counter" aria-live="polite">
+            <span id="currentCollection">01</span>
+            <span class="counter-line"></span>
+            <span id="totalCollections">01</span>
+          </div>
+
+          <div class="auto-rotate-track"
+               title="The next collection opens automatically every 9 seconds"
+               aria-hidden="true">
+            <span id="autoProgress" class="auto-progress"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="carousel-shell">
+        <button class="carousel-button previous" id="previousCollection"
+                type="button" aria-label="Previous collection">
+          <span aria-hidden="true">←</span>
+        </button>
+
+        <div id="collectionViewport" class="collection-viewport"
+             tabindex="0" aria-roledescription="carousel"
+             aria-label="Product collection carousel">
+          <div id="collectionTrack" class="collection-track"></div>
+        </div>
+
+        <button class="carousel-button next" id="nextCollection"
+                type="button" aria-label="Next collection">
+          <span aria-hidden="true">→</span>
+        </button>
+
+        <div id="collectionDots" class="collection-dots"
+             aria-label="Choose collection"></div>
+      </div>
+    </section>
+  </main>
+
+  <aside id="productPreview" class="product-preview"
+         aria-hidden="true" aria-label="Product preview">
+    <button id="closePreview" class="preview-close"
+            type="button" aria-label="Close product preview">×</button>
+
+    <div class="preview-media">
+      <img id="previewImage" src="" alt="">
+    </div>
+
+    <div class="preview-content">
+      <p id="previewLabel" class="preview-label">Featured pick</p>
+      <h2 id="previewTitle"></h2>
+      <p id="previewDescription"></p>
+      <ul id="previewFeatures" class="preview-features"></ul>
+
+      <a id="previewLink" class="amazon-button" href="#"
+         target="_blank" rel="sponsored noopener noreferrer">
+        View on Amazon <span aria-hidden="true">↗</span>
+      </a>
+    </div>
+  </aside>
+
+  <div id="previewScrim" class="preview-scrim" aria-hidden="true"></div>
+
+  <!-- Compact Alpha4orge footer kept inside the viewport. -->
+  <footer class="site-footer">
+    <div class="wrap footer-grid">
+      <div class="footer-copy">
+        <strong>Alpha4orge</strong>
+        <span>Curated creator resources and inspiring product collections.</span>
+      </div>
+
+      <nav aria-label="Footer links">
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </footer>
+
+  <noscript>
+    <p class="noscript-message">JavaScript is required to display the product collections.</p>
+  </noscript>
+
+  <script src="products_app.js" defer></script>
+</body>
+</html>
