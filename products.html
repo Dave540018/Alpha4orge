@@ -19,7 +19,6 @@
 <body>
   <a href="#collections" class="skip-link">Skip to collections</a>
 
-  <!-- Header -->
   <header class="site-header" id="siteHeader">
     <div class="wrap header-inner">
       <a class="brand" href="index.html" aria-label="Alpha4orge home">
@@ -119,9 +118,8 @@
     </section>
   </main>
 
-  <!-- Product Drawer / Preview Modal -->
   <aside id="productPreview" class="product-preview"
-         aria-hidden="true" aria-label="Product preview">
+         aria-hidden="true" aria-label="Product preview" role="dialog" aria-modal="true">
     <button id="closePreview" class="preview-close"
             type="button" aria-label="Close product preview">×</button>
 
@@ -144,7 +142,36 @@
 
   <div id="previewScrim" class="preview-scrim" aria-hidden="true"></div>
 
-  <!-- Compact Footer (Hidden on Mobile Feed) -->
+  <!-- Comments Drawer -->
+  <aside id="commentsDrawer" class="comments-drawer"
+         aria-hidden="true" aria-label="Post comments" role="dialog" aria-modal="true">
+    <div class="comments-head">
+      <div>
+        <p class="comments-kicker">Community</p>
+        <h2 id="commentsTitle">Comments</h2>
+      </div>
+      <button id="closeComments" class="comments-close" type="button"
+              aria-label="Close comments">×</button>
+    </div>
+
+    <div id="commentsList" class="comments-list" aria-live="polite"></div>
+
+    <form id="commentForm" class="comment-form">
+      <label class="sr-only" for="commentName">Your name</label>
+      <input id="commentName" name="name" type="text" maxlength="40"
+             placeholder="Your name" autocomplete="name">
+
+      <label class="sr-only" for="commentText">Write a comment</label>
+      <textarea id="commentText" name="comment" maxlength="280"
+                placeholder="Write a comment…" required></textarea>
+
+      <button type="submit">Post comment</button>
+    </form>
+  </aside>
+
+  <div id="commentsScrim" class="comments-scrim" aria-hidden="true"></div>
+
+
   <footer class="site-footer">
     <div class="wrap footer-grid">
       <div class="footer-copy">
