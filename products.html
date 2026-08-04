@@ -19,7 +19,7 @@
 <body>
   <a href="#collections" class="skip-link">Skip to collections</a>
 
-  <!-- Alpha4orge header copied from the supplied index-page design. -->
+  <!-- Header -->
   <header class="site-header" id="siteHeader">
     <div class="wrap header-inner">
       <a class="brand" href="index.html" aria-label="Alpha4orge home">
@@ -41,7 +41,7 @@
         <a href="index.html#/figma" data-nav="figma">Figma Files</a>
         <a href="index.html#/printables" data-nav="printables">Printables</a>
         <a href="comics.html" data-nav="comics">Comics</a>
-	<a href="products.html" data-nav="Products">Products</a>
+        <a href="products.html" data-nav="Products" class="active">Products</a>
         <a href="blog.html" data-nav="blog">Blog</a>
 
         <div class="nav-dropdown" id="gamesDropdown">
@@ -110,10 +110,16 @@
 
         <div id="collectionDots" class="collection-dots"
              aria-label="Choose collection"></div>
+
+        <div class="mobile-feed-hint" aria-hidden="true">
+          <span>Swipe up for next find</span>
+          <span class="mobile-feed-arrow">⌄</span>
+        </div>
       </div>
     </section>
   </main>
 
+  <!-- Product Drawer / Preview Modal -->
   <aside id="productPreview" class="product-preview"
          aria-hidden="true" aria-label="Product preview">
     <button id="closePreview" class="preview-close"
@@ -131,14 +137,14 @@
 
       <a id="previewLink" class="amazon-button" href="#"
          target="_blank" rel="sponsored noopener noreferrer">
-        View on Amazon <span aria-hidden="true">↗</span>
+        Buy on Amazon <span aria-hidden="true">↗</span>
       </a>
     </div>
   </aside>
 
   <div id="previewScrim" class="preview-scrim" aria-hidden="true"></div>
 
-  <!-- Compact Alpha4orge footer kept inside the viewport. -->
+  <!-- Compact Footer (Hidden on Mobile Feed) -->
   <footer class="site-footer">
     <div class="wrap footer-grid">
       <div class="footer-copy">
