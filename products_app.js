@@ -167,70 +167,112 @@ const COLLECTIONS = [
     }
   ]
 },
-  {
-    id: "reading-corner",
-    eyebrow: "Slow living",
-    title: "Quiet Reading Corner",
-    subtitle: "Small comforts for an unhurried evening",
-    theme: {
-      accent: "#d7875c",
-      accentSoft: "#ffe6d7",
-      accentDark: "#9a5434",
-      surfaceTint: "rgba(255, 229, 214, 0.76)"
+ {
+  id: "gaming-accessories-setup",
+  eyebrow: "Gaming essentials",
+  title: "Level Up Your Gaming Setup",
+  subtitle: "Cool accessories for a more immersive gaming experience",
+
+  theme: {
+    accent: "#39d353",
+    accentSoft: "#d8ffe2",
+    accentDark: "#087f3e",
+    surfaceTint: "rgba(10, 34, 48, 0.78)"
+  },
+
+  // Add your generated gaming-room image and video links here.
+  image: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/AccessoriesAmazonkit03.png",
+  video: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/AccessoriesAmazonkit03.mp4",
+  poster: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/AccessoriesAmazonkit03.png",
+  backgroundImage: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/AccessoriesAmazonkit03.png",
+  backgroundVideo: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/AccessoriesAmazonkit03.mp4",
+
+  products: [
+    {
+      id: "rgb-gaming-mouse",
+      position: "top-left",
+      title: "Ergonomic RGB Wired Gaming Mouse",
+      shortLabel: "Fast and precise control",
+
+      image: "https://m.media-amazon.com/images/I/71VR6c3j2bL._SL1500_.jpg",
+      amazonUrl: "https://link.amazon/B0gAbrCY1",
+
+      tint: "#d9ff78",
+
+      description:
+        "A futuristic wired gaming mouse with an angular ergonomic design, responsive controls and bright RGB-style lighting accents.",
+
+      features: [
+        "Ergonomic gaming design",
+        "Responsive wired connection",
+        "Illuminated RGB-style accents"
+      ]
     },
-    image: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1800&q=90",
-    video: "",
-    poster: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1800&q=90",
-    backgroundImage: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1800&q=90",
-    backgroundVideo: "",
-    products: [
-      {
-        id: "reading-light",
-        position: "top-left",
-        title: "Warm Rechargeable Reading Light",
-        shortLabel: "Gentle evening light",
-        image: "https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?auto=format&fit=crop&w=900&q=85",
-        amazonUrl: "https://www.amazon.in/?tag=YOUR-AFFILIATE-TAG",
-        tint: "#ffd2b8",
-        description: "A warm reading light that creates a softer atmosphere for books, journaling and winding down.",
-        features: ["Warm light tone", "Rechargeable design", "Portable and compact"]
-      },
-      {
-        id: "book-rest",
-        position: "top-right",
-        title: "Adjustable Book and Tablet Stand",
-        shortLabel: "Hands-free reading",
-        image: "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?auto=format&fit=crop&w=900&q=85",
-        amazonUrl: "https://www.amazon.in/?tag=YOUR-AFFILIATE-TAG",
-        tint: "#ead8ca",
-        description: "A practical stand for holding books or a tablet at a more comfortable reading angle.",
-        features: ["Adjustable viewing angle", "Supports books and tablets", "Foldable design"]
-      },
-      {
-        id: "soft-blanket",
-        position: "bottom-left",
-        title: "Soft Throw Blanket",
-        shortLabel: "Extra comfort",
-        image: "https://images.unsplash.com/photo-1580301762395-21ce84d00bc6?auto=format&fit=crop&w=900&q=85",
-        amazonUrl: "https://www.amazon.in/?tag=YOUR-AFFILIATE-TAG",
-        tint: "#ffc6a8",
-        description: "A soft throw blanket for a chair, sofa or bed, adding warmth to a calm reading space.",
-        features: ["Soft comfortable texture", "Easy room styling", "Useful across seasons"]
-      },
-      {
-        id: "ceramic-mug",
-        position: "bottom-right",
-        title: "Ceramic Tea and Coffee Mug",
-        shortLabel: "A warm drink nearby",
-        image: "https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?auto=format&fit=crop&w=900&q=85",
-        amazonUrl: "https://www.amazon.in/?tag=YOUR-AFFILIATE-TAG",
-        tint: "#e5cab9",
-        description: "A simple ceramic mug for tea, coffee or cocoa during a quiet reading session.",
-        features: ["Comfortable handle", "Everyday ceramic body", "Suitable for hot drinks"]
-      }
-    ]
-  }
-];
+
+    {
+      id: "rgb-desktop-speakers",
+      position: "top-right",
+      title: "RGB Multimedia Gaming Speakers",
+      shortLabel: "Immersive desktop sound",
+
+      image: "https://m.media-amazon.com/images/I/71kIRMs8nQL._SL1500_.jpg",
+      amazonUrl: "https://link.amazon/B09omlf8k",
+
+      tint: "#b8f5ff",
+
+      description:
+        "A compact pair of desktop speakers with colourful RGB lighting, designed for gaming, music and everyday multimedia use.",
+
+      features: [
+        "Colourful RGB lighting",
+        "Compact desktop design",
+        "Suitable for games and music"
+      ]
+    },
+
+    {
+      id: "wired-gaming-controller",
+      position: "bottom-left",
+      title: "Wired Dual-Stick Gaming Controller",
+      shortLabel: "Comfortable console-style play",
+
+      image: "https://m.media-amazon.com/images/I/515eeXc5YuL._SL1200_.jpg",
+      amazonUrl: "https://link.amazon/B09lNS20m",
+
+      tint: "#dcecff",
+
+      description:
+        "A comfortable wired game controller with dual analogue sticks, responsive action buttons and illuminated design details.",
+
+      features: [
+        "Dual analogue controls",
+        "Responsive action buttons",
+        "Comfortable wired gameplay"
+      ]
+    },
+
+    {
+      id: "rgb-gaming-headset",
+      position: "bottom-right",
+      title: "RGB Gaming Headset with Microphone",
+      shortLabel: "Clear sound and team chat",
+
+      image: "https://m.media-amazon.com/images/I/71VR6c3j2bL._SL1500_.jpg",
+      amazonUrl: "https://link.amazon/B0dtpZBLi",
+
+      tint: "#c9e5ff",
+
+      description:
+        "An over-ear gaming headset with soft ear cushions, an adjustable microphone and colourful RGB lighting for an immersive setup.",
+
+      features: [
+        "Over-ear padded comfort",
+        "Adjustable boom microphone",
+        "RGB illuminated design"
+      ]
+    }
+  ]
+};
 
 const track = document.getElementById("collectionTrack");
 const viewport = document.getElementById("collectionViewport");
