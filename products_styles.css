@@ -866,3 +866,68 @@ img, video { display: block; max-width: 100%; }
     scroll-snap-align:center;
   }
 }
+
+/* ============================================================
+   V4 LAYOUT + INTERACTION FIXES
+   ============================================================ */
+
+/* Desktop preview follows the side of the hovered/selected product. */
+@media (min-width: 681px) {
+  .product-preview.preview-left {
+    left: 18px;
+    right: auto;
+  }
+
+  .product-preview.preview-right {
+    left: auto;
+    right: 18px;
+  }
+
+  /* Use substantially more of the desktop viewport while preserving 4:3. */
+  .hero-frame {
+    width: min(
+      calc(100% - clamp(300px, 29vw, 430px)),
+      calc((100% - 12px) * 4 / 3)
+    );
+    height: auto;
+    max-width: none;
+    max-height: calc(100% - 12px);
+    aspect-ratio: 4 / 3;
+  }
+
+  .hero-frame img,
+  .hero-frame video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .collection-viewport {
+    touch-action: pan-y pinch-zoom;
+  }
+}
+
+@media (max-width: 680px) {
+  /* Mobile is a true portrait reel, using mobileImage/mobileVideo when supplied. */
+  .hero-frame {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 9 / 16;
+  }
+
+  .hero-frame img,
+  .hero-frame video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    background: #000;
+  }
+
+  .collection-viewport {
+    touch-action: pan-y;
+    overscroll-behavior-y: contain;
+  }
+}
