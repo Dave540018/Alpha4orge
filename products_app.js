@@ -207,7 +207,7 @@ const COLLECTIONS = [
         title: "Ergonomic RGB Wired Gaming Mouse",
         shortLabel: "Fast and precise control",
         image: "https://m.media-amazon.com/images/I/81tioCUVf4L._SL1500_.jpg",
-        amazonUrl: "https://link.amazon/B0gAbrCY1",
+        amazonUrl: "https://link.amazon/B05yLBqnn",
         tint: "#d9ff78",
         description:
           "A futuristic wired gaming mouse with an angular ergonomic design, responsive controls and bright RGB-style lighting accents.",
