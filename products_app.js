@@ -15,6 +15,10 @@ const COLLECTIONS = [
     poster: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/PurpleAmazonKit01.png",
     backgroundImage: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/PurpleAmazonKit01.png",
     backgroundVideo: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/PurpleAmazonKit01.mp4",
+    // Optional 9:16 media. Leave blank to fall back to desktop media.
+    mobileImage: "",
+    mobileVideo: "",
+    mobilePoster: "",
     products: [
       {
         id: "ambient-pen-stand",
@@ -100,6 +104,10 @@ const COLLECTIONS = [
     poster: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/PokemonAmazonKit02.png",
     backgroundImage: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/PokemonAmazonKit02.png",
     backgroundVideo: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/PokemonAmazonKit02.mp4",
+    // Optional 9:16 media. Leave blank to fall back to desktop media.
+    mobileImage: "",
+    mobileVideo: "",
+    mobilePoster: "",
 
     products: [
       {
@@ -187,6 +195,10 @@ const COLLECTIONS = [
     poster: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/AccessoriesAmazonkit03.png",
     backgroundImage: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/AccessoriesAmazonkit03.png",
     backgroundVideo: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/AccessoriesAmazonkit03.mp4",
+    // Optional 9:16 media. Leave blank to fall back to desktop media.
+    mobileImage: "",
+    mobileVideo: "",
+    mobilePoster: "",
 
     products: [
       {
@@ -436,7 +448,11 @@ function collectionTemplate(collection, index) {
       <video
         class="hero-media"
         src="${escapeHtml(collection.video)}"
+        data-desktop-src="${escapeHtml(collection.video)}"
+        data-mobile-src="${escapeHtml(collection.mobileVideo || collection.video)}"
         poster="${escapeHtml(collection.poster || collection.image)}"
+        data-desktop-poster="${escapeHtml(collection.poster || collection.image)}"
+        data-mobile-poster="${escapeHtml(collection.mobilePoster || collection.mobileImage || collection.poster || collection.image)}"
         ${isMuted ? "muted" : ""}
         loop
         playsinline
@@ -447,6 +463,8 @@ function collectionTemplate(collection, index) {
       <img
         class="hero-media"
         src="${escapeHtml(collection.image)}"
+        data-desktop-src="${escapeHtml(collection.image)}"
+        data-mobile-src="${escapeHtml(collection.mobileImage || collection.image)}"
         alt="${escapeHtml(collection.title)}"
         loading="${index === 0 ? "eager" : "lazy"}"
       />
@@ -568,6 +586,7 @@ function renderCollections() {
 
   bindProductEvents();
   bindMobileFeedActions();
+  syncResponsiveMediaSources();
 }
 
 function applyTheme(collection) {
@@ -674,6 +693,30 @@ function isMobileFeed() {
   ).matches;
 }
 
+function syncResponsiveMediaSources() {
+  const mobile = isMobileFeed();
+
+  document.querySelectorAll(".hero-media").forEach(media => {
+    const desiredSrc = mobile ? media.dataset.mobileSrc : media.dataset.desktopSrc;
+    if (!desiredSrc) return;
+
+    if (media.tagName === "VIDEO") {
+      const desiredPoster = mobile ? media.dataset.mobilePoster : media.dataset.desktopPoster;
+      const currentSrc = media.getAttribute("src") || "";
+      if (currentSrc !== desiredSrc) {
+        media.pause();
+        media.setAttribute("src", desiredSrc);
+        if (desiredPoster) media.setAttribute("poster", desiredPoster);
+        media.load();
+      } else if (desiredPoster && media.getAttribute("poster") !== desiredPoster) {
+        media.setAttribute("poster", desiredPoster);
+      }
+    } else if (media.getAttribute("src") !== desiredSrc) {
+      media.setAttribute("src", desiredSrc);
+    }
+  });
+}
+
 function updateCarousel({
   animate = true,
   fromScroll = false
@@ -734,6 +777,7 @@ function updateCarousel({
     COLLECTIONS.length <= 1;
 
   applyTheme(collection);
+  syncResponsiveMediaSources();
   updateAmbientBackground(collection);
   syncActiveHeroVideo();
 
@@ -789,6 +833,14 @@ function openPreview(
 
   previewReturnFocus =
     sourceElement || document.activeElement;
+
+  // Keep the preview on the same side as the selected desktop product.
+  preview.classList.remove("preview-left", "preview-right");
+  if (!isMobileFeed() && sourceElement) {
+    const position = sourceElement.dataset.position ||
+      sourceElement.closest("[data-position]")?.dataset.position || "";
+    preview.classList.add(position.includes("right") ? "preview-right" : "preview-left");
+  }
 
   previewImage.src = product.image;
   previewImage.alt = product.title;
@@ -1700,6 +1752,105 @@ function setupMobileFeedObserver() {
   });
 }
 
+/* Unified desktop/mobile navigation: drag, swipe and keyboard */
+const SWIPE_THRESHOLD = 54;
+let dragStartY = 0;
+let dragCurrentY = 0;
+
+function isInteractiveTarget(target) {
+  return Boolean(target.closest(
+    "a, button, input, textarea, select, .product-card, .mobile-product-pill, " +
+    ".mobile-products-drawer, .mobile-actions-bar, .product-preview, .comments-drawer"
+  ));
+}
+
+function beginCarouselDrag(event) {
+  if (event.pointerType === "mouse" && event.button !== 0) return;
+  if (isInteractiveTarget(event.target)) return;
+
+  isDragging = true;
+  dragStartX = event.clientX;
+  dragCurrentX = event.clientX;
+  dragStartY = event.clientY;
+  dragCurrentY = event.clientY;
+  viewport.classList.add("is-dragging");
+  pauseAutoRotation();
+
+  try { viewport.setPointerCapture(event.pointerId); } catch (_) {}
+}
+
+function moveCarouselDrag(event) {
+  if (!isDragging) return;
+  dragCurrentX = event.clientX;
+  dragCurrentY = event.clientY;
+
+  const dx = dragCurrentX - dragStartX;
+  const dy = dragCurrentY - dragStartY;
+
+  // On desktop, show direct horizontal drag feedback.
+  if (!isMobileFeed() && Math.abs(dx) > Math.abs(dy)) {
+    event.preventDefault();
+    const percent = (dx / Math.max(1, viewport.clientWidth)) * 100;
+    track.classList.add("no-transition");
+    track.style.transform = `translate3d(calc(-${activeIndex * 100}% + ${percent}%), 0, 0)`;
+  }
+}
+
+function endCarouselDrag(event) {
+  if (!isDragging) return;
+  isDragging = false;
+  viewport.classList.remove("is-dragging");
+
+  try { viewport.releasePointerCapture(event.pointerId); } catch (_) {}
+
+  const dx = dragCurrentX - dragStartX;
+  const dy = dragCurrentY - dragStartY;
+  track.classList.remove("no-transition");
+
+  if (isMobileFeed()) {
+    if (Math.abs(dy) >= SWIPE_THRESHOLD && Math.abs(dy) > Math.abs(dx)) {
+      goToCollection(activeIndex + (dy < 0 ? 1 : -1));
+    } else {
+      updateCarousel({ animate: true });
+      scheduleAutoRotation();
+    }
+  } else {
+    if (Math.abs(dx) >= SWIPE_THRESHOLD && Math.abs(dx) > Math.abs(dy)) {
+      goToCollection(activeIndex + (dx < 0 ? 1 : -1));
+    } else {
+      updateCarousel({ animate: true });
+      scheduleAutoRotation();
+    }
+  }
+}
+
+viewport?.addEventListener("pointerdown", beginCarouselDrag);
+viewport?.addEventListener("pointermove", moveCarouselDrag, { passive: false });
+viewport?.addEventListener("pointerup", endCarouselDrag);
+viewport?.addEventListener("pointercancel", endCarouselDrag);
+
+document.addEventListener("keydown", event => {
+  if (event.target.closest?.("input, textarea, select, [contenteditable='true']")) return;
+  if (preview.classList.contains("is-open") || commentsDrawer?.classList.contains("is-open")) return;
+
+  const previousKeys = isMobileFeed() ? ["ArrowUp", "PageUp"] : ["ArrowLeft", "PageUp"];
+  const nextKeys = isMobileFeed() ? ["ArrowDown", "PageDown"] : ["ArrowRight", "PageDown"];
+
+  if (previousKeys.includes(event.key)) {
+    event.preventDefault();
+    goToCollection(activeIndex - 1);
+  } else if (nextKeys.includes(event.key)) {
+    event.preventDefault();
+    goToCollection(activeIndex + 1);
+  } else if (event.key === "Home") {
+    event.preventDefault();
+    goToCollection(0);
+  } else if (event.key === "End") {
+    event.preventDefault();
+    goToCollection(COLLECTIONS.length - 1);
+  }
+});
+
 previousButton?.addEventListener(
   "click",
   () => {
@@ -1743,6 +1894,7 @@ previewScrim?.addEventListener(
 window.addEventListener(
   "resize",
   () => {
+    syncResponsiveMediaSources();
     updateCarousel({
       animate: false
     });
