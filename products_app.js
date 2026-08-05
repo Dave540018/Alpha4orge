@@ -17,7 +17,7 @@ const COLLECTIONS = [
     backgroundVideo: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/PurpleAmazonKit01.mp4",
     // Optional 9:16 media. Leave blank to fall back to desktop media.
     mobileImage: "",
-    mobileVideo: "",
+    mobileVideo: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/PurpleAmazonKit01portrait.mp4",
     mobilePoster: "",
     products: [
       {
@@ -106,7 +106,7 @@ const COLLECTIONS = [
     backgroundVideo: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/PokemonAmazonKit02.mp4",
     // Optional 9:16 media. Leave blank to fall back to desktop media.
     mobileImage: "",
-    mobileVideo: "",
+    mobileVideo: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/PokemonAmazonKit02portrait.mp4",
     mobilePoster: "",
 
     products: [
