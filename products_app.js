@@ -197,7 +197,7 @@ const COLLECTIONS = [
     backgroundVideo: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/AccessoriesAmazonkit03.mp4",
     // Optional 9:16 media. Leave blank to fall back to desktop media.
     mobileImage: "",
-    mobileVideo: "",
+    mobileVideo: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/AccessoriesAmazonkit03portrait.mp4",
     mobilePoster: "",
 
     products: [
