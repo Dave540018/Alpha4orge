@@ -63,68 +63,110 @@ const COLLECTIONS = [
     ]
   },
   {
-    id: "soft-workspace",
-    eyebrow: "Minimal workspace",
-    title: "Soft Productivity Setup",
-    subtitle: "Calm tools for focused work",
-    theme: {
-      accent: "#5f9ed8",
-      accentSoft: "#dceeff",
-      accentDark: "#356c9f",
-      surfaceTint: "rgba(218, 238, 255, 0.74)"
-    },
-    image: "https://images.unsplash.com/photo-1497215842964-222b430dc094?auto=format&fit=crop&w=1800&q=90",
-    video: "",
-    poster: "https://images.unsplash.com/photo-1497215842964-222b430dc094?auto=format&fit=crop&w=1800&q=90",
-    backgroundImage: "https://images.unsplash.com/photo-1497215842964-222b430dc094?auto=format&fit=crop&w=1800&q=90",
-    backgroundVideo: "",
-    products: [
-      {
-        id: "desk-lamp",
-        position: "top-left",
-        title: "Minimal LED Desk Lamp",
-        shortLabel: "Soft task lighting",
-        image: "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=900&q=85",
-        amazonUrl: "https://www.amazon.in/?tag=YOUR-AFFILIATE-TAG",
-        tint: "#cde8ff",
-        description: "A clean desk lamp for reading and focused work, designed to keep the workspace visually uncluttered.",
-        features: ["Adjustable lighting", "Minimal footprint", "Suitable for study desks"]
-      },
-      {
-        id: "keyboard",
-        position: "top-right",
-        title: "Compact Wireless Keyboard",
-        shortLabel: "Clean typing setup",
-        image: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&w=900&q=85",
-        amazonUrl: "https://www.amazon.in/?tag=YOUR-AFFILIATE-TAG",
-        tint: "#dbe8f3",
-        description: "A compact wireless keyboard that keeps the desk tidy while remaining comfortable for daily typing.",
-        features: ["Wireless connection", "Compact layout", "Desk-friendly design"]
-      },
-      {
-        id: "notebook",
-        position: "bottom-left",
-        title: "Hardbound Productivity Notebook",
-        shortLabel: "Plans in one place",
-        image: "https://images.unsplash.com/photo-1517842645767-c639042777db?auto=format&fit=crop&w=900&q=85",
-        amazonUrl: "https://www.amazon.in/?tag=YOUR-AFFILIATE-TAG",
-        tint: "#bfddf5",
-        description: "A simple hardbound notebook for project notes, daily planning and focused task lists.",
-        features: ["Durable hard cover", "Useful for planning", "Portable size"]
-      },
-      {
-        id: "desk-speaker",
-        position: "bottom-right",
-        title: "Compact Bluetooth Desk Speaker",
-        shortLabel: "Low-volume ambience",
-        image: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?auto=format&fit=crop&w=900&q=85",
-        amazonUrl: "https://www.amazon.in/?tag=YOUR-AFFILIATE-TAG",
-        tint: "#cbd7e2",
-        description: "A compact speaker for soft background music, podcasts and light audio during work sessions.",
-        features: ["Bluetooth playback", "Compact body", "Suitable for desk use"]
-      }
-    ]
+  id: "pokemon-collector-room",
+  eyebrow: "Collector world",
+  title: "Ultimate Pokémon Collector Setup",
+  subtitle: "Figures, guides and accessories for Pokémon fans",
+  theme: {
+    accent: "#2f80ed",
+    accentSoft: "#d9ebff",
+    accentDark: "#163f8f",
+    surfaceTint: "rgba(24, 55, 110, 0.76)"
   },
+
+  // Add your generated 4:3 or 9:16 image and video links here.
+  image: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/PokemonAmazonKit02.png",
+  video: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/PokemonAmazonKit02.mp4",
+  poster: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/PokemonAmazonKit02.png",
+  backgroundImage: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/PokemonAmazonKit02.png",
+  backgroundVideo: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/PokemonAmazonKit02.mp4",
+
+  products: [
+    {
+      id: "mega-charizard-x-figure",
+      position: "top-left",
+      title: "Mega Charizard X Pokémon Collectible Figure",
+      shortLabel: "Blue-flame display figure",
+
+      image: "https://m.media-amazon.com/images/I/51BVTz2CwCL._SL1100_.jpg",
+      amazonUrl: "https://link.amazon/B0a1ERbSL",
+
+      tint: "#82cfff",
+
+      description:
+        "A dramatic Mega Charizard X collectible featuring its distinctive black body, blue wings and bright blue flame details.",
+
+      features: [
+        "Detailed Mega Charizard X design",
+        "Bold black and blue colour scheme",
+        "Suitable for display and collections"
+      ]
+    },
+
+    {
+      id: "zacian-figure",
+      position: "top-right",
+      title: "Zacian Legendary Pokémon Collectible Figure",
+      shortLabel: "Legendary display collectible",
+
+      image: "https://m.media-amazon.com/images/I/51XR8B7IYbL._SL1100_.jpg",
+      amazonUrl: "https://link.amazon/B05rPxNZf",
+
+      tint: "#ffe08a",
+
+      description:
+        "A colourful Zacian collectible figure with its recognisable red, gold and blue legendary armour-inspired appearance.",
+
+      features: [
+        "Legendary Pokémon character design",
+        "Detailed red, gold and blue finish",
+        "Ideal for desks and display shelves"
+      ]
+    },
+
+    {
+      id: "pokemon-essential-handbook",
+      position: "bottom-left",
+      title: "Pokémon Super Duper Extra Deluxe Essential Handbook",
+      shortLabel: "Guide to Pokémon characters",
+
+      image: "https://m.media-amazon.com/images/I/81WfiCf9MNL._SL1500_.jpg",
+      amazonUrl: "https://link.amazon/B0ahsH2yb",
+
+      tint: "#ff746c",
+
+      description:
+        "A colourful Pokémon reference handbook containing information and statistics for more than one thousand Pokémon characters.",
+
+      features: [
+        "Covers more than 1,000 characters",
+        "Colourful illustrated reference guide",
+        "Useful for young fans and collectors"
+      ]
+    },
+
+    {
+      id: "pokeball-card-storage-case",
+      position: "bottom-right",
+      title: "Poké Ball Trading Card Storage and Carrying Case",
+      shortLabel: "Protect and carry cards",
+
+      image: "https://m.media-amazon.com/images/I/61tZy-HymQL._SL1024_.jpg",
+      amazonUrl: "https://link.amazon/B09K1yLDI",
+
+      tint: "#ff9b96",
+
+      description:
+        "A compact Poké Ball-themed storage case designed to organise and protect trading cards, small accessories and collector items.",
+
+      features: [
+        "Protective zippered outer case",
+        "Poké Ball-inspired exterior design",
+        "Portable storage for cards and accessories"
+      ]
+    }
+  ]
+},
   {
     id: "reading-corner",
     eyebrow: "Slow living",
