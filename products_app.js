@@ -423,6 +423,31 @@ let hidePreviewTimer = null;
 let activePreviewCard = null;
 let isMuted = true;
 
+// Prevent accidental product previews while the carousel is moving.
+let isCarouselMoving = false;
+let hoverUnlockTimer = null;
+
+function suspendProductHover() {
+  isCarouselMoving = true;
+  clearTimeout(hoverUnlockTimer);
+
+  viewport?.classList.add("hover-suspended");
+
+  // Close an existing hover preview before moving to another post.
+  if (preview?.classList.contains("is-open")) {
+    closePreview({ resume: false });
+  }
+}
+
+function resumeProductHover(delay = 140) {
+  clearTimeout(hoverUnlockTimer);
+
+  hoverUnlockTimer = window.setTimeout(() => {
+    isCarouselMoving = false;
+    viewport?.classList.remove("hover-suspended");
+  }, delay);
+}
+
 const SOCIAL_STORAGE_KEY = "alpha4orge-products-social-v1";
 const DEFAULT_LIKE_COUNT = 1240;
 
@@ -855,17 +880,26 @@ function updateCarousel({
       }
     }
   } else {
-    if (!animate) {
-      track.classList.add("no-transition");
-    }
-
-    track.style.transform =
-      `translate3d(-${activeIndex * 100}%, 0, 0)`;
-
-    requestAnimationFrame(() => {
-      track.classList.remove("no-transition");
-    });
+  // Disable product hover while the collection is moving.
+  if (animate) {
+    suspendProductHover();
   }
+
+  if (!animate) {
+    track.classList.add("no-transition");
+  }
+
+  track.style.transform =
+    `translate3d(-${activeIndex * 100}%, 0, 0)`;
+
+  requestAnimationFrame(() => {
+    track.classList.remove("no-transition");
+
+    if (!animate) {
+      resumeProductHover(0);
+    }
+  });
+}
 
   const collection = COLLECTIONS[activeIndex];
 
@@ -995,7 +1029,7 @@ function openPreview(
   });
 }
 
-function closePreview() {
+function closePreview({ resume = true } = {}) {
   clearTimeout(hidePreviewTimer);
 
   activePreviewCard = null;
@@ -1004,17 +1038,14 @@ function closePreview() {
   preview.setAttribute("aria-hidden", "true");
 
   previewScrim.classList.remove("is-visible");
-  previewScrim.setAttribute(
-    "aria-hidden",
-    "true"
-  );
+  previewScrim.setAttribute("aria-hidden", "true");
 
-  document.body.classList.remove(
-    "preview-open"
-  );
+  document.body.classList.remove("preview-open");
 
-  resumeAutoRotation();
-  startProductRailForActiveSlide();
+  if (resume) {
+    resumeAutoRotation();
+    startProductRailForActiveSlide();
+  }
 
   if (
     previewReturnFocus &&
@@ -1060,21 +1091,23 @@ function bindProductEvents() {
       );
 
       card.addEventListener(
-        "mouseenter",
-        () => {
-          const supportsHover =
-            window.matchMedia(
-              "(hover: hover) and (pointer: fine)"
-            ).matches;
+  "mouseenter",
+  () => {
+    const supportsHover =
+      window.matchMedia(
+        "(hover: hover) and (pointer: fine)"
+      ).matches;
 
-          if (
-            !isMobileFeed() &&
-            supportsHover
-          ) {
-            openPreview(product, card);
-          }
-        }
-      );
+    if (
+      !isMobileFeed() &&
+      supportsHover &&
+      !isCarouselMoving &&
+      !viewport?.classList.contains("is-dragging")
+    ) {
+      openPreview(product, card);
+    }
+  }
+);
     });
 }
 
@@ -1884,6 +1917,7 @@ function beginCarouselDrag(event) {
   if (event.pointerType === "mouse" && event.button !== 0) return;
   if (isInteractiveTarget(event.target)) return;
 
+  suspendProductHover();
   isDragging = true;
   dragStartX = event.clientX;
   dragCurrentX = event.clientX;
@@ -1944,6 +1978,25 @@ viewport?.addEventListener("pointerdown", beginCarouselDrag);
 viewport?.addEventListener("pointermove", moveCarouselDrag, { passive: false });
 viewport?.addEventListener("pointerup", endCarouselDrag);
 viewport?.addEventListener("pointercancel", endCarouselDrag);
+
+track?.addEventListener("transitionend", event => {
+  if (
+    event.propertyName !== "transform" ||
+    isMobileFeed()
+  ) {
+    return;
+  }
+
+  // Small delay prevents a stationary cursor from immediately
+  // activating the incoming product card.
+  resumeProductHover(140);
+});
+
+track?.addEventListener("transitioncancel", () => {
+  if (!isMobileFeed()) {
+    resumeProductHover(140);
+  }
+});
 
 document.addEventListener("keydown", event => {
   if (event.target.closest?.("input, textarea, select, [contenteditable='true']")) return;
