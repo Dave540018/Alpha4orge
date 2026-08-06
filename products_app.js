@@ -1,5 +1,121 @@
 const COLLECTIONS = [
   {
+  id: "freedom-sale-phones",
+  eyebrow: "Freedom Sale picks",
+  title: "Best Smartphone Deals",
+  subtitle: "Four standout phones worth checking during the sale",
+
+  theme: {
+    accent: "#ff7a18",
+    accentSoft: "#fff0db",
+    accentDark: "#b94412",
+    surfaceTint: "rgba(255, 126, 43, 0.76)"
+  },
+
+  // Desktop 16:9 or landscape media
+  image: "ADD_FREEDOM_SALE_LANDSCAPE_IMAGE_URL",
+  video: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/FreedomSaleAmazonKit04.mp4.mp4",
+  poster: "ADD_FREEDOM_SALE_LANDSCAPE_IMAGE_URL",
+
+  backgroundImage: "ADD_FREEDOM_SALE_LANDSCAPE_IMAGE_URL",
+  backgroundVideo: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/FreedomSaleAmazonKit04.mp4.mp4",
+
+  // Mobile 9:16 portrait media
+  mobileImage: "ADD_FREEDOM_SALE_PORTRAIT_IMAGE_URL",
+  mobileVideo: "https://github.com/Dave540018/alpha4orge-assets/releases/download/v1.0.0/FreedomSaleAmazonKit04Portrait.mp4",
+  mobilePoster: "ADD_FREEDOM_SALE_PORTRAIT_IMAGE_URL",
+
+  products: [
+    {
+      id: "iqoo-15",
+      position: "top-left",
+
+      title: "iQOO 15 5G Smartphone",
+      shortLabel: "Flagship performance pick",
+
+      image: "https://m.media-amazon.com/images/I/61o9FFbUEJL._SL1200_.jpg",
+      amazonUrl: "https://link.amazon/B0eUtUshF",
+
+      tint: "#bce8ff",
+
+      description:
+        "A performance-focused flagship smartphone suited to gaming, demanding apps and users looking for strong battery life.",
+
+      features: [
+        "Flagship-class performance",
+        "High-refresh premium display",
+        "Designed for gaming and multitasking"
+      ]
+    },
+
+    {
+      id: "samsung-galaxy-s26",
+      position: "top-right",
+
+      title: "Samsung Galaxy S26 5G",
+      shortLabel: "Premium balanced flagship",
+
+      image: "https://m.media-amazon.com/images/I/71N8YkTS0TL._SL1500_.jpg",
+      amazonUrl: "https://link.amazon/B0fMiRkKy",
+
+      tint: "#d9e5ff",
+
+      description:
+        "A polished premium smartphone for users who prioritise dependable cameras, software experience and an elegant compact design.",
+
+      features: [
+        "Premium camera experience",
+        "Refined everyday software",
+        "Compact flagship design"
+      ]
+    },
+
+    {
+      id: "realme-gt-16-pro+",
+      position: "bottom-left",
+
+      title: "realme GT 16 Pro+ 5G",
+      shortLabel: "Camera and charging pick",
+
+      image: "https://m.media-amazon.com/images/I/71omLBVju1L._SL1500_.jpg",
+      amazonUrl: "https://link.amazon/B05qCzvzz",
+
+      tint: "#ffd7c2",
+
+      description:
+        "A high-performance smartphone for buyers looking for fast charging, strong camera hardware and premium specifications.",
+
+      features: [
+        "High-performance processor",
+        "Fast charging support",
+        "Versatile camera system"
+      ]
+    },
+
+    {
+      id: "oneplus-nord-6",
+      position: "bottom-right",
+
+      title: "OnePlus Nord 6 5G",
+      shortLabel: "Upper mid-range value",
+
+      image: "https://m.media-amazon.com/images/I/61F1NWYtCKL._SL1500_.jpg",
+      amazonUrl: "https://link.amazon/B0gFdLSrl",
+
+      tint: "#ccebdc",
+
+      description:
+        "A well-rounded upper mid-range smartphone for buyers who want smooth performance and a clean everyday experience without flagship pricing.",
+
+      features: [
+        "Smooth everyday performance",
+        "Large battery capacity",
+        "Clean and responsive interface"
+      ]
+    }
+  ]
+},
+  {
     id: "cozy-study",
     eyebrow: "Study aesthetic",
     title: "Cozy Study Essentials",
