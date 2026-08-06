@@ -931,3 +931,17 @@ img, video { display: block; max-width: 100%; }
     overscroll-behavior-y: contain;
   }
 }
+
+/* Prevent accidental desktop hover while dragging or sliding posts. */
+@media (min-width: 681px) {
+  .collection-viewport.hover-suspended .product-card {
+    pointer-events: none;
+  }
+
+  .collection-viewport.hover-suspended .product-card:hover,
+  .collection-viewport.hover-suspended .product-card:focus-visible {
+    z-index: 6;
+    transform: none;
+    box-shadow: var(--small-shadow);
+  }
+}
